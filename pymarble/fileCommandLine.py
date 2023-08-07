@@ -2,10 +2,11 @@
 import re, struct
 from prettytable import PrettyTable
 from .section import SECTION_OUTPUT_ORDER
-from .binFile_ import BinaryFileProtocol
+from .fileClass import FileProtocol
 
-class Mixin_Commandline():
-  def printNext(self:BinaryFileProtocol, count:int, dType:str='i') -> None:
+class Commandline():
+  """ Mixin that includes all functions for the commandline """
+  def printNext(self:FileProtocol, count:int, dType:str='i') -> None:
     '''
     print next variables in file
 
@@ -28,7 +29,7 @@ class Mixin_Commandline():
     return
 
 
-  def printAscii(self:BinaryFileProtocol, numRows:int=-1) -> None:
+  def printAscii(self:FileProtocol, numRows:int=-1) -> None:
     '''
     print the file as ascii and return to zero position
 
@@ -52,7 +53,7 @@ class Mixin_Commandline():
     return
 
 
-  def printList(self:BinaryFileProtocol, printBinary:bool=False) -> None:
+  def printList(self:FileProtocol, printBinary:bool=False) -> None:
     '''
     print list of all items
     - shorten long texts to 30 chars

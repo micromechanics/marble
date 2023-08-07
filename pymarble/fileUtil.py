@@ -3,10 +3,12 @@ import struct, math, re, difflib
 from typing import Union
 import numpy as np
 from .section import Section, SECTION_OUTPUT_ORDER
-from .binFile_ import BinaryFileProtocol
+from .fileClass import FileProtocol
 
-class Mixin_Util():
-  def findValue(self:BinaryFileProtocol, value:Union[str,float], dType:str='d', verbose:bool=True, offset:int=0) -> list[str]:
+class Util():
+  """ Mixin that includes all utility functions """
+  def findValue(self:FileProtocol, value:Union[str,float], dType:str='d', verbose:bool=True, offset:int=0) \
+    -> list[str]:
     '''
     find value in binary file by iterating all offsets
 
@@ -48,7 +50,7 @@ class Mixin_Util():
     return []
 
 
-  def findBytes(self:BinaryFileProtocol, value:Union[str,float], dType:str='d', offset:int=0) -> int:
+  def findBytes(self:FileProtocol, value:Union[str,float], dType:str='d', offset:int=0) -> int:
     '''
     find value in binary file by looking for the appropriate byte string
 
@@ -87,7 +89,7 @@ class Mixin_Util():
     return found
 
 
-  def label(self:BinaryFileProtocol, start:int, data:str) -> None:
+  def label(self:FileProtocol, start:int, data:str) -> None:
     '''
     Manually label / define key a section
     - Set probability to 100 and important to true since why would the user label it
@@ -99,8 +101,7 @@ class Mixin_Util():
     Args:
       start: start offset
       data: data of section
-    '''    
-    #TODO_P3 z Temporary verification until version 1.1
+    '''
     if start<0 or start>self.fileLength:
       print("**ERROR: start value does not make sense", start)
       return
@@ -155,7 +156,7 @@ class Mixin_Util():
     return
 
 
-  def fill(self:BinaryFileProtocol) -> None:
+  def fill(self:FileProtocol) -> None:
     '''
     Fill content by labeling undefined sections to be "undefined" binary data
     - cleaning / repair all cases of overlap
@@ -238,7 +239,7 @@ class Mixin_Util():
       #create section after last section
       if starts[-1] in self.content:  #if last section still there
         section = self.content[starts[-1]]
-        newStart = starts[-1]+struct.calcsize(str(max(section.length,0))+section.dType)#max: prevent neg. numbers
+        newStart = starts[-1]+struct.calcsize(str(max(section.length,0))+section.dType)#max: no neg. numbers
         if newStart<self.fileLength:
           self.file.seek(newStart)
           text = self.byteToString(self.file.read(self.fileLength-newStart),1)
@@ -247,7 +248,7 @@ class Mixin_Util():
     return
 
 
-  def verify(self:BinaryFileProtocol) -> None:
+  def verify(self:FileProtocol) -> None:
     '''
     Verify some sanity tests
     '''
@@ -278,9 +279,9 @@ class Mixin_Util():
     if spaceEvery>0:
       spaceEvery *= 2
       aString = ' '.join(aString[i:i+spaceEvery] for i in range(0, len(aString), spaceEvery))
-    else:      
-      aList = [int(aString[i:i+2], base=16) for i in range(0,len(aString),2) ] #list of integer/char
-      listConsecutive = np.split(aList, np.where(np.diff(aList) != 0)[0]+1)    #find consecutive entries: list[np.array]
+    else:
+      aList = [int(aString[i:i+2], base=16) for i in range(0,len(aString),2) ]#list of integer/char
+      listConsecutive = np.split(aList, np.where(np.diff(aList) != 0)[0]+1)   #find consecutive entries list[]
       aString = ''.join([''.join([hex(j)[2:].zfill(2) for j in i]) if len(i)<3 or i[0]>0 \
         else ' '+str(len(i))+'*00 ' for i in listConsecutive])
     return aString
@@ -331,7 +332,7 @@ class Mixin_Util():
     return [result, str(differenceFlag)]
 
 
-  def pretty(self:BinaryFileProtocol, number:int) -> str:
+  def pretty(self:FileProtocol, number:int) -> str:
     '''
     convert decimal or hexdecimal number in easy to read string
 

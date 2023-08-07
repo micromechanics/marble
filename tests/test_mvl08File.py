@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import warnings, os
-from pymarble.binaryFile import BinaryFile
+from pymarble.file import BinaryFile
 
 def test_main():
   # initialization: create database, destroy on filesystem and database and then create new one

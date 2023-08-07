@@ -1,17 +1,17 @@
 """module that describes binary file that is to be deciphered"""
 import os, io
 from sortedcontainers import SortedDict
-from .binFile_ import BinaryFileProtocol
-from .binFile_inputOutput import Mixin_InputOutput
-from .binFile_automaticIdentify import Mixin_Automatic
-from .binFile_util import Mixin_Util
-from .binFile_commandLine import Mixin_Commandline
+from .fileClass import FileProtocol
+from .fileInputOutput import InputOutput
+from .fileAutomaticIdentify import Automatic
+from .fileUtil import Util
+from .fileCommandLine import Commandline
 
-class BinaryFile(Mixin_InputOutput,Mixin_Automatic,Mixin_Util, Mixin_Commandline):
+class BinaryFile(InputOutput, Automatic, Util, Commandline):
   """
   class that describes binary file that is to be deciphered
   """
-  def __init__(self:BinaryFileProtocol, fileName:str, verbose:int=1, fileType:str='disk'):
+  def __init__(self:FileProtocol, fileName:str, verbose:int=1, fileType:str='disk'):
     '''
     initialize
 
@@ -21,6 +21,7 @@ class BinaryFile(Mixin_InputOutput,Mixin_Automatic,Mixin_Util, Mixin_Commandline
       fileType: disk or data
 
     '''
+    super().__init__()
     #All options should be here. GUI can change these defaults
     self.optGeneral   = {'maxSize':-1}
     self.optFind      = {'maxError':1e-4}
@@ -28,7 +29,8 @@ class BinaryFile(Mixin_InputOutput,Mixin_Automatic,Mixin_Util, Mixin_Commandline
     self.optEntropy   = {'blockSize':256, 'skipEvery':5}
 
     self.fileType   = fileType  #'disk': read directly from disk; 'ram' copy file in ram and work in virt. disk
-                                #'data': #futureFeature copy file into data & work on different sections parallel
+                                #'data': #futureFeature copy file into data & work on different sections
+                                #   in parallel
     self.fileName                  = fileName
     self.fileLength                = -1
     self.content                   = SortedDict()
@@ -36,7 +38,8 @@ class BinaryFile(Mixin_InputOutput,Mixin_Automatic,Mixin_Util, Mixin_Commandline
     self.file                      = io.BytesIO()
     self.printMode                 = 'dec' #      printMode: dec-decimal, hex-hexadecimal
     self.verbose                   = verbose
-    self.meta                      = {'vendor':'', 'label':'', 'software':'', 'ext':os.path.splitext(fileName)[1][1:]}
+    self.meta                      = {'vendor':'', 'label':'', 'software':'', \
+                                      'ext':os.path.splitext(fileName)[1][1:]}
 
     self.initContent()
     return

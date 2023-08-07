@@ -5,13 +5,22 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+from matplotlib import ticker
 from matplotlib.axes._axes import Axes
 from .section import Section, SECTION_OUTPUT_ORDER
-from .binFile_ import BinaryFileProtocol
+from .fileClass import FileProtocol
 
-class Mixin_InputOutput():
-  def initContent(self:BinaryFileProtocol) -> None:
+class InputOutput():
+  """ Mixin that includes all input and output functions """
+  def __init__(self:FileProtocol):
+    """ defaults if this class is used separately, aka. never.
+    """
+    self.file                      = io.BytesIO()
+    self.periodicity:dict[str,int] = {}
+    self.meta                      = {'vendor':'', 'label':'', 'software':''}
+    self.fileLength                = -1
+
+  def initContent(self:FileProtocol) -> None:
     '''
     set binary file initially
 
@@ -23,22 +32,22 @@ class Mixin_InputOutput():
     '''
     self.fileLength = os.path.getsize(self.fileName)
     if self.fileType=='disk':
-      self.file       = open(self.fileName,'br')
+      self.file       = open(self.fileName,'br')               # pylint: disable=consider-using-with
       #runtime python test: 26.5sec # runtime shell test: 1m3.577s
     else:
-      file            = open(self.fileName,'br')
-      self.file       = io.BytesIO(file.read())
-      file.close()
+      with open(self.fileName,'br') as file:
+        self.file       = io.BytesIO(file.read())
       #runtime python test: 22.8sec  # runtime shell test: 1m8.051s
     # set initial content
     self.content[np.int64(0)] = Section(length=self.fileLength, dType='b',prob=0)
     # output of initialization
     if self.verbose>1:
       print("Process file:",self.fileName,' of length',self.pretty(self.fileLength),'in mode',self.printMode)
+    self.meta['ext']=os.path.splitext(self.fileName)[1][1:]
     return
 
 
-  def saveTags(self:BinaryFileProtocol) -> None:
+  def saveTags(self:FileProtocol) -> None:
     '''
     Output file content to .tags file
     '''
@@ -46,7 +55,7 @@ class Mixin_InputOutput():
       print("**ERROR in SaveTags: NOT ENOUGH ENTRIES in content. I exit.")
       return
     tagsFile = self.fileName+'.tags'
-    with open(tagsFile, 'w') as fOut:
+    with open(tagsFile, 'w', encoding='utf-8') as fOut:
       fOut.write('<?xml version="1.0" encoding="UTF-8"?>\n')
       fOut.write('<wxHexEditor_XML_TAG>\n')
       fOut.write('  <filename path="'+self.fileName+'">\n')
@@ -83,7 +92,7 @@ class Mixin_InputOutput():
     return
 
 
-  def loadTags(self:BinaryFileProtocol) -> None:
+  def loadTags(self:FileProtocol) -> None:
     '''
     .tags file read into content
     '''
@@ -96,28 +105,27 @@ class Mixin_InputOutput():
     meta = root.find('meta')
     if meta is None:
       print('**ERROR could not loadTags metadata')
-      return 
+      return
     self.meta = json.loads(str(meta.text))
     periodicity = root.find('periodicity')
     if periodicity is None:
       print('**ERROR could not loadTags periodicity')
-      return 
+      return
     self.periodicity = json.loads(str(periodicity.text))
     filename = root.find('filename')
-    print("TODO !!!")
-    # for tag in list(filename):
-    #   start = int(tag.find('start_offset').text)
-    #   self.content[start] = Section(data=tag.find('tag_text').text)
+    for tag in list(filename):   # type: ignore[arg-type]
+      start = int(tag.find('start_offset').text)
+      self.content[start] = Section(data=tag.find('tag_text').text)
     return
 
 
-  def savePython(self:BinaryFileProtocol) -> None:
+  def savePython(self:FileProtocol) -> None:
     '''
     Output file content to .py file
     header has formalized description of file-structure
     '''
     pyFile = os.path.splitext(self.fileName)[0]+'.py'
-    with open(pyFile, 'w') as fOut:
+    with open(pyFile, 'w', encoding='utf-8') as fOut:
       # PYTHON PART
       # header
       fOut.write("#!/usr/bin/python3\n")
@@ -196,7 +204,7 @@ class Mixin_InputOutput():
     return
 
 
-  def loadPython(self:BinaryFileProtocol, pyFile:Optional[str]=None) -> None:
+  def loadPython(self:FileProtocol, pyFile:Optional[str]=None) -> None:
     '''
     load python file and parse its header information
     '''
@@ -205,7 +213,7 @@ class Mixin_InputOutput():
       pyFile = os.path.splitext(self.fileName)[0]+'.py'
       compare = False
 
-    with open(pyFile, 'r') as fIn:
+    with open(pyFile, 'r', encoding='utf-8') as fIn:
       for line in fIn:
         if line.strip() == '# INFO: THIS PART IS LOADED BY MARBLE':
           break
@@ -266,7 +274,7 @@ class Mixin_InputOutput():
     return
 
 
-  def plot(self:BinaryFileProtocol, start:int, plotMode:int=1, show:bool=True) -> Optional[Axes]:
+  def plot(self:FileProtocol, start:int, plotMode:int=1, show:bool=True) -> Optional[Axes]:
     '''
     Plot as graph values found at location i
 
@@ -293,7 +301,7 @@ class Mixin_InputOutput():
       ax1 = plt.subplot(111)
       ax1.plot(valuesX, valuesY, '-o')
       def toHex(num:str, _:int) -> str:
-        return '0x%x' % int(num)
+        return f'0x{int(num)}'
       if self.printMode=='hex':
         ax1.get_xaxis().set_major_formatter(ticker.FuncFormatter(toHex))
       yMin = np.percentile(valuesY,2)
@@ -318,7 +326,7 @@ class Mixin_InputOutput():
     return ax1
 
 
-  def pythonHeader(self:BinaryFileProtocol) -> str:
+  def pythonHeader(self:FileProtocol) -> str:
     '''
     Header written at top of python file
     - includes only the python code and not the predefined functions

@@ -1,9 +1,11 @@
+"""data and functions of class, have to be separate from file.py"""
 import io
-from typing import Protocol, Callable, Union, Optional
+from typing import Protocol, Callable, Union, Any
 from sortedcontainers import SortedDict
 from .section import Section
 
-class BinaryFileProtocol(Protocol):
+class FileProtocol(Protocol):
+  """ Class data and functions """
   # data
   fileName: str
   file: Union[io.BufferedReader, io.BytesIO]
@@ -11,7 +13,7 @@ class BinaryFileProtocol(Protocol):
   fileType: str
   content: SortedDict[int,Section]
   meta: dict[str,str]
-  periodicity: dict[str,int]  
+  periodicity: dict[str,int]
   optGeneral: dict[str, int]
   optFind: dict[str, float]
   optAutomatic: dict[str, int]
@@ -33,4 +35,5 @@ class BinaryFileProtocol(Protocol):
   pythonHeader: Callable[[],str]
   byteToString: Callable[[bytes,int],str]
   diffStrings: Callable[[str,str],list[str]]
-  entropy: Callable[[int,bool],float]  
+  entropy: Callable[[int,bool],float]
+  verify: Callable[[Any], None]

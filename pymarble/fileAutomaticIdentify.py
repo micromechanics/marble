@@ -3,10 +3,11 @@ import math, struct, re, time
 import xml.etree.ElementTree as ET
 import numpy as np
 from .section import Section
-from .binFile_ import BinaryFileProtocol
+from .fileClass import FileProtocol
 
-class Mixin_Automatic():
-  def automatic(self:BinaryFileProtocol, methodOrder:str='x_z_p_a') -> None:
+class Automatic():
+  """ Mixin that includes all functions that identify sections """
+  def automatic(self:FileProtocol, methodOrder:str='x_z_p_a') -> None:
     '''
     Wrapper that calls the different methods. This is generally the first step
 
@@ -55,7 +56,7 @@ class Mixin_Automatic():
     return
 
 
-  def findZeroSection(self:BinaryFileProtocol, start:int=0) -> None:
+  def findZeroSection(self:FileProtocol, start:int=0) -> None:
     '''
     Find zeros in file and mark probability as low, to not block other entries
 
@@ -73,7 +74,7 @@ class Mixin_Automatic():
     return
 
 
-  def findAsciiSection(self:BinaryFileProtocol, start:int) -> None:
+  def findAsciiSection(self:FileProtocol, start:int) -> None:
     '''
     Find sections of Ascii letters in file
 
@@ -98,7 +99,7 @@ class Mixin_Automatic():
     return
 
 
-  def findXMLSection(self:BinaryFileProtocol) -> None:
+  def findXMLSection(self:FileProtocol) -> None:
     '''
     Find xml sections in file
     '''
@@ -124,7 +125,7 @@ class Mixin_Automatic():
     return
 
 
-  def useExportedFile(self:BinaryFileProtocol, exportedFile:str) -> None:
+  def useExportedFile(self:FileProtocol, exportedFile:str) -> None:
     '''
     Using exported file, try to find those occurrences in binary file. Zero at beginning taking
     somewhat into account. Difficult to account for trailing zeros since those difficult to
@@ -140,14 +141,14 @@ class Mixin_Automatic():
         exportedFile: file name of exported file: has to be np.loadtxt readable
     '''
     #identify number separators, decimal separators
-    fIn = open(exportedFile,'r')
-    text = fIn.read()
-    numLines = text.count('\n')
-    relComma = text.count(',')/float(numLines)
-    relPoint = text.count('.')/float(numLines)
-    relSemicolon = text.count(';')/float(numLines)
-    relTab = text.count('\t')/float(numLines)
-    fIn.close()
+    with open(exportedFile,'r', encoding='ISO-8859-1') as fIn:
+      text = fIn.read()
+      numLines = text.count('\n')
+      relComma = text.count(',')/float(numLines)
+      relPoint = text.count('.')/float(numLines)
+      relSemicolon = text.count(';')/float(numLines)
+      relTab = text.count('\t')/float(numLines)
+      fIn.close()
     print("Info file: num. lines:",numLines,'rel. ","',relComma,'rel. "."',relPoint,
       'rel. ";"',relSemicolon,'rel. tab',relTab)
     if relComma>0.99 and relTab>0.99:
@@ -182,7 +183,7 @@ class Mixin_Automatic():
           maxDiff = np.max(dataBINARY-dataTXT[:,col])
           if bestMax is None or abs(maxDiff)<abs(bestMax):
             bestOffset, bestMax, bestDType = start, maxDiff, dType
-      print(col)
+      print(f'Identify column: {col}')
       if bestOffset is None or bestMax is None or bestDType is None:
         print('**ERROR no fitting best value found')
         return
@@ -197,7 +198,7 @@ class Mixin_Automatic():
     return
 
 
-  def findStreak(self:BinaryFileProtocol, dType:str='d', start:int=0) -> None:
+  def findStreak(self:FileProtocol, dType:str='d', start:int=0) -> None:
     '''
     Go through the file and try to read numbers,
       if make sense continue reading
@@ -242,12 +243,12 @@ class Mixin_Automatic():
     #
     if self.verbose>1:
       print(start,'- '+self.pretty(self.file.tell())+': streak of dType='+dType+', length='+str(len(found)))
-    self.content[start] = Section(length=len(found), value='streak of dType='+dType+', length='+str(len(found)),\
-      dType=dType, prob=20)
+    self.content[start] = Section(length=len(found), value='streak of dType='+dType+', \
+                                  length='+str(len(found)), dType=dType, prob=20)
     return
 
 
-  def primaryTimeData(self:BinaryFileProtocol, start:int=0) -> None:
+  def primaryTimeData(self:FileProtocol, start:int=0) -> None:
     '''
     Go through the file and read numbers based on if they and next numbers make sense
 
@@ -266,8 +267,7 @@ class Mixin_Automatic():
     sectionBefore = self.content[starts[idx-1]]
     if sectionBefore.dType == 'B':
       start -= min(16, sectionBefore.byteSize())
-      if start<0:
-        start=0
+      start = max(0, start)
       length+= min(16, sectionBefore.byteSize())
     #start process
     self.file.seek(start)
@@ -310,7 +310,7 @@ class Mixin_Automatic():
     return
 
 
-  def entropy(self:BinaryFileProtocol, start:int=-1, plot:bool=False) -> float:
+  def entropy(self:FileProtocol, start:int=-1, plot:bool=False) -> float:
     '''
     inspired by but not more than inspired by
     - http://blog.dkbza.org/2007/05/scanning-data-for-entropy-anomalies.html
@@ -333,7 +333,7 @@ class Mixin_Automatic():
       dataBin = self.file.read( self.content[start].byteSize() )  #read data
       data = struct.unpack(str(self.content[start].byteSize())+'B', dataBin) #convert to byte-int
       blockSize = min(blockSize, self.content[start].byteSize()-1)
-      skipEvery = max(self.optEntropy['skipEvery'], int(self.content[start].byteSize()/1024)) #max. of 1024 tests
+      skipEvery = max(self.optEntropy['skipEvery'], int(self.content[start].byteSize()/1024))#max. of 1024tests
     else:
       self.file.seek(0)
       dataBin = self.file.read()  #read data
@@ -360,7 +360,7 @@ class Mixin_Automatic():
     return np.average(results)
 
 
-  def find2DImage(self:BinaryFileProtocol, start:int) -> None:
+  def find2DImage(self:FileProtocol, start:int) -> None:
     '''
     find a 2D image in section with this start and label accordingly
 
