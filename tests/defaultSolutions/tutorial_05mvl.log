@@ -1,0 +1,22 @@
+**INFO: no xml string found
+Info file: num. lines: 58076 rel. "," 0.0 rel. "." 3.0 rel. ";" 0.0 rel. tab 2.0
+  Tab separated numbers with .-decimal
+000044 found value 58076
+00044 found value 195
+00044 found value 195
+00044 found 195.0 with error 0.0
+... found nothing
+... found nothing
+... found nothing
+69272 (0.0, 0.01999999999998181, 0.03999999999996362, 0.05999999999994543, 0.07999999999992724)
+Average entropy: 0.7574
+
+Test Python script
+Translation successful
+Translation successful
+
+Test python import, and then compare the output, incl. diff
+**WARNING SKIP APPLICATION TO OTHER FOR NOW
+
+Python import and compare to real other file 08.mvl
+**WARNING SKIP APPLICATION TO OTHER FOR NOW

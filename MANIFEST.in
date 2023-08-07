@@ -1,0 +1,5 @@
+graft pymarble
+graft docs
+prune docs/build
+global-exclude *.py[cod]
+

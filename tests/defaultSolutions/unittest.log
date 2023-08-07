@@ -1,0 +1,16 @@
+
+START testBackendTutorial.py
+**INFO: no xml string found
+00044 found value 195
+
+*** DONE WITH VERIFY ***
+
+START testExportedFile.py
+Info file: num. lines: 58076 rel. "," 0.0 rel. "." 3.0 rel. ";" 0.0 rel. tab 2.0
+  Tab separated numbers with .-decimal
+000044 found value 58076
+58076|d|||||44|58076|90|-1.0000|False|exportedData_col=1
+58076|f|||||44|58076|76|-1.0000|False|exportedData_col=2
+58076|f|||||44|58076|90|-1.0000|False|exportedData_col=3
+
+*** DONE WITH VERIFY ***
