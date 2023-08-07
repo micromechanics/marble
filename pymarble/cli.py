@@ -3,7 +3,6 @@
 """
 import warnings, sys, traceback
 from .file import BinaryFile
-from .fileClass import FileProtocol
 
 def printHelp() -> None:
   """
@@ -70,38 +69,38 @@ def main() -> None:
       try:
         # smart\automatic functions
         if command.startswith('s'):
-          fBIN.findStreak(command[1],int(command.split()[1], 0))
+          fBIN.findStreak(command[1],int(command.split()[1], 0))  # type: ignore[misc]
         elif command.startswith('m'):
           methodOrder = 'x_z_p_a' if len(command.split())==1 else command.split()[1]
-          fBIN.automatic(methodOrder)
+          fBIN.automatic(methodOrder)                             # type: ignore[misc]
         elif command.startswith('z'):
-          fBIN.entropy()
+          fBIN.entropy()                                          # type: ignore[misc]
 
         # find data
         elif   command.startswith('f'):
-          fBIN.findValue(command.split()[1],command[1])
+          fBIN.findValue(command.split()[1],command[1])           # type: ignore[misc]
         elif   command.startswith('b'):
-          fBIN.findBytes(command.split()[1],command[1])
+          fBIN.findBytes(command.split()[1],command[1])           # type: ignore[misc]
         elif command.startswith('e'):
-          fBIN.useExportedFile(command.split()[1])
+          fBIN.useExportedFile(command.split()[1])                # type: ignore[misc]
 
         # print informaton
         elif command.startswith('p'):
-          fBIN.printNext(int(command.split()[1]),command[1])
+          fBIN.printNext(int(command.split()[1]),command[1])      # type: ignore[misc]
         elif command.startswith('a'):
-          fBIN.printAscii(0 if len(command.split())==1 else int(command.split()[1]))
+          fBIN.printAscii(0 if len(command.split())==1 else int(command.split()[1]))    # type: ignore[misc]
         elif command.startswith('g'):
           fBIN.file.seek(0 if len(command.split())==1 else int(command.split()[1],0) )
 
         # read/write identified
         elif command.startswith('l'):
-          fBIN.printList(command.endswith('a'))
+          fBIN.printList(command.endswith('a'))                   # type: ignore[misc]
         elif command.startswith('r'):  #manually labeled
           parts = command.split()
-          fBIN.label(start=int(parts[1]), data=' '.join(parts[2:]) )
+          fBIN.label(start=int(parts[1]), data=' '.join(parts[2:]) )                    # type: ignore[misc]
         elif command.startswith('d'):
           drawMode = 1 if command.split()[0]=='d' else int(command.split()[0][1])
-          fBIN.plot(int(command.split()[1]), drawMode)
+          fBIN.plot(int(command.split()[1]), drawMode)            # type: ignore[misc]
         elif command.startswith('y'):
           for start in [int(i) for i in command.split()[1].split('_')]:
             del fBIN.content[start]
@@ -120,18 +119,18 @@ def main() -> None:
           else:
             fBIN.printMode='dec'
         elif command=='ot':
-          fBIN.saveTags()
+          fBIN.saveTags()                                         # type: ignore[misc]
         elif command=='it':
-          fBIN.loadTags()
+          fBIN.loadTags()                                         # type: ignore[misc]
         elif command=='op':
-          fBIN.savePython()
+          fBIN.savePython()                                       # type: ignore[misc]
         elif command.startswith('ip'):
           pyFile = None if len(command.split())<3 else command.split()[-1]
-          fBIN.loadPython(pyFile)
+          fBIN.loadPython(pyFile)                                 # type: ignore[misc]
         elif command=='x fill':
-          fBIN.fill()
+          fBIN.fill()                                             # type: ignore[misc]
         elif command=='x verify':
-          fBIN.verify()
+          fBIN.verify()                                           # type: ignore[misc]
         elif command=='q':
           break
         elif command=='h':

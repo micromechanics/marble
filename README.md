@@ -5,32 +5,14 @@
 - Volker Hofmann (IAS-9 and HMC, FZJ)
 - Fiona D'Mello (IAS-9 and HMC, FZJ)
 
-## Using 'Poetry' dependency management
-1. Activate poetry in terminal window in the 'Software' directory
-```
-poetry shell
-```
-to have a virtual env created. It is within this environment all development activities can be comfortably continued in a clean and isolated manner.
-
-2. (one-time) run
-```
-poetry install
-```
-to have all project dependencies installed within the environment.
-
-3. Use either command to stat backend or frontend application
-```
-marble-cli
-marble-gui
-```
 ## Code
 ### Backend
 - Can be found within the 'pymarble/' directory.
-- Entry point is the main function in rff.py file within 'pymarble/'
+- Entry point is the main function in cli.py file within 'pymarble/'
 
 ### Frontend
-- Can be found within the 'pymarble/' directory.
-- Entry point is the main function in app.py file
+- Can be found within the 'pymarble/GUI' directory.
+- Entry point is the main function in gui.py file
 
 ## Tests / User-cases
 - All testing related files can be found under the 'tests/' folder
@@ -40,32 +22,22 @@ marble-gui
 - Three example files are supplied
 
 ## For publishing code
-From within Software directory:
-
-Before:
+#TODO_P1 create more tests, reduce type: ignore !!
 ``` bash
 pylint pymarble
+mypy pymarble
 
-#TODO_P1 create more tests!!
-mypy pymarble/backend/*.py
-coverage erase; coverage run --source pymarble/backend -m pytest tests; coverage html
-firefox htmlcov/index.html 
+tests/testBackend.sh
 
-poetry shell
-> tests/testBackend.sh
-> exit
-rm dist/pymarble-*
-```
-and increase version number in pyproject.toml
+coverage erase; coverage run --source pymarble -m pytest tests; coverage html
+firefox htmlcov/index.html
 
-For publication
-``` bash
 cp ../Documentation/README.md README_pypi.md
-poetry build
-poetry publish
-git commit -a -m 'Version 0.9.4'
-git push
 ```
+
+
+
+rm dist/pymarble-*
 
 
 

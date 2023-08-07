@@ -93,8 +93,8 @@ fi
 #use this python file to decipher this datafile and other raw datafile
 echo
 echo "Test Python script"
-python tests/examples/Membrane_Repeatability_08.py tests/examples/Membrane_Repeatability_08.mvl
-python tests/examples/Membrane_Repeatability_08.py tests/examples/Membrane_Repeatability_08.mvl
+python3 tests/examples/Membrane_Repeatability_08.py tests/examples/Membrane_Repeatability_08.mvl
+python3 tests/examples/Membrane_Repeatability_08.py tests/examples/Membrane_Repeatability_08.mvl
 
 
 echo

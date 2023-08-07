@@ -183,7 +183,6 @@ class Automatic():
           maxDiff = np.max(dataBINARY-dataTXT[:,col])
           if bestMax is None or abs(maxDiff)<abs(bestMax):
             bestOffset, bestMax, bestDType = start, maxDiff, dType
-      print(f'Identify column: {col}')
       if bestOffset is None or bestMax is None or bestDType is None:
         print('**ERROR no fitting best value found')
         return

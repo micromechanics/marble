@@ -35,7 +35,7 @@ fi
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; op'
 
 # Test
-python tests/examples/1-11-OA_0000.py tests/examples/1-11-OA_0000.emi
+python3 tests/examples/1-11-OA_0000.py tests/examples/1-11-OA_0000.emi
 
 # echo
 # echo "Test python import, and then compare the output, incl. diff"

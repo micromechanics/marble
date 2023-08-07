@@ -196,6 +196,7 @@ class InputOutput():
           lineData['dClass']=='primary'):
           lineData['length']=-1
         lineData['value'] = lineData['value'].encode('unicode_escape')
+        lineData['entropy'] = round(lineData['entropy'],4)
         dataframe = pd.concat([dataframe, pd.Series(lineData).to_frame().T], ignore_index=True)
       dataframe = dataframe[SECTION_OUTPUT_ORDER]         #sort colums by defined order
       del dataframe['shape']

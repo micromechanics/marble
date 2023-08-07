@@ -33,7 +33,7 @@ class Section:
   class that represents each identified section of data
   """
   def __init__(self, length:int=0, dType:str='', key:str='', unit:str='', value:str='', link:str='',
-               dClass:str='', count:list[int]=[], shape:list[int]=[], prob:int=0, entropy:float=1.0,
+               dClass:str='', count:list[int]=[], shape:list[int]=[], prob:int=0, entropy:float=-1.0,
                important:bool=False, data:Union[str,dict[str,str]]=''):
     # structural properties
     self.dType     = dType
