@@ -24,8 +24,8 @@
 ## For publishing code
 #TODO_P1 create more tests, reduce type: ignore !!
 ``` bash
-pylint pymarble
-mypy pymarble
+pylint pymarble/*
+mypy pymarble/
 
 tests/testBackend.sh
 
