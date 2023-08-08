@@ -49,7 +49,7 @@ class Section:
     self.prob      = prob
     self.entropy   = entropy
     self.important = important
-    if data!='':
+    if data:
       self.setData(data)
     # set shape if unset
     if self.shape==[] and self.length>0:
@@ -60,8 +60,8 @@ class Section:
     return
 
 
-  def setData(self, data:Union[str,dict[str,str]]='', count:Optional[list[int]]=None,\
-              dClass:Optional[str]=None) -> None:
+  def setData(self, data:Union[str,dict[str,str]]='', count:list[int]=[], dClass:str='', shape:list[int]=[]) \
+      -> None:
     '''
     Change values
 
@@ -74,7 +74,7 @@ class Section:
         if idx<len(dataList) and len(dataList[idx])>0:
           if isinstance( getattr(self,name), list):
             content = dataList[idx][1:-1]
-            if len(content)>1:
+            if len(content)>0:
               setattr(self, name, [int(i) for i in content.split(',')] )
           elif isinstance( getattr(self,name), bool) and isinstance(dataList[idx],str):
             setattr(self, name, dataList[idx]=='True' )
@@ -87,13 +87,17 @@ class Section:
     else:
       for key,value in data.items():
         setattr(self,key, value)
-    if count is not None:
-      self.count = count
-    if dClass is not None:
-      self.dClass = dClass
     #add shape if not given
-    if (SECTION_OUTPUT_ORDER.index('shape')>=len(dataList) or self.shape==[]) and self.length>0:
+    if ((SECTION_OUTPUT_ORDER.index('shape')>=len(dataList) and len(dataList)>1) or self.shape==[]) \
+      and self.length>0:
       self.shape=[self.length]
+    #overwrite with manual given ones
+    if len(count)>0:
+      self.count = count
+    if len(shape)>0:
+      self.shape = shape
+    if dClass:
+      self.dClass = dClass
     return
 
 

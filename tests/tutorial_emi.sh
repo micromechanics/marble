@@ -19,7 +19,7 @@ fi
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'fi 4096'
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1011 1|i|k1=4096|||count; x fill; ot'
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1015 1|i|k2=4096|||count; x fill; ot'
-./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1019 16777216|H|image|||primary|1011,1015; ot'
+./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1019 16777216|H|image|||primary|[1011,1015]; ot'
 
 
 # Plot/Draw it in 2D

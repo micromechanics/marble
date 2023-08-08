@@ -50,9 +50,9 @@ fi
 
 # Lets clean up everything: assuming the length is 1562
 # - changes are written to file
-./marbleCLI.py tests/examples/alone.idr 'it; r 16    4000|d|force|mN||primary||1562; ot'
-./marbleCLI.py tests/examples/alone.idr 'it; r 32016 4000|d|displacement|nm||primary||1562; ot'
-./marbleCLI.py tests/examples/alone.idr 'it; r 64016 4000|d|time|s||primary||1562; ot'
+./marbleCLI.py tests/examples/alone.idr 'it; r 16    4000|d|force|mN||primary||[1562]; ot'
+./marbleCLI.py tests/examples/alone.idr 'it; r 32016 4000|d|displacement|nm||primary||[1562]; ot'
+./marbleCLI.py tests/examples/alone.idr 'it; r 64016 4000|d|time|s||primary||[1562]; ot'
 if [[ -n "$1" ]] && [ $1 = m ]; then
   ./marbleCLI.py tests/examples/alone.idr 'it; l'
 fi
