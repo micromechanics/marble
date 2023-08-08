@@ -3,6 +3,6 @@ __pycache__
 TODO.md
 thisOutput.log
 
-*.hdf5
-*.tags
+tests/examples/*.hdf5
+tests/examples/*.tags
 tests/examples/*.py
