@@ -31,14 +31,8 @@ tests/testBackend.sh
 
 coverage erase; coverage run --source pymarble -m pytest tests; coverage html
 firefox htmlcov/index.html
-
-cp ../Documentation/README.md README_pypi.md
+rm -r htmlcov
 ```
-
-
-
-rm dist/pymarble-*
-
 
 
 ## Python data-types and their byteSize
