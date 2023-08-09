@@ -3,6 +3,7 @@ __pycache__
 
 TODO.md
 thisOutput.log
+pymarble/test.py
 
 tests/examples/*.hdf5
 tests/examples/*.tags

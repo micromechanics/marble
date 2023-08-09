@@ -1,10 +1,12 @@
 """ Main table in app """
+import logging
 from PySide6.QtWidgets import QWidget, QMenu, QTableView    # pylint: disable=no-name-in-module
 from PySide6.QtCore import QPoint, Slot                     # pylint: disable=no-name-in-module
 from PySide6.QtGui import QStandardItemModel, QStandardItem # pylint: disable=no-name-in-module
 
 from .communicate import Communicate
 from .style import widgetAndLayout, Action
+from .form import Form
 
 class Table(QWidget):
   """ widget that shows the table of the items """
@@ -34,6 +36,8 @@ class Table(QWidget):
     self.modelAll.setHorizontalHeaderLabels(self.tableHeaders)
     self.modelHide  = QStandardItemModel(nrows, ncols)
     self.modelHide.setHorizontalHeaderLabels(self.tableHeaders)
+    self.rowIDsAll  = []
+    self.rowIDsHide = []
 
 
   @Slot()
@@ -48,6 +52,8 @@ class Table(QWidget):
     self.modelAll.setHorizontalHeaderLabels(self.tableHeaders)
     self.modelHide  = QStandardItemModel(nrows, ncols)
     self.modelHide.setHorizontalHeaderLabels(self.tableHeaders)
+    self.rowIDsAll  = []
+    self.rowIDsHide = []
     # use content to build models
     content    = self.comm.binaryFile.content
     nrows      = len(content)
@@ -56,6 +62,7 @@ class Table(QWidget):
     iHide = -1
     for i,start in enumerate(content):
       row = content[start].toCSV()
+      self.rowIDsAll.append(start)
       for j, key in enumerate(self.tableHeaders):
         if key=='start':
           item = QStandardItem(str(start))
@@ -64,6 +71,7 @@ class Table(QWidget):
         self.modelAll.setItem(i, j, item)
 
       if content[start].dType not in ['b','B']:
+        self.rowIDsHide.append(start)
         iHide += 1
         for j, key in enumerate(self.tableHeaders):
           if key=='start':
@@ -71,7 +79,6 @@ class Table(QWidget):
           else:
             item = QStandardItem(str(row[key]))
           self.modelHide.setItem(iHide, j, item)
-
     self.modelHide.setRowCount(iHide+1)
     self.table.setModel(self.modelAll)
     return
@@ -139,5 +146,15 @@ class Table(QWidget):
     Args:
       item (QStandardItem): cell clicked
     """
-    # row = item.row()
+    row = item.row()
+    try:
+      if self.showBinary:
+        start = self.rowIDsAll[row]
+      else:
+        start = self.rowIDsHide[row]
+      dialog = Form(self.comm, start)
+      dialog.exec()
+    except:
+      logging.error('cell click is irrational', row)
+      print(self.rowIDsAll, self.rowIDsHide)
     return
