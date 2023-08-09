@@ -1,5 +1,5 @@
 """ Graphical user interface includes all widgets """
-import os, logging, webbrowser, json
+import os, logging, webbrowser, json, subprocess
 from typing import Any
 from pathlib import Path
 from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog # pylint: disable=no-name-in-module
@@ -9,7 +9,7 @@ from qt_material import apply_stylesheet  #of https://github.com/UN-GCPDS/qt-mat
 
 from ..file import BinaryFile
 from .defaults import defaultConfiguration
-from .style import Action
+from .style import Action, showMessage
 from .communicate import Communicate
 from .table import Table
 
@@ -30,12 +30,15 @@ class MainWindow(QMainWindow):
     menu = self.menuBar()
     fileMenu = menu.addMenu("&File")
     Action('&Open binary file', self, ['open'],       fileMenu, shortcut='Ctrl+L')
+    if 'advanced' in configuration:
+      fileMenu.addSeparator()
+      Action('Save tags-file',    self, ['saveTags'],   fileMenu)
+      Action('Load tags-file',    self, ['loadTags'],   fileMenu)
     fileMenu.addSeparator()
-    Action('Save tags-file',    self, ['saveTags'],   fileMenu)
-    Action('Load tags-file',    self, ['loadTags'],   fileMenu)
-    fileMenu.addSeparator()
-    Action('Save python-file',  self, ['savePython'], fileMenu)
-    Action('&Load python-file', self, ['loadPython'], fileMenu)
+    Action('&Save python-file',  self, ['savePython'], fileMenu)
+    Action('Save and e&xtract',  self, ['extractPython'], fileMenu)
+    if 'advanced' in configuration:
+      Action('Load python-file',   self, ['loadPython'], fileMenu)
     fileMenu.addSeparator()
     Action('&Exit',             self, ['exit'],       fileMenu)
 
@@ -71,22 +74,33 @@ class MainWindow(QMainWindow):
           fOut.write(json.dumps(self.configuration, indent=2))
         self.comm.binaryFile = BinaryFile(fileName)
         self.comm.changeTable.emit()
-    elif command[0]=='saveTags':
-      pass
-    elif command[0]=='loadTags':
-      pass
-    elif command[0]=='savePython':
-      pass
-    elif command[0]=='loadPython':
-      pass
+    elif command[0]=='website':
+      webbrowser.open('https://pypi.org/project/pymarble/')
     elif command[0]=='exit':
       self.close()
     elif command[0]=='hide':
       self.comm.toggle.emit()
-    elif command[0]=='website':
-      webbrowser.open('https://pypi.org/project/pymarble/')
+    elif self.comm.binaryFile is None:
+      showMessage(self, 'Error', 'An open file is required to execute the command.','Critical')
+    #commands that require open binary file
+    elif command[0]=='saveTags':
+      self.comm.binaryFile.saveTags()
+    elif command[0]=='loadTags':
+      self.comm.binaryFile.loadTags()
+      self.comm.changeTable.emit()
+    elif command[0]=='savePython':
+      self.comm.binaryFile.savePython()
+    elif command[0]=='loadPython':
+      self.comm.binaryFile.loadPython()
+      self.comm.changeTable.emit()
+    elif command[0]=='extractPython':
+      self.comm.binaryFile.savePython()
+      pyFile = os.path.splitext(self.comm.binaryFile.fileName)[0]+'.py'
+      result = subprocess.run(['python3', pyFile, self.comm.binaryFile.fileName], stdout=subprocess.PIPE)
+      showMessage(self, 'Result of extraction', result.stdout.decode('utf-8'), 'Information')
     else:
       print(f'ERROR: unknown command {command}')
+    return
 
 
   def resizeEvent(self, event: QResizeEvent) -> None:

@@ -5,3 +5,5 @@ defaultConfiguration = {
   "columns": ["start", "length", "key", "value"],
   "theme": "light_blue"
 }
+# additional options
+# advanced: anything: e.g. true

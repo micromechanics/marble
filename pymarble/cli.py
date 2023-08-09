@@ -108,11 +108,6 @@ def main() -> None:
           fBIN.periodicity =  dict(zip(['count','start','end'],[int(i) for i in command.split()[1:]]))
 
         # misc. functions
-        # TODO
-        # elif command.startswith('c'):
-        #   fBIN.compare(command.split()[1])
-        # elif command.startswith('n'):
-        #   fBIN.addNote()
         elif command=='x mode':
           if fBIN.printMode=='dec':
             fBIN.printMode='hex'
