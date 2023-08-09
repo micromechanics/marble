@@ -1,8 +1,6 @@
 """ Editor to change metadata of binary file """
-import json
-from pathlib import Path
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox  # pylint: disable=no-name-in-module
-from .style import IconButton, widgetAndLayout, showMessage
+from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
 
 class MetaEditor(QDialog):
@@ -16,6 +14,8 @@ class MetaEditor(QDialog):
     """
     super().__init__()
     self.comm = comm
+    if self.comm.binaryFile is None:
+      return
     self.metaFields = self.comm.binaryFile.meta
 
     # GUI elements
@@ -41,7 +41,7 @@ class MetaEditor(QDialog):
     """ save selectedList to configuration and exit """
     if btn.text().endswith('Cancel'):
       self.reject()
-    elif btn.text().endswith('Save'):
+    elif btn.text().endswith('Save') and self.comm.binaryFile is not None:
       for key in self.metaFields.keys():
         if key == 'endian':
           self.metaFields[key]=self.endianComboBox.currentText()

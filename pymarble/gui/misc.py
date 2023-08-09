@@ -1,3 +1,4 @@
+""" Misc. functions for MARBLE """
 import os, sys
 
 def restart() -> None:

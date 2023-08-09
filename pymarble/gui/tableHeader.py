@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QDialogButtonBox  # pylint: disable=no-name-in-module
-from .style import IconButton, widgetAndLayout, showMessage
+from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
 from ..section import SECTION_OUTPUT_ORDER
 
@@ -18,7 +18,7 @@ class TableHeader(QDialog):
     super().__init__()
     self.comm = comm
     self.selectedList = self.comm.configuration['columns']
-    self.allSet = {i for i in ['start']+SECTION_OUTPUT_ORDER}
+    self.allSet = set(['start']+SECTION_OUTPUT_ORDER)
 
     # GUI elements
     self.setWindowTitle('Select table headers')
@@ -42,7 +42,7 @@ class TableHeader(QDialog):
     mainL.addWidget(buttonBox)
 
 
-  def execute(self, command) -> None:
+  def execute(self, command:list[str]) -> None:
     """ Event if user clicks button in the center """
     selectedLeft   = [i.text() for i in self.choicesW.selectedItems()]
     selectedRight  = [i.text() for i in self.selectW.selectedItems()]

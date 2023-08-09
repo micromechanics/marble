@@ -27,13 +27,6 @@ class Table(QWidget):
     mainL.addWidget(self.table)
     self.setLayout(mainL)
 
-
-
-  @Slot()
-  def change(self) -> None:
-    """ Change / Refresh / Repaint """
-    if self.comm.binaryFile is None:
-      return
     #initialize models
     self.tableHeaders = self.comm.configuration['columns']
     nrows, ncols = 0, len(self.tableHeaders)
@@ -41,6 +34,21 @@ class Table(QWidget):
     self.modelAll.setHorizontalHeaderLabels(self.tableHeaders)
     self.modelHide  = QStandardItemModel(nrows, ncols)
     self.modelHide.setHorizontalHeaderLabels(self.tableHeaders)
+
+
+  @Slot()
+  def change(self) -> None:
+    """ Change / Refresh / Repaint """
+    if self.comm.binaryFile is None:
+      return
+    # initialize models
+    self.tableHeaders = self.comm.configuration['columns']
+    nrows, ncols = 0, len(self.tableHeaders)
+    self.modelAll   = QStandardItemModel(nrows, ncols)
+    self.modelAll.setHorizontalHeaderLabels(self.tableHeaders)
+    self.modelHide  = QStandardItemModel(nrows, ncols)
+    self.modelHide.setHorizontalHeaderLabels(self.tableHeaders)
+    # use content to build models
     content    = self.comm.binaryFile.content
     nrows      = len(content)
     self.modelAll.setRowCount(nrows)

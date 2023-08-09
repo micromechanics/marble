@@ -98,19 +98,20 @@ class MainWindow(QMainWindow):
       dialog = MetaEditor(self.comm)
       dialog.exec()
     elif command[0]=='saveTags':
-      self.comm.binaryFile.saveTags()
+      self.comm.binaryFile.saveTags()           # type: ignore[misc]
     elif command[0]=='loadTags':
-      self.comm.binaryFile.loadTags()
+      self.comm.binaryFile.loadTags()           # type: ignore[misc]
       self.comm.changeTable.emit()
     elif command[0]=='savePython':
-      self.comm.binaryFile.savePython()
+      self.comm.binaryFile.savePython()         # type: ignore[misc]
     elif command[0]=='loadPython':
-      self.comm.binaryFile.loadPython()
+      self.comm.binaryFile.loadPython()         # type: ignore[misc]
       self.comm.changeTable.emit()
     elif command[0]=='extractPython':
-      self.comm.binaryFile.savePython()
+      self.comm.binaryFile.savePython()         # type: ignore[misc]
       pyFile = os.path.splitext(self.comm.binaryFile.fileName)[0]+'.py'
-      result = subprocess.run(['python3', pyFile, self.comm.binaryFile.fileName], stdout=subprocess.PIPE)
+      result = subprocess.run(['python3', pyFile, self.comm.binaryFile.fileName], stdout=subprocess.PIPE, \
+                              check=False)
       showMessage(self, 'Result of extraction', result.stdout.decode('utf-8'), 'Information')
     else:
       print(f'ERROR: unknown command {command}')
