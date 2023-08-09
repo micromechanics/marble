@@ -13,6 +13,7 @@ from .style import Action, showMessage
 from .communicate import Communicate
 from .table import Table
 from .tableHeader import TableHeader
+from .metaEditor  import MetaEditor
 from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
@@ -32,6 +33,7 @@ class MainWindow(QMainWindow):
     menu = self.menuBar()
     fileMenu = menu.addMenu("&File")
     Action('&Open binary file', self, ['open'],       fileMenu, shortcut='Ctrl+L')
+    Action('Edit &metadata',    self, ['metaEditor'], fileMenu, shortcut='Ctrl+M')
     if 'advanced' in configuration:
       fileMenu.addSeparator()
       Action('Save tags-file',    self, ['saveTags'],   fileMenu)
@@ -92,6 +94,9 @@ class MainWindow(QMainWindow):
     elif self.comm.binaryFile is None:
       showMessage(self, 'Error', 'An open file is required to execute the command.','Critical')
     #commands that require open binary file
+    elif command[0]=='metaEditor':
+      dialog = MetaEditor(self.comm)
+      dialog.exec()
     elif command[0]=='saveTags':
       self.comm.binaryFile.saveTags()
     elif command[0]=='loadTags':

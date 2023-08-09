@@ -38,8 +38,8 @@ class BinaryFile(InputOutput, Automatic, Util, Commandline):
     self.file                      = io.BytesIO()
     self.printMode                 = 'dec' #      printMode: dec-decimal, hex-hexadecimal
     self.verbose                   = verbose
-    self.meta                      = {'vendor':'', 'label':'', 'software':'', \
-                                      'ext':os.path.splitext(fileName)[1][1:]}
+    self.meta                      = {'vendor':'', 'label':'', 'software':'',\
+                                      'ext':os.path.splitext(fileName)[1][1:], 'endian':'small'}
 
     self.initContent()
     return

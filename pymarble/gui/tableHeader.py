@@ -14,7 +14,6 @@ class TableHeader(QDialog):
 
     Args:
       comm (Communicate): communication channel
-      docType (string):  document type
     """
     super().__init__()
     self.comm = comm
