@@ -27,13 +27,6 @@ class Table(QWidget):
     mainL.addWidget(self.table)
     self.setLayout(mainL)
 
-    #initialize models
-    self.tableHeaders = self.comm.configuration['columns']
-    nrows, ncols = 0, len(self.tableHeaders)
-    self.modelAll   = QStandardItemModel(nrows, ncols)
-    self.modelAll.setHorizontalHeaderLabels(self.tableHeaders)
-    self.modelHide  = QStandardItemModel(nrows, ncols)
-    self.modelHide.setHorizontalHeaderLabels(self.tableHeaders)
 
 
   @Slot()
@@ -41,6 +34,13 @@ class Table(QWidget):
     """ Change / Refresh / Repaint """
     if self.comm.binaryFile is None:
       return
+    #initialize models
+    self.tableHeaders = self.comm.configuration['columns']
+    nrows, ncols = 0, len(self.tableHeaders)
+    self.modelAll   = QStandardItemModel(nrows, ncols)
+    self.modelAll.setHorizontalHeaderLabels(self.tableHeaders)
+    self.modelHide  = QStandardItemModel(nrows, ncols)
+    self.modelHide.setHorizontalHeaderLabels(self.tableHeaders)
     content    = self.comm.binaryFile.content
     nrows      = len(content)
     self.modelAll.setRowCount(nrows)

@@ -12,6 +12,8 @@ from .defaults import defaultConfiguration
 from .style import Action, showMessage
 from .communicate import Communicate
 from .table import Table
+from .tableHeader import TableHeader
+from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
 
@@ -44,6 +46,7 @@ class MainWindow(QMainWindow):
 
     viewMenu = menu.addMenu("&View")
     Action('&Hide binary',      self, ['hide'],       viewMenu, shortcut='Ctrl+H')
+    Action('Table columns',     self, ['tableHeader'],viewMenu)
 
     helpMenu = menu.addMenu("&Help")
     Action('&Website',          self, ['website'],        helpMenu)
@@ -80,6 +83,12 @@ class MainWindow(QMainWindow):
       self.close()
     elif command[0]=='hide':
       self.comm.toggle.emit()
+    elif command[0]=='tableHeader':
+      dialog = TableHeader(self.comm)
+      dialog.exec()
+    elif command[0]=='restart':
+      restart()
+    #check for existing file
     elif self.comm.binaryFile is None:
       showMessage(self, 'Error', 'An open file is required to execute the command.','Critical')
     #commands that require open binary file

@@ -32,7 +32,7 @@ def getColor(configuration:dict[str,Any], color:str) -> str:
   Returns:
     str: #123456 color code
   """
-  themeName = configuration['GUI']['theme']
+  themeName = configuration['theme']
   ## For dark-blue:
   ## {'primaryColor': '#448aff', 'primaryLightColor': '#83b9ff', 'secondaryColor': '#232629',
   ##  'secondaryLightColor': '#4f5b62','secondaryDarkColor': '#31363b', 'primaryTextColor': '#000000',
@@ -68,13 +68,13 @@ class TextButton(QPushButton):
     if style:
       self.setStyleSheet(style)
     else:
-      primaryColor = getColor(widget.comm.backend, 'primary')
-      secTextColor = getColor(widget.comm.backend, 'secondaryText')
+      primaryColor = getColor(widget.comm.configuration, 'primary')
+      secTextColor = getColor(widget.comm.configuration, 'secondaryText')
       self.setStyleSheet(f'border-width: 0px; background-color: {primaryColor}; color: {secTextColor}')
     if hide:
       self.hide()
     if iconName:
-      color = 'black' if widget is None else getColor(widget.comm.backend, 'primary')
+      color = 'black' if widget is None else getColor(widget.comm.configuration, 'primary')
       icon = qta.icon(iconName, color=color, scale_factor=1)
       self.setIcon(icon)
     if layout is not None:
@@ -96,7 +96,7 @@ class IconButton(QPushButton):
       hide (bool): hidden or shown initially
     """
     super().__init__()
-    color = 'black' if widget is None else getColor(widget.comm.backend, 'primary')
+    color = 'black' if widget is None else getColor(widget.comm.configuration, 'primary')
     icon = qta.icon(iconName, color=color, scale_factor=1)
     self.setIcon(icon)
     self.clicked.connect(lambda: widget.execute(identifier))
