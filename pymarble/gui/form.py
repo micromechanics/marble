@@ -31,6 +31,7 @@ class Form(QDialog):
     section  = self.comm.binaryFile.content [start]  #no self.length etc. since content of textfields only truth
     self.lead = 20
     space = 20
+    minSpace = 5
 
     # GUI elements
     self.setWindowTitle('Change section')
@@ -43,6 +44,7 @@ class Form(QDialog):
     # - add text output of data/binary instead of graph
     # - verify entropy plot
     # - simplify refresh: x axis always bytes,....
+    # - toolbar does not render correctly
     #graph
     _, graphL = widgetAndLayout('V', mainL)
     self.graph = MplCanvas(self, width=5, height=4, dpi=100)
@@ -81,7 +83,9 @@ class Form(QDialog):
     self.lengthW.setRange(0, self.comm.binaryFile.fileLength)
     self.lengthW.setValue(section.length)
     dimensionL.addWidget(self.lengthW, stretch=1)
+    dimensionL.addSpacing(minSpace)
     self.dTypeCB = QComboBox()
+    self.dTypeCB.setToolTip('data type')
     self.dTypeCB.addItems(self.translateDtype.values())
     self.dTypeCB.setCurrentText(self.translateDtype[section.dType])
     self.dTypeCB.currentTextChanged.connect(self.refresh)
@@ -101,12 +105,12 @@ class Form(QDialog):
 
     #key value unit
     _, keyValueL = widgetAndLayout('H', mainL)
-    keyValueL.addWidget(QLabel('Key:'))
     self.keyW = QLineEdit(section.key,self)
+    self.keyW.setToolTip('key')
     keyValueL.addWidget(self.keyW)
-    keyValueL.addSpacing(space)
-    keyValueL.addWidget(QLabel('Value:'))
+    keyValueL.addWidget(QLabel('  :  '))
     self.valueW = QLineEdit(section.value,self)
+    self.valueW.setToolTip('value')
     keyValueL.addWidget(self.valueW, stretch=1)
     keyValueL.addSpacing(space)
     keyValueL.addWidget(QLabel('Unit:'))

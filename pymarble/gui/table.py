@@ -1,8 +1,9 @@
 """ Main table in app """
 import logging
+from typing import Any
 from PySide6.QtWidgets import QWidget, QMenu, QTableView    # pylint: disable=no-name-in-module
 from PySide6.QtCore import QPoint, Slot                     # pylint: disable=no-name-in-module
-from PySide6.QtGui import QStandardItemModel, QStandardItem # pylint: disable=no-name-in-module
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QFont # pylint: disable=no-name-in-module
 
 from .communicate import Communicate
 from .style import widgetAndLayout, Action
@@ -60,27 +61,44 @@ class Table(QWidget):
     self.modelAll.setRowCount(nrows)
     self.modelHide.setRowCount(nrows)
     iHide = -1
-    for i,start in enumerate(content):
-      row = content[start].toCSV()
+    for i,start in enumerate(content):  #loop over rows
+      rowData = content[start].toCSV()
+      # build model that has all the information
       self.rowIDsAll.append(start)
-      for j, key in enumerate(self.tableHeaders):
-        if key=='start':
-          item = QStandardItem(str(start))
-        else:
-          item = QStandardItem(str(row[key]))
-        self.modelAll.setItem(i, j, item)
-
+      self.addRow(self.modelAll, i, start, rowData)
+      # build model that has only non-binary data
       if content[start].dType not in ['b','B']:
         self.rowIDsHide.append(start)
         iHide += 1
-        for j, key in enumerate(self.tableHeaders):
-          if key=='start':
-            item = QStandardItem(str(start))
-          else:
-            item = QStandardItem(str(row[key]))
-          self.modelHide.setItem(iHide, j, item)
+        self.addRow(self.modelHide, iHide, start, rowData)
     self.modelHide.setRowCount(iHide+1)
     self.table.setModel(self.modelAll)
+    return
+
+
+  def addRow(self, model:QStandardItemModel, row:int, start:int, rowData:dict[str,Any]) -> None:
+    """
+    Helper function to add a row
+
+    Args:
+      model (QStandardItemModel): model to add to
+      row (int): row to add
+      start (int): start value
+    """
+    for j, key in enumerate(self.tableHeaders):
+      if key=='start':
+          item = QStandardItem(self.comm.binaryFile.pretty(start))
+      elif key=='dType':
+        translate = {'b':'byte', 'i':'int', 'f':'float', 'd':'double', 'B':'zeros', 'c':'character'}
+        item = QStandardItem(translate[rowData[key]])
+      elif key=='entropy':
+        item = QStandardItem(f'{rowData[key]:.3f}')
+      elif key=='important':
+        item = QStandardItem('\u2713') if rowData[key] else QStandardItem('\u00D7')
+        item.setFont(QFont("Helvetica [Cronyx]", 16))
+      else:
+        item = QStandardItem(str(rowData[key]))
+      model.setItem(row, j, item)
     return
 
 

@@ -7,3 +7,4 @@ defaultConfiguration = {
 }
 # additional options
 # advanced: anything: e.g. true
+# print_mode hex
