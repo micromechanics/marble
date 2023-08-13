@@ -57,7 +57,6 @@ class Form(QDialog):
     graphButtonL.addSpacing(200)
     self.plotCB = QComboBox()
     self.plotCB.addItems(['numerical value','byte value','entropy'])
-    print("----", section.dType, section.dType in self.translatePlot, section.dType in self.translateDtype)
     self.plotCB.setCurrentText(self.translatePlot[section.dType])
     self.plotCB.currentTextChanged.connect(self.refresh)
     # plotComboBox.changeEvent()
@@ -131,6 +130,7 @@ class Form(QDialog):
     self.linkW.setStyleSheet('background-color:#d8e0f4')
     dClassL.addWidget(self.linkW)
 
+    #TODO_P1 refresh table after save
     if 'advanced' in self.comm.configuration:
       # advanced items
       _, advancedL = widgetAndLayout('H', mainL)

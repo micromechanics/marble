@@ -2,7 +2,7 @@
 from typing import Callable, Optional, Any
 from PySide6.QtWidgets import QPushButton, QLabel, QSizePolicy, QMessageBox, QLayout, QWidget, QMenu, \
                               QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout # pylint: disable=no-name-in-module
-from PySide6.QtGui import QImage, QPixmap, QAction, QKeySequence, QMouseEvent    # pylint: disable=no-name-in-module
+from PySide6.QtGui import QImage, QPixmap, QAction, QKeySequence, QMouseEvent, QColor    # pylint: disable=no-name-in-module
 from PySide6.QtCore import QByteArray, Qt           # pylint: disable=no-name-in-module
 from PySide6.QtSvgWidgets import QSvgWidget         # pylint: disable=no-name-in-module
 import qtawesome as qta
@@ -293,3 +293,15 @@ def widgetAndLayout(direction:str='V', parentLayout:Optional[QLayout]=None, spac
   if parentLayout is not None:
     parentLayout.addWidget(widget)
   return widget, layout
+
+
+def hexToColor(code:str) -> QColor:
+  """
+  convert hex color #333333 to QColor
+
+  Args:
+    code (str): hex string
+  """
+  code_hex = code.replace("#", "")
+  rgb = tuple(int(code_hex[i:i+2], 16) for i in (0, 2, 4))
+  return QColor.fromRgb(rgb[0], rgb[1], rgb[2])

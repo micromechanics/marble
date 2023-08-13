@@ -1,12 +1,14 @@
 """ Main table in app """
 import logging
 # from typing import Any
+import numpy as np
 from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
 from PySide6.QtGui import QFont                                 # pylint: disable=no-name-in-module
-# from PySide6.QtGui import QColor, QBrush
+from PySide6.QtGui import QColor
 from .communicate import Communicate
-from .style import widgetAndLayout, Action
+from .style import widgetAndLayout, Action, hexToColor
+from .defaults import dClass2Color
 from .form import Form
 
 class Table(QWidget):
@@ -18,11 +20,9 @@ class Table(QWidget):
     comm.toggle.connect(self.toggle)
     self.showAll = True
     _, mainL = widgetAndLayout()
-
-    # table
     self.table = QTableWidget(self)
     self.table.verticalHeader().hide()
-    # self.table.clicked.connect(self.cellClicked)
+    self.table.clicked.connect(self.cellClicked)
     self.table.doubleClicked.connect(self.cell2Clicked)
     header = self.table.horizontalHeader()
     header.setSectionsMovable(True)
@@ -39,9 +39,9 @@ class Table(QWidget):
       return
     # initialize
     content    = self.comm.binaryFile.content
-    tableHeaders = self.comm.configuration['columns']
-    self.table.setColumnCount(len(tableHeaders))
-    self.table.setHorizontalHeaderLabels(tableHeaders)
+    self.tableHeaders = self.comm.configuration['columns']
+    self.table.setColumnCount(len(self.tableHeaders))
+    self.table.setHorizontalHeaderLabels(self.tableHeaders)
     self.table.setRowCount(len(content))
     self.rowIDs  = []
     # use content to build models
@@ -50,7 +50,7 @@ class Table(QWidget):
       rowData = content[start].toCSV()
       if content[start].dType not in ['b','B'] or self.showAll :
         row += 1
-        for col, key in enumerate(tableHeaders):
+        for col, key in enumerate(self.tableHeaders):
           if key=='start':
             item = QTableWidgetItem(self.comm.binaryFile.pretty(start)) # type: ignore[misc]
           elif key=='dType':
@@ -64,6 +64,7 @@ class Table(QWidget):
           else:
             item = QTableWidgetItem(str(rowData[key]))
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
+          item.setBackground(hexToColor(dClass2Color[rowData['dClass']]))
           self.table.setItem(row, col, item)
         self.rowIDs.append(start)
     self.table.setRowCount(row+1)
@@ -110,23 +111,35 @@ class Table(QWidget):
     if len(self.comm.binaryFile.content) == 1:
       Action('Automatic for time series', self, ['autoTime'], context)
       Action('Automatic for other data', self, ['autoElse'], context)
-    index = self.table.currentIndex()
-    print(index)
     context.exec(point.globalPos())
     return
 
 
-  # def cellClicked(self, item:QTableWidgetItem) -> None:
-  #   """
-  #   What happens when user clicks cell in table of tags, projects, samples, ...
-  #   -> show details
+  def cellClicked(self, item:QTableWidgetItem) -> None:
+    """
+    What happens when user clicks cell in table of tags, projects, samples, ...
+    -> show details
 
-  #   Args:
-  #     item (QStandardItem): cell clicked
-  #   """
-  #   # row = item.row()
-  #   # item = self.itemFromRow(row)
-  #   return
+    Args:
+      item (QStandardItem): cell clicked
+    """
+    start = self.rowIDs[item.row()]
+    colName  = self.tableHeaders[item.column()]
+    content  = self.comm.binaryFile.content
+    if colName == 'important':
+      content[start].important = not content[start].important
+    elif colName == 'dClass':
+      order = ['', 'metadata', 'primary', '']
+      idx   = order.index(content[start].dClass)
+      content[start].dClass = order[idx+1]
+    elif colName == 'prob':
+      order = np.array([49, 100, 75, 50])
+      mask = order>=content[start].prob
+      minValue = order[mask].min()
+      idx = np.argmin(np.abs(order-minValue))
+      content[start].prob = order[idx+1]
+    self.change()
+    return
 
 
   def cell2Clicked(self, item:QTableWidgetItem) -> None:
