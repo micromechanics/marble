@@ -136,9 +136,9 @@ class MainWindow(QMainWindow):
         self.comm.binaryFile.printMode='hex'
       self.comm.binaryFile.loadTags()
       self.comm.changeTable.emit()
-      # from .form import Form
-      # dialog     = Form(self.comm, 70840)
-      # dialog.show()
+      from .form import Form
+      dialog     = Form(self.comm, 70840)
+      dialog.show()
     return super().resizeEvent(event)
 
 

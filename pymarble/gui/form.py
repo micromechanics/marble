@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, \
-                              QSpinBox, QCheckBox, QWidget  # pylint: disable=no-name-in-module
+                              QSpinBox, QCheckBox, QWidget, QTextEdit  # pylint: disable=no-name-in-module
 from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
@@ -25,8 +25,8 @@ class Form(QDialog):
     self.comm = comm
     if self.comm.binaryFile is None:
       return
-    self.translatePlot     = {'f':'numerical value','d':'numerical value','b':'byte value',\
-                              'B':'byte value','c':'byte value'}
+    self.translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'plot byte value',\
+                              'B':'plot byte value','c':'plot byte value'}
     self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes','b':'byte = 1byte', \
                               'i':'int = 4bytes','B':'byte = 1byte','c':'character = 1byte'}
     self.translateDtypeInv = {v: k for k, v in self.translateDtype.items()}
@@ -43,11 +43,14 @@ class Form(QDialog):
     mainL.setSpacing(space)
 
     #graph
-    _, graphL = widgetAndLayout('V', mainL)
+    self.graphW, graphL = widgetAndLayout('V', mainL)
     self.graph = MplCanvas(self, width=5, height=4, dpi=100)
     graphToolbar = NavigationToolbar(self.graph, self)
     graphL.addWidget(graphToolbar)
     graphL.addWidget(self.graph)
+    self.textEditW = QTextEdit()
+    self.textEditW.hide()
+    mainL.addWidget(self.textEditW)
 
     #buttons below graph
     _, graphButtonL = widgetAndLayout('H', mainL)
@@ -56,7 +59,8 @@ class Form(QDialog):
     IconButton('fa.arrow-right', self, ['startUp'],   graphButtonL, 'increase start point')
     graphButtonL.addSpacing(200)
     self.plotCB = QComboBox()
-    self.plotCB.addItems(['numerical value','byte value','entropy'])
+    self.plotCB.addItems(['plot numerical value','plot byte value','plot entropy',\
+                          'print numerical value', 'print byte value'])
     self.plotCB.setCurrentText(self.translatePlot[section.dType])
     self.plotCB.currentTextChanged.connect(self.refresh)
     # plotComboBox.changeEvent()
@@ -158,58 +162,79 @@ class Form(QDialog):
     if self.comm.binaryFile is None:
       return
     # get values from text fields
-    start  = int(self.startW.text())
-    length = int(self.lengthW.text())
-    dType  = self.translateDtypeInv[self.dTypeCB.currentText()]
-    byteSize = struct.calcsize(dType)
-    totalByteSize = str(length+2*self.lead)+dType
+    start       = int(self.startW.text())
+    length      = int(self.lengthW.text())
+    dType       = self.translateDtypeInv[self.dTypeCB.currentText()]
+    byteSize    = struct.calcsize(dType)
+    startAll    = start-self.lead*byteSize
+    lengthAll   = length+2*self.lead
+    dTypeAll    = str(lengthAll)+dType
+    byteSizeAll = struct.calcsize(dTypeAll)
+    # use the values
     self.startW.setSingleStep(byteSize)
-    # make graph
-    self.comm.binaryFile.file.seek(start-self.lead*byteSize)
-    data = self.comm.binaryFile.file.read(struct.calcsize(totalByteSize))
-    if len(data)<struct.calcsize(totalByteSize):
-      data = data+bytearray(struct.calcsize(totalByteSize)-len(data))
-    self.graph.axes.cla()                        # Clear the canvas.
-    #    self.plotCB.addItems(['numerical value',,'entropy'])
-    if self.plotCB.currentText()=='byte value':
-      self.graph.axes.axvline(0, color='k')
-      self.graph.axes.axvline(length*byteSize, color='k')
+    self.comm.binaryFile.file.seek(startAll)
+    dataAll = self.comm.binaryFile.file.read(byteSizeAll)
+    if len(dataAll)<byteSizeAll:
+      dataAll = dataAll+bytearray(byteSizeAll-len(dataAll))
+    # depending on plot/print type
+    if self.plotCB.currentText().endswith('byte value') or \
+       (dType in ['b','B'] and self.plotCB.currentText().endswith('numerical value')):
       valuesX = np.arange(-self.lead*byteSize, (length+self.lead)*byteSize)
-      valuesY = list(data)
-      self.graph.axes.plot(valuesX, valuesY, '.')
-      self.graph.axes.set_ylim([0,255])
-      self.graph.axes.set_xlabel('byte offset')
-      self.graph.axes.set_ylabel('binary value')
-    elif self.plotCB.currentText()=='numerical value':
-      self.graph.axes.axvline(0, color='k')
-      self.graph.axes.axvline(length, color='k')
+      valuesY = list(dataAll)
+      labelY  = 'byte value'
+      limitX  = length*byteSize
+      limitY  = [0,255]
+      lineStyle= '.'
+    elif self.plotCB.currentText().endswith('numerical value'):
       valuesX = np.arange(-self.lead, length+self.lead)
-      valuesY = list(struct.unpack(totalByteSize, data)) #get data
-      self.graph.axes.plot(valuesX, valuesY, '-o')
-      self.graph.axes.set_ylim(np.min(valuesY[self.lead:-self.lead])*0.8, \
-                               np.max(valuesY[self.lead:-self.lead])*1.2)
-      self.graph.axes.set_xlabel('increment')
-      self.graph.axes.set_ylabel('numerical value')
-    elif self.plotCB.currentText()=='entropy':
-      dataBin = struct.unpack(totalByteSize, data) #convert to byte-int
+      valuesY = list(struct.unpack(dTypeAll, dataAll))
+      labelY  = 'numerical value'
+      limitX  = length
+      limitY  = [np.min(valuesY[self.lead:-self.lead])*0.8, np.max(valuesY[self.lead:-self.lead])*1.2]
+      lineStyle= 'o-'
+    elif self.plotCB.currentText().endswith('plot entropy'):
+      dataBin = list(dataAll) #convert to byte-int
       blockSize = self.comm.binaryFile.optEntropy['blockSize']
-      valuesX = np.arange(-self.lead*byteSize, (len(dataBin)-blockSize-self.lead)*byteSize,
-                          self.comm.binaryFile.optEntropy['skipEvery'])
+      valuesX = np.arange(-self.lead*byteSize, (length+self.lead-blockSize)*byteSize, byteSize)
       valuesY = []
       for startI in valuesX:
         _, counts = np.unique(dataBin[startI:startI+blockSize], return_counts=True)
-        counts    = counts/blockSize
-        value    = np.sum(-counts*np.log2(counts))
-        valuesY.append(value)
-      self.graph.axes.axvline(0, color='k')
-      self.graph.axes.axvline(len(dataBin)-self.lead*byteSize, color='k')
-      self.graph.axes.plot(valuesX, valuesY, '-o')
-      self.graph.axes.set_ylim([0,8])
-      self.graph.axes.set_xlabel('byte offset')
-      self.graph.axes.set_ylabel('entropy')
+        valueI    = np.sum(-counts/blockSize*np.log2(counts/blockSize))
+        valuesY.append(valueI)
+      labelY  = 'entropy'
+      limitX  = (length-blockSize)*byteSize
+      limitY  = [0, 7.8]
+      lineStyle= '-'
     else:
-      print('**ERROR unknown value')
-    self.graph.draw() # Trigger the canvas to update and redraw.
+      print('**ERROR unknown value in form')
+    # graph / print
+    if self.plotCB.currentText().startswith('plot'):
+      self.graph.axes.cla()                        # Clear the canvas.
+      self.graph.axes.axvline(0, color='k')
+      self.graph.axes.axvline(limitX, color='k')
+      self.graph.axes.plot(valuesX, valuesY, lineStyle)
+      self.graph.axes.set_ylim(limitY)
+      self.graph.axes.set_xlabel('bytes')
+      self.graph.axes.set_ylabel(labelY)
+      self.graph.draw() # Trigger the canvas to update and redraw.
+      self.textEditW.hide()
+      self.graph.show()
+    elif self.plotCB.currentText().startswith('print'):
+      self.textEditW.show()
+      idxStart = np.argmin(np.abs(valuesX))
+      idxEnd   = np.argmin(np.abs(valuesX-limitX))
+      if labelY == 'numerical value':
+        text  = '  '.join([f'{i:.3e}'     for i in valuesY[:idxStart]])
+        text += ' '+'  '.join([f'**{i:.3e}**' for i in valuesY[idxStart:idxEnd]])
+        text += ' '+'  '.join([f'{i:.3e}'     for i in valuesY[idxEnd:]])
+      else:
+        text  = self.comm.binaryFile.byteToString(dataAll[:idxStart], 1, 8)
+        text += '  **'+self.comm.binaryFile.byteToString(dataAll[idxStart:idxEnd], 1, 8)+'**  '
+        text += self.comm.binaryFile.byteToString(dataAll[idxEnd:], 1, 8)
+      self.textEditW.setMarkdown(text)
+      self.graph.hide()
+    else:
+      print('**ERROR unknown value in plot/print')
     return
 
 

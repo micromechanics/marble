@@ -268,18 +268,22 @@ class Util():
 
 
   @staticmethod
-  def byteToString(aBytes:bytes, spaceEvery:int=1) -> str:
+  def byteToString(aBytes:bytes, spaceEvery:int=1, spaceBlock:int=-1) -> str:
     '''
     convert bytestring to easy to read string
 
     Args:
         aString: byte-string
         spaceEvery: white-space for easy reading
+        spaceBlock: triple white-space to form block; requires spaceEvery>0
     '''
     aString = aBytes.hex().upper()
     if spaceEvery>0:
       spaceEvery *= 2
       aString = ' '.join(aString[i:i+spaceEvery] for i in range(0, len(aString), spaceEvery))
+      if spaceBlock>0 and spaceEvery==2:
+        spaceEvery = 3*spaceBlock
+        aString = '\t'.join(aString[i:i+spaceEvery] for i in range(0, len(aString), spaceEvery))
     else:
       aList = [int(aString[i:i+2], base=16) for i in range(0,len(aString),2) ]#list of integer/char
       listConsecutive = np.split(aList, np.where(np.diff(aList) != 0)[0]+1)   #find consecutive entries list[]
