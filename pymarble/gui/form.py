@@ -1,34 +1,37 @@
 """ Editor to change metadata of binary file """
 import struct
+from typing import Optional
 import numpy as np
-import matplotlib
-matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, QSpinBox, QCheckBox  # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, \
+                              QSpinBox, QCheckBox, QWidget  # pylint: disable=no-name-in-module
 from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
 
 class Form(QDialog):
   """ Editor to change metadata of binary file """
-  def __init__(self, comm:Communicate, start):
+  def __init__(self, comm:Communicate, start:int):
     """
     Initialization
 
     Args:
       comm (Communicate): communication channel
+      start (int): location of section which should be edited
     """
     super().__init__()
     self.comm = comm
     if self.comm.binaryFile is None:
       return
-    self.translatePlot     = {'f':'numerical value','d':'numerical value','b':'byte value'}
-    self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes','b':'byte = 1byte', 'i':'int = 4bytes'}
+    self.translatePlot     = {'f':'numerical value','d':'numerical value','b':'byte value',\
+                              'B':'byte value','c':'byte value'}
+    self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes','b':'byte = 1byte', \
+                              'i':'int = 4bytes','B':'byte = 1byte','c':'character = 1byte'}
     self.translateDtypeInv = {v: k for k, v in self.translateDtype.items()}
-    #definitions
-    section  = self.comm.binaryFile.content [start]  #no self.length etc. since content of textfields only truth
+    #definitions: no self.length etc. since content of textfields only truth
+    section  = self.comm.binaryFile.content [start]
     self.lead = 20
     space = 20
     minSpace = 5
@@ -39,12 +42,6 @@ class Form(QDialog):
     mainL = QVBoxLayout(self)
     mainL.setSpacing(space)
 
-    #TODO_P2:
-    # - plot of binary not the same as values of binary
-    # - add text output of data/binary instead of graph
-    # - verify entropy plot
-    # - simplify refresh: x axis always bytes,....
-    # - toolbar does not render correctly
     #graph
     _, graphL = widgetAndLayout('V', mainL)
     self.graph = MplCanvas(self, width=5, height=4, dpi=100)
@@ -60,6 +57,7 @@ class Form(QDialog):
     graphButtonL.addSpacing(200)
     self.plotCB = QComboBox()
     self.plotCB.addItems(['numerical value','byte value','entropy'])
+    print("----", section.dType, section.dType in self.translatePlot, section.dType in self.translateDtype)
     self.plotCB.setCurrentText(self.translatePlot[section.dType])
     self.plotCB.currentTextChanged.connect(self.refresh)
     # plotComboBox.changeEvent()
@@ -76,17 +74,17 @@ class Form(QDialog):
     self.startW.setRange(0, self.comm.binaryFile.fileLength)
     self.startW.setSingleStep(struct.calcsize(section.dType))
     self.startW.setValue(start)
-    dimensionL.addWidget(self.startW, stretch=1)
+    dimensionL.addWidget(self.startW, stretch=1)                           # type: ignore[call-arg]
     dimensionL.addSpacing(space)
     dimensionL.addWidget(QLabel('Length:'))
     self.lengthW = QSpinBox()
     self.lengthW.setRange(0, self.comm.binaryFile.fileLength)
     self.lengthW.setValue(section.length)
-    dimensionL.addWidget(self.lengthW, stretch=1)
+    dimensionL.addWidget(self.lengthW, stretch=1)                          # type: ignore[call-arg]
     dimensionL.addSpacing(minSpace)
     self.dTypeCB = QComboBox()
     self.dTypeCB.setToolTip('data type')
-    self.dTypeCB.addItems(self.translateDtype.values())
+    self.dTypeCB.addItems(list(self.translateDtype.values()))
     self.dTypeCB.setCurrentText(self.translateDtype[section.dType])
     self.dTypeCB.currentTextChanged.connect(self.refresh)
     dimensionL.addWidget(self.dTypeCB)
@@ -107,14 +105,16 @@ class Form(QDialog):
     _, keyValueL = widgetAndLayout('H', mainL)
     self.keyW = QLineEdit(section.key,self)
     self.keyW.setToolTip('key')
+    self.keyW.setStyleSheet('background-color:#d8e0f4')
     keyValueL.addWidget(self.keyW)
     keyValueL.addWidget(QLabel('  :  '))
     self.valueW = QLineEdit(section.value,self)
     self.valueW.setToolTip('value')
-    keyValueL.addWidget(self.valueW, stretch=1)
+    keyValueL.addWidget(self.valueW, stretch=1)                     # type: ignore[call-arg]
     keyValueL.addSpacing(space)
     keyValueL.addWidget(QLabel('Unit:'))
     self.unitW = QLineEdit(section.unit,self)
+    self.unitW.setStyleSheet('background-color:#d8e0f4')
     self.unitW.setMaximumWidth(60)
     keyValueL.addWidget(self.unitW)
 
@@ -128,6 +128,7 @@ class Form(QDialog):
     dClassL.addSpacing(space)
     dClassL.addWidget(QLabel('Link:'))
     self.linkW = QLineEdit(section.link,self)
+    self.linkW.setStyleSheet('background-color:#d8e0f4')
     dClassL.addWidget(self.linkW)
 
     if 'advanced' in self.comm.configuration:
@@ -152,7 +153,10 @@ class Form(QDialog):
     self.refresh()
 
 
-  def refresh(self):
+  def refresh(self) -> None:
+    """ repaint form incl. graph """
+    if self.comm.binaryFile is None:
+      return
     # get values from text fields
     start  = int(self.startW.text())
     length = int(self.lengthW.text())
@@ -180,24 +184,25 @@ class Form(QDialog):
       self.graph.axes.axvline(0, color='k')
       self.graph.axes.axvline(length, color='k')
       valuesX = np.arange(-self.lead, length+self.lead)
-      valuesY = struct.unpack(totalByteSize, data) #get data
+      valuesY = list(struct.unpack(totalByteSize, data)) #get data
       self.graph.axes.plot(valuesX, valuesY, '-o')
-      self.graph.axes.set_ylim(np.min(valuesY[self.lead:-self.lead])*0.8,np.max(valuesY[self.lead:-self.lead])*1.2)
+      self.graph.axes.set_ylim(np.min(valuesY[self.lead:-self.lead])*0.8, \
+                               np.max(valuesY[self.lead:-self.lead])*1.2)
       self.graph.axes.set_xlabel('increment')
       self.graph.axes.set_ylabel('numerical value')
     elif self.plotCB.currentText()=='entropy':
-      data = struct.unpack(totalByteSize, data) #convert to byte-int
+      dataBin = struct.unpack(totalByteSize, data) #convert to byte-int
       blockSize = self.comm.binaryFile.optEntropy['blockSize']
-      valuesX = np.arange(-self.lead*byteSize, (len(data)-blockSize-self.lead)*byteSize,
+      valuesX = np.arange(-self.lead*byteSize, (len(dataBin)-blockSize-self.lead)*byteSize,
                           self.comm.binaryFile.optEntropy['skipEvery'])
       valuesY = []
       for startI in valuesX:
-        _, counts = np.unique(data[startI:startI+blockSize], return_counts=True)
+        _, counts = np.unique(dataBin[startI:startI+blockSize], return_counts=True)
         counts    = counts/blockSize
         value    = np.sum(-counts*np.log2(counts))
         valuesY.append(value)
       self.graph.axes.axvline(0, color='k')
-      self.graph.axes.axvline(len(data)-self.lead*byteSize, color='k')
+      self.graph.axes.axvline(len(dataBin)-self.lead*byteSize, color='k')
       self.graph.axes.plot(valuesX, valuesY, '-o')
       self.graph.axes.set_ylim([0,8])
       self.graph.axes.set_xlabel('byte offset')
@@ -209,6 +214,12 @@ class Form(QDialog):
 
 
   def execute(self, command:list[str]) -> None:
+    """
+    Execute action
+
+    Args:
+      command (list): command to be executed
+    """
     start    = int(self.startW.text())
     length   = int(self.lengthW.text())
     dType    = self.translateDtypeInv[self.dTypeCB.currentText()]
@@ -249,7 +260,7 @@ class Form(QDialog):
                         )
       #first save section with semi-infinite probability, fill/clean, save real section
       self.comm.binaryFile.content[start] = section
-      self.comm.binaryFile.fill()
+      self.comm.binaryFile.fill()                                 # type: ignore[misc]
       section.prob = int(self.probabilityW.text())
       self.comm.binaryFile.content[start] = section
       self.accept()
@@ -259,7 +270,14 @@ class Form(QDialog):
 
 
 class MplCanvas(FigureCanvas):
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        super(MplCanvas, self).__init__(fig)
+  """ Canvas to draw upon """
+  def __init__(self, _:Optional[QWidget]=None, width:float=5, height:float=4, dpi:int=100):
+    """
+    Args:
+      width (float): width in inch
+      height (float): height in inch
+      dpi (int): dots per inch
+    """
+    fig = Figure(figsize=(width, height), dpi=dpi)
+    self.axes = fig.add_subplot(111)
+    super().__init__(fig)

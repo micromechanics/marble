@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
     Action('&Exit',             self, ['exit'],       fileMenu)
 
     viewMenu = menu.addMenu("&View")
-    Action('&Hide binary',      self, ['hide'],       viewMenu, shortcut='Ctrl+H')
+    Action('&Hide binary',      self, ['hide'],       viewMenu, shortcut='F5')
     Action('Table columns',     self, ['tableHeader'],viewMenu)
 
     helpMenu = menu.addMenu("&Help")
@@ -127,19 +127,18 @@ class MainWindow(QMainWindow):
     """
     if self.suggestFileOpen and self.comm.binaryFile is None:
       self.suggestFileOpen = False
-      if False: #easy switch for fast testing
-        self.execute(['open'])
-      else:
-        fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/Membrane_Repeatability_05.mvl'
-        self.comm.binaryFile = BinaryFile(fileName)
-        if 'print_mode' in self.comm.configuration and self.comm.configuration['print_mode']=='hex':
-          self.comm.binaryFile.printMode='hex'
-        self.comm.binaryFile.loadTags()
-        self.comm.changeTable.emit()
-        # from .form import Form
-        # dialog     = Form(self.comm, 70840)
-        # dialog.show()
-
+      self.execute(['open'])
+      # #for easy testing
+      # fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/'+\
+      #            'Membrane_Repeatability_05.mvl'
+      # self.comm.binaryFile = BinaryFile(fileName)
+      # if 'print_mode' in self.comm.configuration and self.comm.configuration['print_mode']=='hex':
+      #   self.comm.binaryFile.printMode='hex'
+      # self.comm.binaryFile.loadTags()
+      # self.comm.changeTable.emit()
+      # # from .form import Form
+      # # dialog     = Form(self.comm, 70840)
+      # # dialog.show()
     return super().resizeEvent(event)
 
 
