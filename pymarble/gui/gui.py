@@ -2,7 +2,7 @@
 import os, logging, webbrowser, json, subprocess
 from typing import Any
 from pathlib import Path
-from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog, QStatusBar, QLabel # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt                                        # pylint: disable=no-name-in-module
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QResizeEvent    # pylint: disable=no-name-in-module
 from qt_material import apply_stylesheet  #of https://github.com/UN-GCPDS/qt-material
@@ -47,13 +47,21 @@ class MainWindow(QMainWindow):
     Action('&Exit',             self, ['exit'],       fileMenu)
 
     viewMenu = menu.addMenu("&View")
-    Action('&Hide binary',      self, ['hide'],       viewMenu, shortcut='F5')
+    Action('&Hide binary',      self, ['F5'],         viewMenu, shortcut='F5')
+    Action('&Hide data class',  self, ['F6'],         viewMenu, shortcut='F6')
+    Action('&Hide important',   self, ['F7'],         viewMenu, shortcut='F7')
     Action('Table columns',     self, ['tableHeader'],viewMenu)
 
     helpMenu = menu.addMenu("&Help")
     Action('&Website',          self, ['website'],        helpMenu)
     #shortcuts for advanced usage (user should not need)
     QShortcut('F9', self, lambda : self.execute(['restart']))
+
+    self.statusBarW =QLabel('Initialize...')
+    self.toggleState = {'F5':'all', 'F6':'all', 'F7':'all'}
+    self.setStatusBar(QStatusBar(self))
+    self.statusBar().addWidget(self.statusBarW)
+    self.changeStatusbar()
 
     #Content
     self.configuration = configuration
@@ -83,8 +91,12 @@ class MainWindow(QMainWindow):
       webbrowser.open('https://pypi.org/project/pymarble/')
     elif command[0]=='exit':
       self.close()
-    elif command[0]=='hide':
-      self.comm.toggle.emit()
+    elif command[0] in ['F5','F6','F7']:
+      listNext = ['all', 'none', 'only', 'all']
+      idx = listNext.index(self.toggleState[command[0]])
+      self.toggleState[command[0]] = listNext[idx+1]
+      self.comm.toggle.emit(self.toggleState['F5'],self.toggleState['F6'],self.toggleState['F7'])
+      self.changeStatusbar()
     elif command[0]=='tableHeader':
       dialog = TableHeader(self.comm)
       dialog.exec()
@@ -136,11 +148,22 @@ class MainWindow(QMainWindow):
         self.comm.binaryFile.printMode='hex'
       self.comm.binaryFile.loadTags()
       self.comm.changeTable.emit()
-      from .form import Form
-      dialog     = Form(self.comm, 70840)
-      dialog.show()
+      # from .form import Form
+      # dialog     = Form(self.comm, 70840)
+      # dialog.show()
     return super().resizeEvent(event)
 
+
+  def changeStatusbar(self) -> None:
+    """ change statusbar slot """
+    self.statusBar().removeWidget(self.statusBarW)
+    newText = ''
+    postText = {'all':'all data', 'none':'except these', 'only':'only these'}
+    for key, text in [['F5','binary'], ['F6','data class'], ['F7','important']]:
+      newText += f'\t{key} - toggle {text}: {postText[self.toggleState[key]]}'
+    self.statusBarW = QLabel(newText)
+    self.statusBar().addWidget(self.statusBarW)
+    return
 
 
 ##############

@@ -13,4 +13,4 @@ class Communicate(QObject):
   # Signals: specify emitter and receiver
   # BE SPECIFIC ABOUT WHAT THIS ACTION DOES
   changeTable = Signal()            # redraw table
-  toggle = Signal()                 # toggle between binary and except-binary table
+  toggle = Signal(str,str,str)      # toggle table: binary, dClass, important

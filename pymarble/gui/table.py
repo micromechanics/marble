@@ -18,7 +18,7 @@ class Table(QWidget):
     self.comm = comm
     comm.changeTable.connect(self.change)
     comm.toggle.connect(self.toggle)
-    self.showAll = True
+    self.toggleState = {'F5':'all', 'F6':'all', 'F7':'all'}
     _, mainL = widgetAndLayout()
     self.table = QTableWidget(self)
     self.table.verticalHeader().hide()
@@ -48,35 +48,47 @@ class Table(QWidget):
     row = -1
     for start in content:  #loop over rows
       rowData = content[start].toCSV()
-      if content[start].dType not in ['b','B'] or self.showAll :
-        row += 1
-        for col, key in enumerate(self.tableHeaders):
-          if key=='start':
-            item = QTableWidgetItem(self.comm.binaryFile.pretty(start)) # type: ignore[misc]
-          elif key=='dType':
-            translate = {'b':'byte', 'i':'int', 'f':'float', 'd':'double', 'B':'zeros', 'c':'character'}
-            item = QTableWidgetItem(translate[rowData[key]])
-          elif key=='entropy':
-            item = QTableWidgetItem(f'{rowData[key]:.3f}')
-          elif key=='important':
-            item = QTableWidgetItem('\u2713' if rowData[key] else '\u00D7')
-            item.setFont(QFont("Helvetica [Cronyx]", 16))
-          else:
-            item = QTableWidgetItem(str(rowData[key]))
-          item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
-          item.setBackground(hexToColor(dClass2Color[rowData['dClass']]))
-          self.table.setItem(row, col, item)
-        self.rowIDs.append(start)
+      #block depending on filter
+      if content[start].dType in     ['b','B'] and self.toggleState['F5']=='none':
+        continue
+      if content[start].dType not in ['b','B'] and self.toggleState['F5']=='only':
+        continue
+      if     content[start].dClass             and self.toggleState['F6']=='none':
+        continue
+      if not content[start].dClass             and self.toggleState['F6']=='only':
+        continue
+      if     content[start].important          and self.toggleState['F7']=='none':
+        continue
+      if not content[start].important          and self.toggleState['F7']=='only':
+        continue
+      row += 1
+      for col, key in enumerate(self.tableHeaders):
+        if key=='start':
+          item = QTableWidgetItem(self.comm.binaryFile.pretty(start)) # type: ignore[misc]
+        elif key=='dType':
+          translate = {'b':'byte', 'i':'int', 'f':'float', 'd':'double', 'B':'zeros', 'c':'character'}
+          item = QTableWidgetItem(translate[rowData[key]])
+        elif key=='entropy':
+          item = QTableWidgetItem(f'{rowData[key]:.3f}')
+        elif key=='important':
+          item = QTableWidgetItem('\u2713' if rowData[key] else '\u00D7')
+          item.setFont(QFont("Helvetica [Cronyx]", 16))
+        else:
+          item = QTableWidgetItem(str(rowData[key]))
+        item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
+        item.setBackground(hexToColor(dClass2Color[rowData['dClass']]))
+        self.table.setItem(row, col, item)
+      self.rowIDs.append(start)
     self.table.setRowCount(row+1)
     self.table.show()
     # TODO_P1 self.table.item(0,0).setBackground(QColor('red'))
     return
 
 
-  @Slot()
-  def toggle(self) -> None:
-    """ toggle between showing the binary data or not """
-    self.showAll = not self.showAll
+  @Slot(str, str, str)
+  def toggle(self, f5text:str, f6text:str, f7text:str) -> None:
+    """ toggle showing sections of data """
+    self.toggleState = {'F5':f5text, 'F6':f6text, 'F7':f7text}
     self.change()
     return
 
