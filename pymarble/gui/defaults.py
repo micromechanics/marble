@@ -18,5 +18,6 @@ defaultConfiguration = {
 dClass2Color = {
   "metadata":"#e5fdff",
   "primary" :"#eaeafe",
-  "":"#f1f1f1"
+  "":        "#f1f1f1",
+  "count":   "#cccccc"
 }

@@ -147,8 +147,9 @@ disable=print-statement,
         broad-except,
         import-outside-toplevel,
         dangerous-default-value,
+        duplicate-code,
         # Fiona's improvements
-        E1101
+        E1101,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -524,7 +525,7 @@ valid-metaclass-classmethod-first-arg=cls
 max-args=15
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=21
+max-attributes=25
 
 # Maximum number of boolean expressions in an if statement (see R0916).
 max-bool-expr=12
@@ -545,7 +546,7 @@ max-public-methods=20
 max-returns=8 #SB change
 
 # Maximum number of statements in function / method body.
-max-statements=120
+max-statements=150
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=0

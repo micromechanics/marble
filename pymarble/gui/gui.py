@@ -5,7 +5,6 @@ from pathlib import Path
 from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog, QStatusBar, QLabel # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt                                        # pylint: disable=no-name-in-module
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QResizeEvent    # pylint: disable=no-name-in-module
-from qt_material import apply_stylesheet  #of https://github.com/UN-GCPDS/qt-material
 
 from ..file import BinaryFile
 from .defaults import defaultConfiguration
@@ -146,7 +145,7 @@ class MainWindow(QMainWindow):
       self.comm.binaryFile = BinaryFile(fileName)
       if 'print_mode' in self.comm.configuration and self.comm.configuration['print_mode']=='hex':
         self.comm.binaryFile.printMode='hex'
-      self.comm.binaryFile.loadTags()
+      self.comm.binaryFile.loadTags()                              # type: ignore[misc]
       self.comm.changeTable.emit()
       # from .form import Form
       # dialog     = Form(self.comm, 70840)

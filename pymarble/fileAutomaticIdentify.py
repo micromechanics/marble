@@ -286,7 +286,10 @@ class Automatic():
       lenD     = np.where(~maskD)[0][0] if np.any(~maskD) else len(maskD) #first value that is true
       lenF     = np.where(~maskF)[0][0] if np.any(~maskF) else len(maskF)
       if lenD>lenF and lenD>=self.optAutomatic['minArray']:
-        label = str(lenD)+' doubles with average '+str(np.mean(valuesD[:lenD]))
+        mean    = np.mean(valuesD[:lenD])
+        minimum = np.min(valuesD[:lenD])
+        maximum = np.max(valuesD[:lenD])
+        label = f'{lenD} doubles with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e} '
         if self.verbose>1:
           print(self.pretty(start)+'-'+self.pretty(start+lenD*8),"double|",label)
         self.content[start] = Section(length=lenD, dType='d', value=label, prob=20, dClass='primary')
@@ -294,7 +297,10 @@ class Automatic():
         data = data[lenD*8:]
         start+= lenD*8
       elif lenF>lenD and lenF>=self.optAutomatic['minArray']:
-        label = str(lenF)+' floats with average '+str(np.mean(valuesF[:lenF]))
+        mean    = np.mean(valuesF[:lenF])
+        minimum = np.min(valuesF[:lenF])
+        maximum = np.max(valuesF[:lenF])
+        label = f'{lenF} floats with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e} '
         if self.verbose>1:
           print(self.pretty(start)+'-'+self.pretty(start+lenF*4),"float |",label)
         self.content[start] = Section(length=lenF,dType='f', value=label, prob=20, dClass='primary')

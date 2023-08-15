@@ -1,5 +1,5 @@
 """ Editor to change metadata of binary file """
-import struct
+import struct, re
 from typing import Optional
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -26,7 +26,7 @@ class Form(QDialog):
     if self.comm.binaryFile is None:
       return
     self.translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'plot byte value',\
-                              'B':'plot byte value','c':'plot byte value'}
+                              'B':'plot byte value','c':'plot byte value', 'i':'print numerical value'}
     self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes','b':'byte = 1byte', \
                               'i':'int = 4bytes','B':'byte = 1byte','c':'character = 1byte'}
     self.translateDtypeInv = {v: k for k, v in self.translateDtype.items()}
@@ -50,6 +50,7 @@ class Form(QDialog):
     graphL.addWidget(self.graph)
     self.textEditW = QTextEdit()
     self.textEditW.hide()
+    self.textEditW.setReadOnly(True)
     mainL.addWidget(self.textEditW)
 
     #buttons below graph
@@ -77,12 +78,14 @@ class Form(QDialog):
     self.startW.setRange(0, self.comm.binaryFile.fileLength)
     self.startW.setSingleStep(struct.calcsize(section.dType))
     self.startW.setValue(start)
+    self.startW.valueChanged.connect(self.refresh)
     dimensionL.addWidget(self.startW, stretch=1)                           # type: ignore[call-arg]
     dimensionL.addSpacing(space)
     dimensionL.addWidget(QLabel('Length:'))
     self.lengthW = QSpinBox()
     self.lengthW.setRange(0, self.comm.binaryFile.fileLength)
-    self.lengthW.setValue(section.length)
+    self.lengthW.setValue(section.length) #TODO_P1 more
+    self.lengthW.valueChanged.connect(self.refresh)
     dimensionL.addWidget(self.lengthW, stretch=1)                          # type: ignore[call-arg]
     dimensionL.addSpacing(minSpace)
     self.dTypeCB = QComboBox()
@@ -150,6 +153,21 @@ class Form(QDialog):
       self.entropyW = QLineEdit(str(section.entropy),self)
       advancedL.addWidget(self.entropyW)
 
+    if section.dClass == 'count':
+      self.startW.setDisabled(True)
+      self.lengthW.setDisabled(True)
+      self.dTypeCB.setDisabled(True)
+      self.probabilityW.setDisabled(True)
+      self.importantW.setDisabled(True)
+      self.keyW.setDisabled(True)
+      self.valueW.setDisabled(True)
+      self.unitW.setDisabled(True)
+      self.dClassCB.setDisabled(True)
+      self.linkW.setDisabled(True)
+      self.countW.setDisabled(True)
+      self.shapeW.setDisabled(True)
+      self.entropyW.setDisabled(True)
+
     #final button box
     buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
     buttonBox.clicked.connect(self.save)
@@ -162,48 +180,55 @@ class Form(QDialog):
     if self.comm.binaryFile is None:
       return
     # get values from text fields
-    start       = int(self.startW.text())
-    length      = int(self.lengthW.text())
+    start       = self.startW.value()
+    length      = self.lengthW.value()
     dType       = self.translateDtypeInv[self.dTypeCB.currentText()]
     byteSize    = struct.calcsize(dType)
     startAll    = start-self.lead*byteSize
     lengthAll   = length+2*self.lead
     dTypeAll    = str(lengthAll)+dType
     byteSizeAll = struct.calcsize(dTypeAll)
+    preData = bytearray(0)
+    if startAll < 0:
+      preData = bytearray(-startAll)
+      startAll = 0
     # use the values
     self.startW.setSingleStep(byteSize)
     self.comm.binaryFile.file.seek(startAll)
     dataAll = self.comm.binaryFile.file.read(byteSizeAll)
+    if len(preData)>1:
+      dataAll = preData + dataAll[:-len(preData)]
     if len(dataAll)<byteSizeAll:
-      dataAll = dataAll+bytearray(byteSizeAll-len(dataAll))
+      dataAll = dataAll + bytearray(byteSizeAll-len(dataAll))
     # depending on plot/print type
     if self.plotCB.currentText().endswith('byte value') or \
        (dType in ['b','B'] and self.plotCB.currentText().endswith('numerical value')):
       valuesX = np.arange(-self.lead*byteSize, (length+self.lead)*byteSize)
-      valuesY = list(dataAll)
+      self.valuesY = list(dataAll)
       labelY  = 'byte value'
       limitX  = length*byteSize
-      limitY  = [0,255]
+      limitY  = [0.0, 255.0]
       lineStyle= '.'
     elif self.plotCB.currentText().endswith('numerical value'):
       valuesX = np.arange(-self.lead, length+self.lead)
-      valuesY = list(struct.unpack(dTypeAll, dataAll))
+      self.valuesY = list(struct.unpack(dTypeAll, dataAll))
       labelY  = 'numerical value'
       limitX  = length
-      limitY  = [np.min(valuesY[self.lead:-self.lead])*0.8, np.max(valuesY[self.lead:-self.lead])*1.2]
+      limitY  = [np.min(self.valuesY[self.lead:-self.lead])*0.8,
+                 np.max(self.valuesY[self.lead:-self.lead])*1.2]
       lineStyle= 'o-'
     elif self.plotCB.currentText().endswith('plot entropy'):
       dataBin = list(dataAll) #convert to byte-int
       blockSize = self.comm.binaryFile.optEntropy['blockSize']
       valuesX = np.arange(-self.lead*byteSize, (length+self.lead-blockSize)*byteSize, byteSize)
-      valuesY = []
+      self.valuesY = []
       for startI in valuesX:
         _, counts = np.unique(dataBin[startI:startI+blockSize], return_counts=True)
         valueI    = np.sum(-counts/blockSize*np.log2(counts/blockSize))
-        valuesY.append(valueI)
+        self.valuesY.append(valueI)
       labelY  = 'entropy'
       limitX  = (length-blockSize)*byteSize
-      limitY  = [0, 7.8]
+      limitY  = [0.0, 7.8]
       lineStyle= '-'
     else:
       print('**ERROR unknown value in form')
@@ -212,7 +237,7 @@ class Form(QDialog):
       self.graph.axes.cla()                        # Clear the canvas.
       self.graph.axes.axvline(0, color='k')
       self.graph.axes.axvline(limitX, color='k')
-      self.graph.axes.plot(valuesX, valuesY, lineStyle)
+      self.graph.axes.plot(valuesX, self.valuesY, lineStyle)
       self.graph.axes.set_ylim(limitY)
       self.graph.axes.set_xlabel('bytes')
       self.graph.axes.set_ylabel(labelY)
@@ -224,9 +249,9 @@ class Form(QDialog):
       idxStart = np.argmin(np.abs(valuesX))
       idxEnd   = np.argmin(np.abs(valuesX-limitX))
       if labelY == 'numerical value':
-        text  = '  '.join([f'{i:.3e}'     for i in valuesY[:idxStart]])
-        text += ' '+'  '.join([f'**{i:.3e}**' for i in valuesY[idxStart:idxEnd]])
-        text += ' '+'  '.join([f'{i:.3e}'     for i in valuesY[idxEnd:]])
+        text  = '  '.join([f'{i:.3e}'         for i in self.valuesY[:idxStart]])
+        text += ' '+'  '.join([f'**{i:.3e}**' for i in self.valuesY[idxStart:idxEnd]])
+        text += ' '+'  '.join([f'{i:.3e}'     for i in self.valuesY[idxEnd:]])
       else:
         text  = self.comm.binaryFile.byteToString(dataAll[:idxStart], 1, 8)
         text += '  **'+self.comm.binaryFile.byteToString(dataAll[idxStart:idxEnd], 1, 8)+'**  '
@@ -272,20 +297,52 @@ class Form(QDialog):
     if btn.text().endswith('Cancel'):
       self.reject()
     elif btn.text().endswith('Save') and self.comm.binaryFile is not None:
-      start = int(self.startW.text())
-      section = Section(length=int(self.lengthW.text()),
-                        dType=self.translateDtypeInv[self.dTypeCB.currentText()],
-                        key=self.keyW.text(), unit=self.unitW.text(), value=self.valueW.text(),
+      start  = self.startW.value()
+      length = self.lengthW.value()
+      dType  = self.translateDtypeInv[self.dTypeCB.currentText()]
+      shape  = [int(i) for i in self.shapeW.text()[1:-1].split(',') if len(i)>0]
+      #find count in file
+      if dType in ['f','d','H']:      #TODO_P1 makes sense for 1D data, but not 2D data
+        lengthSearch = min(length, int(np.prod(shape))) #remember garbage at end of data-set
+        anchor = None
+        prevKvariables = 0
+        #search existing anchors
+        content = self.comm.binaryFile.content
+        for startJ in content:
+          sectionJ = content[startJ]
+          if sectionJ.key.endswith(str(lengthSearch)) and sectionJ.dType=='i':
+            anchor = startJ
+            break
+          if re.search(r'^k\d+=', sectionJ.key) and sectionJ.dType=='i':
+            prevKvariables += 1
+        if anchor is None:    #only if not already found: create new
+          anchor = self.comm.binaryFile.findBytes(lengthSearch,'i',0) # type: ignore[misc]
+          if anchor>=0:
+            content[anchor] = Section(length=1, key='k'+str(prevKvariables+1)+'='+str(lengthSearch),
+                                      dType='i', prob=100, dClass='count', important=True)
+        #create link / enter property count; adopt shape correspondingly
+        count=[anchor]                   # content of count text field is never used
+        shape = []
+        for iCount in count:
+          self.comm.binaryFile.file.seek(iCount)
+          iLength = self.comm.binaryFile.file.read(content[iCount].byteSize())
+          iLength = struct.unpack( content[iCount].size(), iLength)[0]
+          shape.append(int(iLength))
+      value = self.valueW.text()
+      if re.search(r'\d+ floats with mean [\d\.e-]+, minimum [\d\.e-]+, maximum [\d\.e-]+', value):
+        mean    = np.mean(self.valuesY)
+        minimum = np.min(self.valuesY)
+        maximum = np.max(self.valuesY)
+        value = f'{length} floats with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e} '
+      entropy = -1.0
+      section = Section(length=length, dType=dType,
+                        key=self.keyW.text(), unit=self.unitW.text(), value=value,
                         link=self.linkW.text(), dClass=self.dClassCB.currentText(),
-                        count=[int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0],
-                        shape=[int(i) for i in self.shapeW.text()[1:-1].split(',') if len(i)>0],
-                        prob=200,
-                        entropy=float(self.entropyW.text()),
-                        important=self.importantW.isChecked()
-                        )
+                        count=count, shape=shape, prob=200, entropy=entropy,
+                        important=self.importantW.isChecked())
       #first save section with semi-infinite probability, fill/clean, save real section
       self.comm.binaryFile.content[start] = section
-      self.comm.binaryFile.fill()                                 # type: ignore[misc]
+      self.comm.binaryFile.fill()                                   # type: ignore[misc]
       section.prob = int(self.probabilityW.text())
       self.comm.binaryFile.content[start] = section
       self.accept()

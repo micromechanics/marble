@@ -302,6 +302,6 @@ def hexToColor(code:str) -> QColor:
   Args:
     code (str): hex string
   """
-  code_hex = code.replace("#", "")
-  rgb = tuple(int(code_hex[i:i+2], 16) for i in (0, 2, 4))
+  codeHex = code.replace("#", "")
+  rgb = tuple(int(codeHex[i:i+2], 16) for i in (0, 2, 4))
   return QColor.fromRgb(rgb[0], rgb[1], rgb[2])

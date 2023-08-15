@@ -1,11 +1,8 @@
 """ Main table in app """
-import logging
-# from typing import Any
 import numpy as np
 from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
 from PySide6.QtGui import QFont                                 # pylint: disable=no-name-in-module
-from PySide6.QtGui import QColor
 from .communicate import Communicate
 from .style import widgetAndLayout, Action, hexToColor
 from .defaults import dClass2Color
@@ -42,6 +39,8 @@ class Table(QWidget):
     self.tableHeaders = self.comm.configuration['columns']
     self.table.setColumnCount(len(self.tableHeaders))
     self.table.setHorizontalHeaderLabels(self.tableHeaders)
+    print(self.width() )
+    # self.table.setColumnWidth(col,444)
     self.table.setRowCount(len(content))
     self.rowIDs  = []
     # use content to build models
@@ -81,7 +80,6 @@ class Table(QWidget):
       self.rowIDs.append(start)
     self.table.setRowCount(row+1)
     self.table.show()
-    # TODO_P1 self.table.item(0,0).setBackground(QColor('red'))
     return
 
 
@@ -135,22 +133,24 @@ class Table(QWidget):
     Args:
       item (QStandardItem): cell clicked
     """
+    if self.comm.binaryFile is None:
+      return
     start = self.rowIDs[item.row()]
     colName  = self.tableHeaders[item.column()]
     content  = self.comm.binaryFile.content
     if colName == 'important':
       content[start].important = not content[start].important
     elif colName == 'dClass':
-      order = ['', 'metadata', 'primary', '']
-      idx   = order.index(content[start].dClass)
-      content[start].dClass = order[idx+1]
+      orderList = ['', 'metadata', 'primary', '']
+      idxList   = orderList.index(content[start].dClass)
+      content[start].dClass = orderList[idxList+1]
     elif colName == 'prob':
-      order = np.array([49, 100, 75, 50])
-      mask = order>=content[start].prob
-      minValue = order[mask].min()
-      idx = np.argmin(np.abs(order-minValue))
-      content[start].prob = order[idx+1]
-    self.change()
+      orderArray = np.array([49, 100, 75, 50])
+      mask = orderArray>=content[start].prob
+      minValue = orderArray[mask].min()
+      idxArray = np.argmin(np.abs(orderArray-minValue))
+      content[start].prob = orderArray[idxArray+1]
+    self.change()  #repaint
     return
 
 
@@ -162,10 +162,8 @@ class Table(QWidget):
       item (QStandardItem): cell clicked
     """
     row = item.row()
-    try:
-      start = self.rowIDs[row]
-      dialog = Form(self.comm, start)
-      dialog.exec()
-    except Exception:
-      logging.error('cell click or form is irrational %s',row)
+    start = self.rowIDs[row]
+    dialog = Form(self.comm, start)
+    dialog.exec()
+    self.change()  #repaint
     return
