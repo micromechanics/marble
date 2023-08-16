@@ -332,7 +332,7 @@ class Form(QDialog):
           iLength = struct.unpack( content[iCount].size(), iLength)[0]
           shape.append(int(iLength))
       else:
-         count  = [int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0]
+        count  = [int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0]
       value = self.valueW.text()
       if re.search(r'\d+ floats with mean [\d\.e-]+, minimum [\d\.e-]+, maximum [\d\.e-]+', value) or \
          self.autoW.isChecked():

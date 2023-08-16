@@ -43,6 +43,6 @@ class FormSplit(QDialog):
     if btn.text().endswith('Cancel'):
       self.reject()
     elif btn.text().endswith('OK') and self.comm.binaryFile is not None:
-      self.comm.binaryFile.split(self.start, self.numberW.value())
+      self.comm.binaryFile.split(self.start, self.numberW.value())         # type: ignore[misc]
       self.accept()
     return

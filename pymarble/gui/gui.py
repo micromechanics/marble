@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt                                        # pylint: d
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QResizeEvent    # pylint: disable=no-name-in-module
 
 from ..file import BinaryFile
-from .defaults import defaultConfiguration
+from .defaults import defaultConfiguration, ABOUT_TEXT
 from .style import Action, showMessage
 from .communicate import Communicate
 from .table import Table
@@ -32,11 +32,10 @@ class MainWindow(QMainWindow):
     menu = self.menuBar()
     fileMenu = menu.addMenu("&File")
     Action('&Open binary file', self, ['open'],       fileMenu, shortcut='Ctrl+L')
-    Action('Edit &metadata',    self, ['metaEditor'], fileMenu, shortcut='Ctrl+M')
     if 'advanced' in configuration:
       fileMenu.addSeparator()
-      Action('Save tags-file',    self, ['saveTags'],   fileMenu)
-      Action('Load tags-file',    self, ['loadTags'],   fileMenu)
+      Action('Save corr. .tags', self, ['saveTags'],   fileMenu)
+      Action('Load corr. .tags', self, ['loadTags'],   fileMenu)
     fileMenu.addSeparator()
     Action('&Save python-file',  self, ['savePython'], fileMenu)
     Action('Save and e&xtract',  self, ['extractPython'], fileMenu)
@@ -51,8 +50,12 @@ class MainWindow(QMainWindow):
     Action('&Hide important',   self, ['F7'],         viewMenu, shortcut='F7')
     Action('Table columns',     self, ['tableHeader'],viewMenu)
 
+    toolsMenu = menu.addMenu("&Tools")
+    Action('Edit &metadata',    self, ['metaEditor'], toolsMenu, shortcut='Ctrl+M')
+
     helpMenu = menu.addMenu("&Help")
     Action('&Website',          self, ['website'],        helpMenu)
+    Action('&About',            self, ['about'],        helpMenu)
     #shortcuts for advanced usage (user should not need)
     QShortcut('F9', self, lambda : self.execute(['restart']))
 
@@ -88,6 +91,8 @@ class MainWindow(QMainWindow):
         self.comm.changeTable.emit()
     elif command[0]=='website':
       webbrowser.open('https://pypi.org/project/pymarble/')
+    elif command[0]=='about':
+      showMessage(self, 'About MARBLE', ABOUT_TEXT)
     elif command[0]=='exit':
       self.close()
     elif command[0] in ['F5','F6','F7']:
@@ -101,6 +106,8 @@ class MainWindow(QMainWindow):
       dialog.exec()
     elif command[0]=='restart':
       restart()
+    #
+    #
     #check for existing file
     elif self.comm.binaryFile is None:
       showMessage(self, 'Error', 'An open file is required to execute the command.','Critical')

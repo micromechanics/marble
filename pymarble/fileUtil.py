@@ -260,7 +260,7 @@ class Util():
     oldEnd    = start+self.content[start].byteSize()
     newLength = int(self.content[start].length / number)
     self.content[start].length = newLength
-    for i in range(1, number):
+    for _ in range(1, number):
       section = copy.deepcopy(self.content[start])
       start +=  section.byteSize()             #start increases
       self.content[start]  = section
