@@ -2,7 +2,7 @@
 import numpy as np
 from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
-from PySide6.QtGui import QFont                                 # pylint: disable=no-name-in-module
+from PySide6.QtGui import QFont, QResizeEvent                   # pylint: disable=no-name-in-module
 from .communicate import Communicate
 from .style import widgetAndLayout, Action, hexToColor
 from .defaults import dClass2Color
@@ -30,8 +30,13 @@ class Table(QWidget):
 
 
   @Slot()
-  def change(self) -> None:
-    """ Change / Refresh / Repaint """
+  def change(self, resizeColumns:bool=False) -> None:
+    """
+    Change / Refresh / Repaint
+
+    Args:
+      resizeColumns (bool): resize colums depending of window width
+    """
     if self.comm.binaryFile is None:
       return
     # initialize
@@ -39,8 +44,14 @@ class Table(QWidget):
     self.tableHeaders = self.comm.configuration['columns']
     self.table.setColumnCount(len(self.tableHeaders))
     self.table.setHorizontalHeaderLabels(self.tableHeaders)
-    print(self.width() )
-    # self.table.setColumnWidth(col,444)
+    if resizeColumns:
+      extraSize = 4
+      defaultWidth = int(self.width()/(len(self.tableHeaders)+extraSize))
+      for idx,colName in enumerate(self.tableHeaders):
+        if colName=='value':
+          self.table.setColumnWidth(idx, defaultWidth*extraSize)
+        else:
+          self.table.setColumnWidth(idx, defaultWidth)
     self.table.setRowCount(len(content))
     self.rowIDs  = []
     # use content to build models
@@ -167,3 +178,14 @@ class Table(QWidget):
     dialog.exec()
     self.change()  #repaint
     return
+
+
+  def resizeEvent(self, event: QResizeEvent) -> None:
+    """
+    executed upon resize
+
+    Args:
+      event (QResizeEvent): event
+    """
+    self.change(resizeColumns=True)
+    return super().resizeEvent(event)

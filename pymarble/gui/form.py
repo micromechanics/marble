@@ -117,6 +117,10 @@ class Form(QDialog):
     self.valueW = QLineEdit(section.value,self)
     self.valueW.setToolTip('value')
     keyValueL.addWidget(self.valueW, stretch=1)                     # type: ignore[call-arg]
+    keyValueL.addWidget(QLabel('Auto'))
+    self.autoW = QCheckBox()
+    self.autoW.setChecked(False)
+    keyValueL.addWidget(self.autoW)
     keyValueL.addSpacing(space)
     keyValueL.addWidget(QLabel('Unit:'))
     self.unitW = QLineEdit(section.unit,self)
@@ -236,7 +240,7 @@ class Form(QDialog):
     if self.plotCB.currentText().startswith('plot'):
       self.graph.axes.cla()                        # Clear the canvas.
       self.graph.axes.axvline(0, color='k')
-      self.graph.axes.axvline(limitX, color='k')
+      self.graph.axes.axvline(limitX-1, color='k')  #plot from 0 to limit-1
       self.graph.axes.plot(valuesX, self.valuesY, lineStyle)
       self.graph.axes.set_ylim(limitY)
       self.graph.axes.set_xlabel('bytes')
@@ -328,12 +332,20 @@ class Form(QDialog):
           iLength = self.comm.binaryFile.file.read(content[iCount].byteSize())
           iLength = struct.unpack( content[iCount].size(), iLength)[0]
           shape.append(int(iLength))
+      else:
+         count  = [int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0]
       value = self.valueW.text()
-      if re.search(r'\d+ floats with mean [\d\.e-]+, minimum [\d\.e-]+, maximum [\d\.e-]+', value):
-        mean    = np.mean(self.valuesY)
-        minimum = np.min(self.valuesY)
-        maximum = np.max(self.valuesY)
-        value = f'{length} floats with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e} '
+      if re.search(r'\d+ floats with mean [\d\.e-]+, minimum [\d\.e-]+, maximum [\d\.e-]+', value) or \
+         self.autoW.isChecked():
+        mean    = np.mean(self.valuesY[self.lead:-self.lead])
+        minimum = np.min(self.valuesY[self.lead:-self.lead])
+        maximum = np.max(self.valuesY[self.lead:-self.lead])
+        if dType=='f':
+          value = f'{length} floats with mean {mean:.4f}, minimum {minimum:.4f}, maximum {maximum:.4f}'
+        elif dType=='d':
+          value = f'{length} doubles with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e}'
+        else:
+          value = 'Unknown datatype'
       entropy = -1.0
       section = Section(length=length, dType=dType,
                         key=self.keyW.text(), unit=self.unitW.text(), value=value,
