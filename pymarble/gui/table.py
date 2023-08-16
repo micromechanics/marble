@@ -7,6 +7,7 @@ from .communicate import Communicate
 from .style import widgetAndLayout, Action, hexToColor
 from .defaults import dClass2Color
 from .form import Form
+from .formSplit import FormSplit
 
 class Table(QWidget):
   """ widget that shows the table of the items """
@@ -111,10 +112,17 @@ class Table(QWidget):
     """
     if self.comm.binaryFile is None:
       return
-    if command[0] == 'autoTime':
+    if command[0]   == 'autoTime':
       self.comm.binaryFile.automatic('x_z_p_a')  # type: ignore[misc]
     elif command[0] == 'autoElse':
-      self.comm.binaryFile.automatic('x_z_p')  # type: ignore[misc]
+      self.comm.binaryFile.automatic('x_z_p')    # type: ignore[misc]
+    elif command[0] == 'split':
+      start = self.rowIDs[self.table.currentRow()]
+      dialog = FormSplit(self.comm, start)
+      dialog.exec()
+      self.change()  #repaint
+    else:
+      print('**ERROR: command unknown:', command)
     self.change()
     return
 
@@ -131,7 +139,9 @@ class Table(QWidget):
     context = QMenu(self)
     if len(self.comm.binaryFile.content) == 1:
       Action('Automatic for time series', self, ['autoTime'], context)
-      Action('Automatic for other data', self, ['autoElse'], context)
+      Action('Automatic for other data',  self, ['autoElse'], context)
+    else:
+      Action('Split into parts',          self, ['split'],    context)
     context.exec(point.globalPos())
     return
 

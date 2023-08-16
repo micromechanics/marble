@@ -84,7 +84,7 @@ class Form(QDialog):
     dimensionL.addWidget(QLabel('Length:'))
     self.lengthW = QSpinBox()
     self.lengthW.setRange(0, self.comm.binaryFile.fileLength)
-    self.lengthW.setValue(section.length) #TODO_P1 more
+    self.lengthW.setValue(section.length)
     self.lengthW.valueChanged.connect(self.refresh)
     dimensionL.addWidget(self.lengthW, stretch=1)                          # type: ignore[call-arg]
     dimensionL.addSpacing(minSpace)
@@ -141,7 +141,6 @@ class Form(QDialog):
     self.linkW.setStyleSheet('background-color:#d8e0f4')
     dClassL.addWidget(self.linkW)
 
-    #TODO_P1 refresh table after save
     if 'advanced' in self.comm.configuration:
       # advanced items
       _, advancedL = widgetAndLayout('H', mainL)
@@ -359,7 +358,7 @@ class Form(QDialog):
       self.comm.binaryFile.content[start] = section
       self.accept()
     else:
-      print('metaEditor: did not get a fitting btn ',btn.text())
+      print(f'**ERROR unknown command {btn.text()}')
     return
 
 

@@ -1,5 +1,5 @@
 """Search file and find values"""
-import struct, math, re, difflib
+import struct, math, re, difflib, copy
 from typing import Union
 import numpy as np
 from .section import Section, SECTION_OUTPUT_ORDER
@@ -246,6 +246,25 @@ class Util():
           text = self.byteToString(self.file.read(self.fileLength-newStart),1)
           self.content[newStart] = Section(length=self.fileLength-newStart, dType='b', value=text)
           self.entropy(newStart, False)
+    return
+
+
+  def split(self:FileProtocol, start:int, number:int) -> None:
+    '''
+    Split section into number of parts
+
+    Args:
+      start (int): start of section
+      number (int): number of parts to split into
+    '''
+    oldEnd    = start+self.content[start].byteSize()
+    newLength = int(self.content[start].length / number)
+    self.content[start].length = newLength
+    for i in range(1, number):
+      section = copy.deepcopy(self.content[start])
+      start +=  section.byteSize()             #start increases
+      self.content[start]  = section
+    self.content[start].length = int((oldEnd-start)/struct.calcsize(self.content[start].dType))
     return
 
 
