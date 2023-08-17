@@ -151,7 +151,7 @@ class Util():
         section.setData(shape=shape)
       section.setData(dClass='primary')
     elif 'count' not in data:
-      section.setData(dClass='meta')
+      section.setData(dClass='metadata')
     if runFill:
       self.fill()
     return
@@ -191,7 +191,7 @@ class Util():
       #create section before first entry
       if starts[0]>0:
         self.file.seek(0)
-        text = self.byteToString(self.file.read(starts[0]),1)
+        text = 'unknown binary string' #self.byteToString(self.file.read(starts[0]),1)
         self.content[0] = Section(length=starts[0], dType='b', value=text)
         self.entropy(0, False)
 
@@ -202,7 +202,7 @@ class Util():
         if end<starts[idx+1]:
           #there is a hole, fill it with a section
           self.file.seek(end)
-          text = self.byteToString(self.file.read(starts[idx+1]-end),1)
+          text = 'unknown binary string' #self.byteToString(self.file.read(starts[idx+1]-end),1)
           self.content[end] = Section(length=starts[idx+1]-end, dType='b', value=text)
           self.entropy(end, False)
         elif end>starts[idx+1]:
@@ -243,7 +243,7 @@ class Util():
         newStart = starts[-1]+struct.calcsize(str(max(section.length,0))+section.dType)#max: no neg. numbers
         if newStart<self.fileLength:
           self.file.seek(newStart)
-          text = self.byteToString(self.file.read(self.fileLength-newStart),1)
+          text = 'unknown binary string' #self.byteToString(self.file.read(self.fileLength-newStart),1)
           self.content[newStart] = Section(length=self.fileLength-newStart, dType='b', value=text)
           self.entropy(newStart, False)
     return

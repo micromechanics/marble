@@ -112,10 +112,10 @@ class Table(QWidget):
     """
     if self.comm.binaryFile is None:
       return
-    if command[0]   == 'autoTime':
+    if command[0]   == 'autoTime': #look for xml data, zero data, primary data and ascii data
       self.comm.binaryFile.automatic('x_z_p_a')  # type: ignore[misc]
-    elif command[0] == 'autoElse':
-      self.comm.binaryFile.automatic('x_z_p')    # type: ignore[misc]
+    elif command[0] == 'autoElse': #look for xml data, zero data and ascii data
+      self.comm.binaryFile.automatic('x_z_a')    # type: ignore[misc]
     elif command[0] == 'split':
       start = self.rowIDs[self.table.currentRow()]
       dialog = FormSplit(self.comm, start)

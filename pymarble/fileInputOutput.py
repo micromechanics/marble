@@ -140,7 +140,7 @@ class InputOutput():
         line = self.content[start].toPY(start, 'numberOfTests')
         fOut.write('  fIn.seek(0)\n')
         fOut.write('  '+line)
-        self.content[start].dClass='meta'
+        self.content[start].dClass='metadata'
       #body: things other than foor loop
       fOut.write('  fIn.seek(0)\n')
       lastOutput = 0
@@ -161,7 +161,7 @@ class InputOutput():
         if not sect.important:  #don't output unimportant items
           continue
         branchName = None
-        if ( sect.dClass in ['meta','primary'] and inForLoop ) or not bool(self.periodicity):
+        if ( sect.dClass in ['metadata','primary'] and inForLoop ) or not bool(self.periodicity):
           branchName = 'hdfBranch'
         line = self.content[start].toPY(start-lastOutput, self.content, branchName)
         if line:

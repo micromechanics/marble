@@ -7,7 +7,7 @@ import numpy as np
 # length: length of section, responsible for size, byteSize of section
 #   - generally length = shape[0]*shape[1]
 #   - in case garbage (malloc) is in section: length is larger than product of shape
-# dClass: meta, primary, count/parameter, ''=unknown
+# dClass: metadata, primary, count/parameter, ''=unknown
 # count: offset/location of the count
 #   - relates to the shape
 #   - cannot be the variable name because formalized description should not have variable name
@@ -153,7 +153,7 @@ class Section:
       hdf = 'fOut'
     if self.dType in ['b','B']:
       return None
-    if self.dType=='c' or self.dClass=='meta':
+    if self.dType=='c' or self.dClass=='metadata':
       length = str(self.length)  #default: char
       if self.dType!='c':
         length= '"'+self.size()+'"'

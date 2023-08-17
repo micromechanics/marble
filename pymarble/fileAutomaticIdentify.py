@@ -120,7 +120,7 @@ class Automatic():
       except ET.ParseError:
         print("XML incorrect:\n",xmlString,'\n')
       self.content[xmlStart[0]]=Section(length=xmlEnd[1]-xmlStart[0], dType='c', value='xml string',
-                                        key='metadata', dClass='meta', prob=100)
+                                        key='metadata', dClass='metadata', prob=100)
       del self.content[0]
     return
 
