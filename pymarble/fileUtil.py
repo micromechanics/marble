@@ -1,5 +1,5 @@
 """Search file and find values"""
-import struct, math, re, difflib, copy
+import struct, math, re, difflib, copy, logging
 from typing import Union
 import numpy as np
 from .section import Section, SECTION_OUTPUT_ORDER
@@ -39,15 +39,13 @@ class Util():
       output = [self.pretty(i) for i in offsetI+offset+found*byteSize] #output
       if verbose:
         for idx, offsetJ in enumerate(output):
-          print(offsetJ,'found '+str(value)+' with error '+str(data[found][idx]))
-        if len(output)==0:
+          print(f'{offsetJ}  found {value} with error {data[found][idx]}')
+        if not output:
           print('... found nothing')
       else:
         allFound += output
         allError += list(data[found])
-    if not verbose:
-      return [x for _, x in sorted(zip(allError, allFound))]
-    return []
+    return [] if verbose else [x for _, x in sorted(zip(allError, allFound))]
 
 
   def findBytes(self:FileProtocol, value:Union[str,float], dType:str='d', offset:int=0) -> int:
@@ -72,7 +70,7 @@ class Util():
         searchString = struct.pack(dType,value).hex()
         searchString = searchString[2:]  #chop of first byte (two chars) to allow for close values not precise
       else:
-        print("*WARNING NOT TESTED*")
+        logging.error("NOT TESTED dTypes")
     self.file.seek(offset)
     data = self.file.read()
     found = data.hex().find(searchString)
@@ -103,7 +101,7 @@ class Util():
       data: data of section
     '''
     if start<0 or start>self.fileLength:
-      print("**ERROR: start value does not make sense", start)
+      logging.error("start value does not make sense: {start}")
       return
     if start in self.content:  #edit
       self.content[start].setData(data=data)
@@ -148,7 +146,7 @@ class Util():
     - remove all 0-length items
     '''
     if len(self.content)<1:
-      print("**ERROR in FILL: One entry required. I exit.")
+      logging.error("FILL: One entry required. I exit.")
       return
     rerun = True
     while rerun:  #loop until all changes made
@@ -201,8 +199,7 @@ class Util():
             self.content[start] = section
             self.entropy(start, False)   #set entropy
             if self.verbose>1:
-              print('Shorten this entry',start,'=>end='+str(end)+\
-                ', because next section starts at',starts[idx+1])
+              print(f'Shorten this entry {start}=>end={end}, because next section starts at {starts[idx+1]}')
           else:  #repair: move next section to end of this section; shorten next section
             toDelete.append(starts[idx+1])
             secNext = Section(data=str(self.content[starts[idx+1]]))
@@ -213,11 +210,11 @@ class Util():
               self.content[end] = secNext
               self.entropy(end, False)
               if self.verbose>1:
-                print('Shorten next entry',starts[idx+1])
+                print(f'Shorten next entry{starts[idx+1]}')
             else:
               rerun = True
               if self.verbose>1:
-                print('Shorten next entry',starts[idx+1],': do not since too short')
+                print(f'Shorten next entry{starts[idx+1]}: do not since too short')
       for start in toDelete:
         del self.content[start]
 
@@ -275,7 +272,7 @@ class Util():
     if anchor is None:    #only if not already found: create new
       anchor = self.findBytes(lengthSearch,'i',0)
       if anchor>=0:
-        self.content[anchor] = Section(length=1, key='k'+str(prevKvariables+1)+'='+str(lengthSearch),
+        self.content[anchor] = Section(length=1, key=f'k{prevKvariables+1}={lengthSearch}',
                                        dType='i', prob=100, dClass='count', important=True)
         createdNew = True
     return anchor, createdNew
@@ -288,13 +285,12 @@ class Util():
     for start in self.content:
       sect = self.content[start]
       if sect.dType not in ['b', 'B', 'f', 'd', 'i', 'c', 'H']:
-        print('**ERROR: there is a non-defined dType',sect.dType,'| change to b')
+        logging.error('there is a non-defined dType %s| change to b',sect.dType)
         sect.dType='b'
       argumentsExist = sorted(list(self.content[start].__dict__))
       if argumentsExist != sorted(SECTION_OUTPUT_ORDER):
-        print('**ERROR: initialization error in Section')
-        print('    do exist',argumentsExist)
-        print('should exist',sorted(SECTION_OUTPUT_ORDER))
+        logging.error('initialization error in Section\n    do exist: %s\nshould exist: %s',argumentsExist,
+                      sorted(SECTION_OUTPUT_ORDER))
     return
 
 
@@ -320,7 +316,7 @@ class Util():
       aList = [int(aString[i:i+2], base=16) for i in range(0,len(aString),2) ]#list of integer/char
       listConsecutive = np.split(aList, np.where(np.diff(aList) != 0)[0]+1)   #find consecutive entries list[]
       aString = ''.join([''.join([hex(j)[2:].zfill(2) for j in i]) if len(i)<3 or i[0]>0 \
-        else ' '+str(len(i))+'*00 ' for i in listConsecutive])
+        else f' {len(i)}*00 ' for i in listConsecutive])
     return aString
 
 

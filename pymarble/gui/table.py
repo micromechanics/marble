@@ -1,4 +1,5 @@
 """ Main table in app """
+import logging
 import numpy as np
 from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
@@ -57,7 +58,7 @@ class Table(QWidget):
     self.rowIDs  = []
     # use content to build models
     row = -1
-    for start in content:  #loop over rows
+    for start in content:#loop over rows
       rowData = content[start].toCSV()
       #block depending on filter
       if content[start].dType in     ['b','B'] and self.toggleState['F5']=='none':
@@ -74,16 +75,16 @@ class Table(QWidget):
         continue
       row += 1
       for col, key in enumerate(self.tableHeaders):
-        if key=='start':
-          item = QTableWidgetItem(self.comm.binaryFile.pretty(start)) # type: ignore[misc]
-        elif key=='dType':
+        if key == 'dType':
           translate = {'b':'byte', 'i':'int', 'f':'float', 'd':'double', 'B':'zeros', 'c':'character'}
           item = QTableWidgetItem(translate[rowData[key]])
-        elif key=='entropy':
+        elif key == 'entropy':
           item = QTableWidgetItem(f'{rowData[key]:.3f}')
-        elif key=='important':
+        elif key == 'important':
           item = QTableWidgetItem('\u2713' if rowData[key] else '\u00D7')
           item.setFont(QFont("Helvetica [Cronyx]", 16))
+        elif key == 'start':
+          item = QTableWidgetItem(self.comm.binaryFile.pretty(start))        # type: ignore[misc]
         else:
           item = QTableWidgetItem(str(rowData[key]))
         item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
@@ -122,7 +123,7 @@ class Table(QWidget):
       dialog.exec()
       self.change()  #repaint
     else:
-      print('**ERROR: command unknown:', command)
+      logging.error('command unknown: %s', command)
     self.change()
     return
 

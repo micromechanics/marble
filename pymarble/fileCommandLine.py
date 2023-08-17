@@ -15,7 +15,6 @@ class Commandline():
         dType: ['d','i','f'] data-type: double, int, float
     '''
     currPosition = self.file.tell()
-    count = int(count)
     byteSize = struct.calcsize(dType)
     dataBin = self.file.read(count*byteSize)
     data = struct.unpack(str(count)+dType, dataBin) #get data
@@ -45,9 +44,9 @@ class Commandline():
       data = bytearray(dataBin).decode('utf-8', errors='replace')
       data = ''.join(re.findall(r'[ -~]',data))
       if len(data)>1:
-        print(self.pretty(offset)+':',data)
+        print(f'{self.pretty(offset)}: {data}')
       offset += bytesPerRow
-      if numRows>-1 and offset/bytesPerRow > int(numRows)-1:
+      if numRows>-1 and offset/bytesPerRow > numRows-1:
         break
     self.file.seek(0)
     return

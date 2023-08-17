@@ -1,5 +1,5 @@
 """All functions that identify content in binary file automatically"""
-import math, struct, re, time
+import math, struct, re, time, logging
 import xml.etree.ElementTree as ET
 import numpy as np
 from .section import Section
@@ -27,11 +27,7 @@ class Automatic():
       if self.verbose>1:
         print("Start method",method)
         startTime = time.time()
-      if method=='x':
-        self.findXMLSection()
-      elif method=='z':
-        self.findZeroSection(max(0, start))
-      elif method=='a':
+      if method == 'a':
         # Runtime comparison for loop and map
         # map(lambda i: self.findAsciiSection(i) if self.content[i].dType=='b' else None, self.content)
         # map run time: 0m1.951s, 0m1.994s, 0m1.934s
@@ -40,16 +36,20 @@ class Automatic():
         for startI in self.content if start==-1 else [start]:
           if self.content[startI].dType=='b':
             self.findAsciiSection(startI)
-      elif method=='p':
+      elif method == 'p':
         for startI in self.content if start==-1 else [start]:
           section = self.content[startI]
           if section.dType=='b' and \
-            section.length>= self.optAutomatic['minArray']*4 and \
-            section.entropy> self.optAutomatic['minEntropy']: #at least minArray 4byte size
+              section.length>= self.optAutomatic['minArray']*4 and \
+              section.entropy> self.optAutomatic['minEntropy']: #at least minArray 4byte size
             self.primaryTimeData(startI)
+      elif method == 'x':
+        self.findXMLSection()
+      elif method == 'z':
+        self.findZeroSection(max(0, start))
       self.fill()
       if self.verbose>1:
-        print("  End method "+method+". Duration="+str(round(time.time()-startTime))+'sec')
+        print(f'  End method {method}. Duration={str(round(time.time() - startTime))}sec')
     return
 
 
@@ -61,12 +61,12 @@ class Automatic():
       start: start position
     '''
     self.file.seek(start)
-    dataBin = struct.unpack( str(self.fileLength)+'B', self.file.read())
+    dataBin = struct.unpack(f'{str(self.fileLength)}B', self.file.read())
     dataZero = np.where(np.array(dataBin)==0)[0]                  #where is zero
     dataConsecutive = np.split(dataZero, np.where(np.diff(dataZero)!=1)[0]+1) #find consecutive areas
     data = [ [i[0],len(i)] for i in dataConsecutive if len(i)>=self.optAutomatic['minZeros'] ]
     for i in data:
-      section = Section(length=i[1], dType='B', value='Zeros '+str(i[1]), prob=10, entropy=0)
+      section = Section(length=i[1], dType='B', value=f'Zeros {i[1]}', prob=10, entropy=0)
       self.content[i[0]] = section
     return
 
@@ -104,8 +104,8 @@ class Automatic():
     data = bytearray(self.file.read(self.fileLength))
     xmlStartIterator = re.finditer(b'<\w+>'   ,data) #pylint: disable=anomalous-backslash-in-string
     xmlStartList = [(i.start(),i.end(),i.group()) for i in xmlStartIterator]
-    if len(xmlStartList)==0:
-      print("**INFO: no xml string found")
+    if not xmlStartList:
+      logging.info("no xml string found")
       return
     xmlStart = xmlStartList[0]
     xmlEndIterator = re.finditer(b'<\/\w+>' ,data) #pylint: disable=anomalous-backslash-in-string
@@ -115,7 +115,7 @@ class Automatic():
         xmlString = data[xmlStart[0]:xmlEnd[1]]
         _ = ET.fromstring(xmlString)
       except ET.ParseError:
-        print("XML incorrect:\n",xmlString,'\n')
+        logging.error('XML incorrect:\n%s\n',xmlString)
       self.content[xmlStart[0]]=Section(length=xmlEnd[1]-xmlStart[0], dType='c', value='xml string',
                                         key='metadata', dClass='metadata', prob=100)
       del self.content[0]
@@ -181,15 +181,15 @@ class Automatic():
           if bestMax is None or abs(maxDiff)<abs(bestMax):
             bestOffset, bestMax, bestDType = start, maxDiff, dType
       if bestOffset is None or bestMax is None or bestDType is None:
-        print('**ERROR no fitting best value found')
+        logging.error('no fitting best value found')
         return False
       prob = bestMax/valMax if bestDType=='d' else (bestMax/valMax)**2
       prob = min( int(np.log10(1./prob)*3+50), 90) #probability has max. value of 90
       if self.verbose>1:
-        print('  Best fit: dType='+bestDType,' start='+str(bestOffset),' length='+str(lenData),
-          ' end='+str(bestOffset+struct.calcsize(str(lenData)+bestDType)-1), ' probability='+str(prob))
+        print(f'  Best fit: dType={bestDType} start={bestOffset} length={lenData} end=',
+              f'{bestOffset+struct.calcsize(str(lenData)+bestDType)-1}, probability={prob}')
       count=[self.findAnchor(lenData)[0]]      #create link / enter property count; adopt shape correspondingly
-      section = Section(length=lenData, dType=bestDType, value='from exported data column '+str(col+1),
+      section = Section(length=lenData, dType=bestDType, value=f'from exported data column {col+1}',
         prob=prob, count=count, shape=[lenData], dClass='primary')
       self.content[bestOffset] = section
     return True
@@ -222,26 +222,23 @@ class Automatic():
         break
       try:
         value = struct.unpack(dType, data)[0]
-        if value == 0.0:
-          baseD = 0.0
-        else:
-          baseD = abs(math.log10(abs(value)))
+        baseD = 0.0 if value == 0.0 else abs(math.log10(abs(value)))
       except Exception as ex:
-        print('**Exception at',self.pretty(self.file.tell()),'|',ex)
+        logging.error('Exception at %s| %s',self.pretty(self.file.tell()), ex)
         baseD = 999
       if baseD<self.optAutomatic['maxExp'] or value==0.0:
         found.append(value)
       else:
         if self.verbose>1:
-          print('**Failed at value,baseD',value,baseD)
+          logging.error('Failed at value, baseD %s, %s',value, baseD)
         break
       if start in self.content and self.file.tell() > start+self.content[start].length:
         break
     #
     if self.verbose>1:
-      print(start,'- '+self.pretty(self.file.tell())+': streak of dType='+dType+', length='+str(len(found)))
-    self.content[start] = Section(length=len(found), value='streak of dType='+dType+', \
-                                  length='+str(len(found)), dType=dType, prob=20)
+      print(f'{start} - {self.pretty(self.file.tell())}: streak of dType={dType}, length={len(found)}')
+    self.content[start] = Section(length=len(found), value=f'streak of dType={dType}, length={len(found)}',
+                                  dType=dType, prob=20)
     return
 
 
@@ -258,7 +255,7 @@ class Automatic():
     '''
     #move start backward if zeros before that
     length = self.content[start].byteSize()
-    startInit = int(start)
+    startInit = start
     starts = list(self.content)
     idx = starts.index(start)
     sectionBefore = self.content[starts[idx-1]]
@@ -274,9 +271,9 @@ class Automatic():
       numData = math.floor(len(data)/8)               #double is largest, use it to determine max. size
       if numData==0:                                  #stop if nothing left
         break
-      tempData = data[:struct.calcsize(str(numData)+'d')] #crop binary data
-      valuesD = np.array(struct.unpack(str(numData  )+'d', tempData))
-      valuesF = np.array(struct.unpack(str(numData*2)+'f', tempData))
+      tempData = data[:struct.calcsize(f'{str(numData)}d')]
+      valuesD = np.array(struct.unpack(f'{str(numData)}d', tempData))
+      valuesF = np.array(struct.unpack(f'{str(numData * 2)}f', tempData))
       maskD    = np.abs(np.log10(np.abs(valuesD)))  < self.optAutomatic['maxExp']
       maskF    = np.abs(np.log10(np.abs(valuesF)))  < self.optAutomatic['maxExp']
       maskD    = np.logical_or(maskD, valuesD==0)
@@ -289,7 +286,7 @@ class Automatic():
         maximum = np.max(valuesD[:lenD])
         label = f'{lenD} doubles with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e} '
         if self.verbose>1:
-          print(self.pretty(start)+'-'+self.pretty(start+lenD*8),"double|",label)
+          print(f'{self.pretty(start)} - {self.pretty(start+lenD*8)} double| {label}')
         self.content[start] = Section(length=lenD, dType='d', value=label, prob=20, dClass='primary')
         found = True
         data = data[lenD*8:]
@@ -300,7 +297,7 @@ class Automatic():
         maximum = np.max(valuesF[:lenF])
         label = f'{lenF} floats with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e} '
         if self.verbose>1:
-          print(self.pretty(start)+'-'+self.pretty(start+lenF*4),"float |",label)
+          print(f'{self.pretty(start)} - {self.pretty(start+lenF*4)} float | {label}')
         self.content[start] = Section(length=lenF,dType='f', value=label, prob=20, dClass='primary')
         found = True
         data = data[lenF*4:]
@@ -334,13 +331,13 @@ class Automatic():
     if start in self.content:
       self.file.seek(start)
       dataBin = self.file.read( self.content[start].byteSize() )  #read data
-      data = struct.unpack(str(self.content[start].byteSize())+'B', dataBin) #convert to byte-int
+      data = struct.unpack(f'{self.content[start].byteSize()}B', dataBin) #convert to byte-int
       blockSize = min(blockSize, self.content[start].byteSize()-1)
       skipEvery = max(self.optEntropy['skipEvery'], int(self.content[start].byteSize()/1024))#max. of 1024tests
     else:
       self.file.seek(0)
       dataBin = self.file.read()  #read data
-      data = struct.unpack(str(self.fileLength)+'B', dataBin) #convert to byte-int
+      data = struct.unpack(f'{self.fileLength}B', dataBin) #convert to byte-int
       skipEvery = self.optEntropy['skipEvery']
     startPoints = np.arange(0,len(data)-blockSize,skipEvery)
     for startI in startPoints:

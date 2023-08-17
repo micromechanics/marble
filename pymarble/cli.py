@@ -109,10 +109,7 @@ def main() -> None:
 
         # misc. functions
         elif command=='x mode':
-          if fBIN.printMode=='dec':
-            fBIN.printMode='hex'
-          else:
-            fBIN.printMode='dec'
+          fBIN.printMode='hex' if fBIN.printMode=='dec' else 'dec'
         elif command=='ot':
           fBIN.saveTags()                                         # type: ignore[misc]
         elif command=='it':

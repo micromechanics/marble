@@ -1,4 +1,5 @@
 """ all styling of buttons and other general widgets, some defined colors... """
+import logging
 from typing import Callable, Optional, Any
 from PySide6.QtWidgets import QPushButton, QLabel, QSizePolicy, QMessageBox, QLayout, QWidget, QMenu, \
                               QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout # pylint: disable=no-name-in-module
@@ -188,7 +189,7 @@ class Image():
       if layout is not None:
         layout.addWidget(imageW, alignment=Qt.AlignHCenter) # type: ignore
     elif len(data)>2:
-      print(f'WidgetProjectLeaf:What is this image |{data[:50]}|')
+      logging.warning('WidgetProjectLeaf:What is this image |%s|', data[:50])
     return
 
 

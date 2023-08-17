@@ -1,6 +1,6 @@
 """Section of data"""
 from __future__ import annotations
-import struct
+import logging, struct
 from typing import Union, Optional
 import numpy as np
 
@@ -52,7 +52,7 @@ class Section:
     if data:
       self.setData(data)
     # set shape if unset
-    if self.shape==[] and self.length>0:
+    if not self.shape and self.length>0:
       if self.dType=='c' and self.value!='':
         self.shape=[len(self.value)]
       else:
@@ -61,7 +61,7 @@ class Section:
 
 
   def setData(self, data:Union[str,dict[str,str]]='', count:list[int]=[], dClass:str='', shape:list[int]=[]) \
-      -> None:
+    -> None:
     '''
     Change values
 
@@ -88,13 +88,12 @@ class Section:
       for key,value in data.items():
         setattr(self,key, value)
     #add shape if not given
-    if ((SECTION_OUTPUT_ORDER.index('shape')>=len(dataList) and len(dataList)>1) or self.shape==[]) \
-      and self.length>0:
+    if ((SECTION_OUTPUT_ORDER.index('shape')>=len(dataList) > 1) or self.shape==[]) and self.length>0:
       self.shape=[self.length]
     #overwrite with manual given ones
-    if len(count)>0:
+    if count:
       self.count = count
-    if len(shape)>0:
+    if shape:
       self.shape = shape
     if dClass:
       self.dClass = dClass
@@ -154,9 +153,7 @@ class Section:
     if self.dType in ['b','B']:
       return None
     if self.dType=='c' or self.dClass=='metadata':
-      length = str(self.length)  #default: char
-      if self.dType!='c':
-        length= '"'+self.size()+'"'
+      length = str(self.length) if self.dType=='c' else f'"{self.size()}"'  #default: char or
       key = self.key.replace(':','_')
       return 'addAttrs('+str(relPos)+', '+length+', '+hdf+', "'+key+'")\n'
     if self.dType=='i':
@@ -183,7 +180,7 @@ class Section:
       variables = [content[i].key.split('=')[0] for i in self.count]
       return 'addData('+str(relPos)+', str('+str(self.length)+')+"'+self.dType+'", '+hdf+', "'\
           +self.key+'", "'+self.unit+'", shape=['+','.join(variables)+'])\n'
-    print("**ERROR in section.py: UNDEFINED shape, count, length:", self.shape, self.count, self.length)
+    logging.error("section.py: UNDEFINED shape, count, length: %s, %s, %s", self.shape,self.count,self.length)
     return 'print("**ERROR occurred during deciphering")\n'
 
 

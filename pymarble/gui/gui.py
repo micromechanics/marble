@@ -83,8 +83,7 @@ class MainWindow(QMainWindow):
     """
     if command[0]=='open':
       lastPath = self.configuration['lastDirectory'] or str(Path.home())
-      fileName = QFileDialog.getOpenFileName(self,'Open proprietary binary file', lastPath, '*.*')[0]
-      if fileName:
+      if fileName := QFileDialog.getOpenFileName(self,'Open proprietary binary file', lastPath, '*.*')[0]:
         self.configuration['lastDirectory'] = str(Path(fileName).parent)
         with open(Path.home()/'.pyMARBLE.json', 'w', encoding='utf-8') as fOut:
           fOut.write(json.dumps(self.configuration, indent=2))
@@ -107,9 +106,9 @@ class MainWindow(QMainWindow):
       dialog.exec()
     elif command[0]=='restart':
       restart()
-    #
-    #
-    #check for existing file
+    # ------------------------
+    #check for existing file: as remainder use open file
+    # ------------------------
     elif self.comm.binaryFile is None:
       showMessage(self, 'Error', 'An open file is required to execute the command.','Critical')
     #commands that require open binary file
@@ -128,22 +127,20 @@ class MainWindow(QMainWindow):
       self.comm.changeTable.emit()
     elif command[0]=='useExported':
       lastPath = self.configuration['lastDirectory'] or str(Path.home())
-      fileName = QFileDialog.getOpenFileName(self,'Open exported csv file', lastPath, '*.*')[0]
-      if fileName:
-        success = self.comm.binaryFile.useExportedFile(fileName)  # type: ignore[misc]
-        if success:
+      if fileName := QFileDialog.getOpenFileName(self,'Open exported csv file', lastPath, '*.*')[0]:
+        if self.comm.binaryFile.useExportedFile(fileName):  # type: ignore[misc]
           self.comm.binaryFile.fill()            # type: ignore[misc]
           self.comm.changeTable.emit()
         else:
           showMessage(self, 'Could not use exported data', INFO_EXPORTED_FILE, 'Information')
     elif command[0]=='extractPython':
       self.comm.binaryFile.savePython()         # type: ignore[misc]
-      pyFile = os.path.splitext(self.comm.binaryFile.fileName)[0]+'.py'
+      pyFile = f'{os.path.splitext(self.comm.binaryFile.fileName)[0]}.py'
       result = subprocess.run(['python3', pyFile, self.comm.binaryFile.fileName], stdout=subprocess.PIPE, \
                               check=False)
       showMessage(self, 'Result of extraction', result.stdout.decode('utf-8'), 'Information')
     else:
-      print(f'ERROR: unknown command {command}')
+      logging.error('unknown command %s', command)
     return
 
 
@@ -176,10 +173,9 @@ class MainWindow(QMainWindow):
   def changeStatusbar(self) -> None:
     """ change statusbar slot """
     self.statusBar().removeWidget(self.statusBarW)
-    newText = ''
+    allFKeys = [['F5','binary'], ['F6','data class'], ['F7','important']]
     postText = {'all':'all data', 'none':'except these', 'only':'only these'}
-    for key, text in [['F5','binary'], ['F6','data class'], ['F7','important']]:
-      newText += f'\t{key} - toggle {text}: {postText[self.toggleState[key]]}'
+    newText = ''.join(f'\t{key} - toggle {text}: {postText[self.toggleState[key]]}' for key, text in allFKeys)
     self.statusBarW = QLabel(newText)
     self.statusBar().addWidget(self.statusBarW)
     return
@@ -212,7 +208,6 @@ def main() -> None:
   import qtawesome as qta
   if not isinstance(qta.icon('fa5s.times'), QIcon):
     logging.error('qtawesome: could not load. Likely matplotlib is included and can not coexist.')
-    print('qtawesome: could not load. Likely matplotlib is included and can not coexist.')
   # end test coexistance
   window.show()
   app.exec()

@@ -1,5 +1,5 @@
 """ Editor to change metadata of binary file """
-import struct, re
+import struct, re, logging
 from typing import Optional
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -234,7 +234,7 @@ class Form(QDialog):
       limitY  = [0.0, 7.8]
       lineStyle= '-'
     else:
-      print('**ERROR unknown value in form')
+      logging.error('unknown value in form')
     # graph / print
     if self.plotCB.currentText().startswith('plot'):
       self.graph.axes.cla()                        # Clear the canvas.
@@ -257,12 +257,12 @@ class Form(QDialog):
         text += ' '+'  '.join([f'{i:.3e}'     for i in self.valuesY[idxEnd:]])
       else:
         text  = self.comm.binaryFile.byteToString(dataAll[:idxStart], 1, 8)
-        text += '  **'+self.comm.binaryFile.byteToString(dataAll[idxStart:idxEnd], 1, 8)+'**  '
+        text += f'  **{self.comm.binaryFile.byteToString(dataAll[idxStart:idxEnd], 1, 8)}**  '
         text += self.comm.binaryFile.byteToString(dataAll[idxEnd:], 1, 8)
       self.textEditW.setMarkdown(text)
       self.graph.hide()
     else:
-      print('**ERROR unknown value in plot/print')
+      logging.error('**ERROR unknown value in plot/print')
     return
 
 
@@ -288,7 +288,7 @@ class Form(QDialog):
     elif command[0] == 'endUp':
       length += 1
     else:
-      print(f"Command unknown {command}")
+      logging.error('Command unknown %s', command)
     self.startW.setValue(start)
     self.lengthW.setValue(length)
     self.refresh()
@@ -296,6 +296,7 @@ class Form(QDialog):
 
 
   def save(self, btn:IconButton) -> None:
+    # sourcery skip: extract-method
     """ save selectedList to configuration and exit """
     if btn.text().endswith('Cancel'):
       self.reject()
@@ -343,7 +344,7 @@ class Form(QDialog):
       binaryFile.content[start] = section
       self.accept()
     else:
-      print(f'**ERROR unknown command {btn.text()}')
+      logging.error('unknown command %s', btn.text())
     return
 
 

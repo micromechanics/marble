@@ -1,10 +1,7 @@
-**INFO: no xml string found
-Info file: num. lines: 58076 rel. "," 0.0 rel. "." 3.0 rel. ";" 0.0 rel. tab 2.0
-  Tab separated numbers with .-decimal
 000044 found value 58076
 00044 found value 195
 00044 found value 195
-00044 found 195.0 with error 0.0
+00044  found 195.0 with error 0.0
 ... found nothing
 ... found nothing
 ... found nothing

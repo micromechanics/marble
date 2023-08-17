@@ -1,4 +1,5 @@
 """ Editor to change metadata of binary file """
+import logging
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox  # pylint: disable=no-name-in-module
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
@@ -50,5 +51,5 @@ class MetaEditor(QDialog):
       self.comm.binaryFile.meta = self.metaFields
       self.accept()
     else:
-      print('metaEditor: did not get a fitting btn ',btn.text())
+      logging.error('metaEditor: did not get a fitting btn %s',btn.text())
     return

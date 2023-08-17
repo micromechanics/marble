@@ -1,5 +1,5 @@
 """ Table Header dialog: change which colums are shown and in which order """
-import json
+import json, logging
 from pathlib import Path
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QDialogButtonBox  # pylint: disable=no-name-in-module
 from .style import IconButton, widgetAndLayout
@@ -82,5 +82,5 @@ class TableHeader(QDialog):
       self.comm.changeTable.emit()
       self.accept()
     else:
-      print('dialogTableHeader: did not get a fitting btn ',btn.text())
+      logging.error('dialogTableHeader: did not get a fitting btn %s',btn.text())
     return

@@ -1,5 +1,5 @@
 """input and output to files; plot to screen"""
-import os, io, struct, json
+import os, io, struct, json, logging
 from typing import Optional
 import xml.etree.ElementTree as ET
 import numpy as np
@@ -52,7 +52,7 @@ class InputOutput():
     Output file content to .tags file
     '''
     if len(self.content)<2:
-      print("**ERROR in SaveTags: NOT ENOUGH ENTRIES in content. I exit.")
+      logging.error("**ERROR in SaveTags: NOT ENOUGH ENTRIES in content. I exit.")
       return
     tagsFile = self.fileName+'.tags'
     with open(tagsFile, 'w', encoding='utf-8') as fOut:
@@ -62,10 +62,10 @@ class InputOutput():
       for idx, start in enumerate(self.content):
         section = self.content[start]
         end     = start + struct.calcsize(str(section.length)+section.dType)
-        fOut.write('    <TAG id="'+str(idx)+'">\n')
-        fOut.write('      <start_offset>'+str(start)+'</start_offset>\n')
-        fOut.write('      <end_offset>'  +str(end)+'</end_offset>\n')
-        fOut.write('      <tag_text>'    +str(section)+'</tag_text>\n')
+        fOut.write(f'    <TAG id="{idx}' + '">\n')
+        fOut.write(f'      <start_offset>{start}' + '</start_offset>\n')
+        fOut.write(f'      <end_offset>{end}' + '</end_offset>\n')
+        fOut.write(f'      <tag_text>{section}' + '</tag_text>\n')
         if section.dType=='d':
           fOut.write('      <font_colour>#000000</font_colour>\n')
           fOut.write('      <note_colour>#4EB371</note_colour>\n')
@@ -86,8 +86,8 @@ class InputOutput():
           fOut.write('      <note_colour>#FF0000</note_colour>\n')
         fOut.write('    </TAG>\n')
       fOut.write('  </filename>\n')
-      fOut.write('  <meta>'+json.dumps(self.meta)+'</meta>\n')
-      fOut.write('  <periodicity>'+json.dumps(self.periodicity)+'</periodicity>\n')
+      fOut.write(f'  <meta>{json.dumps(self.meta)}' + '</meta>\n')
+      fOut.write(f'  <periodicity>{json.dumps(self.periodicity)}</periodicity>\n')
       fOut.write('</wxHexEditor_XML_TAG>\n')
     return
 
@@ -98,18 +98,18 @@ class InputOutput():
     '''
     tagsFile = self.fileName+'.tags'
     if not os.path.exists(tagsFile):
-      print('**ERROR in loadTags: file does not exist',tagsFile,'. I exit.')
+      logging.error('loadTags: file does not exist %s. I exit.',tagsFile)
       return
     tree = ET.parse(tagsFile)
     root = tree.getroot()
     meta = root.find('meta')
     if meta is None:
-      print('**ERROR could not loadTags metadata')
+      logging.error('could not loadTags metadata')
       return
     self.meta = json.loads(str(meta.text))
     periodicity = root.find('periodicity')
     if periodicity is None:
-      print('**ERROR could not loadTags periodicity')
+      logging.error('could not loadTags periodicity')
       return
     self.periodicity = json.loads(str(periodicity.text))
     filename = root.find('filename')
@@ -163,10 +163,9 @@ class InputOutput():
         branchName = None
         if ( sect.dClass in ['metadata','primary'] and inForLoop ) or not bool(self.periodicity):
           branchName = 'hdfBranch'
-        line = self.content[start].toPY(start-lastOutput, self.content, branchName)
-        if line:
+        if line := self.content[start].toPY(start-lastOutput, self.content, branchName):
           forLoopPrefix = '  ' if inForLoop else ''
-          fOut.write('  '+forLoopPrefix+line)
+          fOut.write(f'  {forLoopPrefix}{line}')
           lastOutput = start+self.content[start].byteSize()
         if 'end' in self.periodicity and start==int(self.periodicity['end']):
           inForLoop = False
@@ -175,7 +174,7 @@ class InputOutput():
       # create periodicity function
       # - if periodicity: remainder does not always have to be zero, no better logic
       #   one should evaluate by running through actual binary file
-      fOut.write('  if os.path.getsize(fileNameIn)-fIn.tell()!='+str(remainderContent)+':\n')
+      fOut.write(f'  if os.path.getsize(fileNameIn)-fIn.tell()!={remainderContent}:\n')
       fOut.write('    print("Translation NOT successful")\n')
       fOut.write('  else:\n')
       fOut.write('    print("Translation successful")\n')
@@ -185,9 +184,9 @@ class InputOutput():
       fOut.write("\n\n\n'''\n")
       fOut.write("# INFO: THIS PART IS LOADED BY MARBLE\n")
       fOut.write('# version= 1.0\n')
-      fOut.write('# meta='+json.dumps(self.meta)+'\n')
-      fOut.write('# periodicity='+json.dumps(self.periodicity)+'\n')
-      fOut.write('# length='+str(len(self.content))+'\n')
+      fOut.write(f'# meta={json.dumps(self.meta)}\n')
+      fOut.write(f'# periodicity={json.dumps(self.periodicity)}\n')
+      fOut.write(f'# length={len(self.content)}\n')
       dataframe = pd.DataFrame()
       for start in self.content:
         lineData = dict( self.content[start].toCSV() )  #make a copy
@@ -222,17 +221,17 @@ class InputOutput():
       if line.startswith('# meta='):
         self.meta = json.loads(line[7:])
       else:
-        print("**ERROR: python does not match loadPython meta")
+        logging.error('python does not match loadPython meta')
         return
       line = fIn.readline().strip()
       if line.startswith('# periodicity='):
         self.periodicity = json.loads(line[14:])
       else:
-        print("**ERROR: python does not match loadPython periodicity")
+        logging.error('python does not match loadPython periodicity')
         return
       line = fIn.readline().strip()
       if not line.startswith('# length='):
-        print("**ERROR: python does not match loadPython length")
+        logging.error('python does not match loadPython length')
         return
       numLines = int(line[9:])
       readDataFrame = pd.read_csv(fIn, nrows=numLines).fillna('')
@@ -283,8 +282,7 @@ class InputOutput():
         start: starting location
         plotMode: plot as 1d time-series (1) or as 2d image (2)
     '''
-    start = int(start)
-    if not start in self.content:
+    if start not in self.content:
       print("**ERROR: cannot print at start",start,'. I exit')
       return None
     section = self.content[start]
@@ -295,7 +293,7 @@ class InputOutput():
     self.file.seek(start)
     data = self.file.read(section.byteSize())
     if len(data) !=struct.calcsize(section.size()):
-      print('**ERROR: cannot plot size does not fit byte-length')
+      logging.error('cannot plot size does not fit byte-length')
       return None
     valuesY = struct.unpack(section.size(), data) #get data
     if plotMode==1:
