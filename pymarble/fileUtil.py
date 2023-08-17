@@ -121,23 +121,7 @@ class Util():
       if section.shape != [] and np.prod(section.shape)<length:
         # garbage at end of data-set
         length = np.prod(section.shape)
-      anchor = None
-      prevKvariables = 0
-      #search existing anchors
-      #TODO_P1 makes sense for 1D data, but not 2D data
-      for startJ in self.content:
-        sectionJ = self.content[startJ]
-        if sectionJ.key.endswith(str(length)) and sectionJ.dType=='i':
-          anchor = startJ
-          break
-        if re.search(r'^k\d+=', sectionJ.key) and sectionJ.dType=='i':
-          prevKvariables += 1
-      if anchor is None:    #only if not already found: create new
-        anchor = self.findBytes(length,'i',0)
-        if anchor>=0:
-          self.content[anchor] = Section(length=1, dType='i', key='k'+str(prevKvariables+1)+'='+str(length),\
-                                         prob=100, dClass='count', important=True)
-          runFill = True
+      anchor, runFill = self.findAnchor(length)
       #create link / enter property count
       if section.count == []:
         section.setData(count=[anchor])
@@ -213,7 +197,7 @@ class Util():
               rerun = True
             section.length = int((starts[idx+1]-start)/struct.calcsize(section.dType))
             self.file.seek(start)
-            section.value   = self.byteToString(self.file.read(section.length),1)
+            section.value   = 'unknown binary string' #self.byteToString(self.file.read(section.length),1)
             self.content[start] = section
             self.entropy(start, False)   #set entropy
             if self.verbose>1:
@@ -225,7 +209,7 @@ class Util():
             secNext.length = secNext.length-(end-start)
             if secNext.length > 0:   #only add if length is positive
               self.file.seek(end)
-              secNext.value   = self.byteToString(self.file.read(secNext.length),1)
+              secNext.value   = 'unknown binary string' #self.byteToString(self.file.read(secNext.length),1)
               self.content[end] = secNext
               self.entropy(end, False)
               if self.verbose>1:
@@ -266,6 +250,35 @@ class Util():
       self.content[start]  = section
     self.content[start].length = int((oldEnd-start)/struct.calcsize(self.content[start].dType))
     return
+
+
+  def findAnchor(self:FileProtocol, lengthSearch:int) -> tuple[int, bool]:
+    """
+    find anchor in data, in previously identified anchors
+
+    Args:
+      lengthSearch (int): number to search
+
+    Returns:
+      int: offset where anchor is located
+    """
+    anchor = None
+    createdNew = False
+    prevKvariables = 0
+    for startJ in self.content:
+      section = self.content[startJ]
+      if section.key.endswith(str(lengthSearch)) and section.dType=='i':
+        anchor = startJ
+        break
+      if re.search(r'^k\d+=', section.key) and section.dType=='i':
+        prevKvariables += 1
+    if anchor is None:    #only if not already found: create new
+      anchor = self.findBytes(lengthSearch,'i',0)
+      if anchor>=0:
+        self.content[anchor] = Section(length=1, key='k'+str(prevKvariables+1)+'='+str(lengthSearch),
+                                       dType='i', prob=100, dClass='count', important=True)
+        createdNew = True
+    return anchor, createdNew
 
 
   def verify(self:FileProtocol) -> None:

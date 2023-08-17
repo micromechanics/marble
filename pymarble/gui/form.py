@@ -304,32 +304,17 @@ class Form(QDialog):
       length = self.lengthW.value()
       dType  = self.translateDtypeInv[self.dTypeCB.currentText()]
       shape  = [int(i) for i in self.shapeW.text()[1:-1].split(',') if len(i)>0]
+      binaryFile = self.comm.binaryFile
       #find count in file
       if dType in ['f','d','H']:      #TODO_P1 makes sense for 1D data, but not 2D data
         lengthSearch = min(length, int(np.prod(shape))) #remember garbage at end of data-set
-        anchor = None
-        prevKvariables = 0
-        #search existing anchors
-        content = self.comm.binaryFile.content
-        for startJ in content:
-          sectionJ = content[startJ]
-          if sectionJ.key.endswith(str(lengthSearch)) and sectionJ.dType=='i':
-            anchor = startJ
-            break
-          if re.search(r'^k\d+=', sectionJ.key) and sectionJ.dType=='i':
-            prevKvariables += 1
-        if anchor is None:    #only if not already found: create new
-          anchor = self.comm.binaryFile.findBytes(lengthSearch,'i',0) # type: ignore[misc]
-          if anchor>=0:
-            content[anchor] = Section(length=1, key='k'+str(prevKvariables+1)+'='+str(lengthSearch),
-                                      dType='i', prob=100, dClass='count', important=True)
         #create link / enter property count; adopt shape correspondingly
-        count=[anchor]                   # content of count text field is never used
+        count =[self.comm.binaryFile.findAnchor(lengthSearch)[0]]     # type: ignore[misc]
         shape = []
         for iCount in count:
-          self.comm.binaryFile.file.seek(iCount)
-          iLength = self.comm.binaryFile.file.read(content[iCount].byteSize())
-          iLength = struct.unpack( content[iCount].size(), iLength)[0]
+          binaryFile.file.seek(iCount)
+          iLength = binaryFile.file.read(binaryFile.content[iCount].byteSize())
+          iLength = struct.unpack( binaryFile.content[iCount].size(), iLength)[0]
           shape.append(int(iLength))
       else:
         count  = [int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0]
@@ -352,10 +337,10 @@ class Form(QDialog):
                         count=count, shape=shape, prob=200, entropy=entropy,
                         important=self.importantW.isChecked())
       #first save section with semi-infinite probability, fill/clean, save real section
-      self.comm.binaryFile.content[start] = section
-      self.comm.binaryFile.fill()                                   # type: ignore[misc]
+      binaryFile.content[start] = section
+      binaryFile.fill()                                   # type: ignore[misc]
       section.prob = int(self.probabilityW.text())
-      self.comm.binaryFile.content[start] = section
+      binaryFile.content[start] = section
       self.accept()
     else:
       print(f'**ERROR unknown command {btn.text()}')

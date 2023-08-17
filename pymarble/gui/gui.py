@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt                                        # pylint: d
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QResizeEvent    # pylint: disable=no-name-in-module
 
 from ..file import BinaryFile
-from .defaults import defaultConfiguration, ABOUT_TEXT
+from .defaults import defaultConfiguration, ABOUT_TEXT, INFO_EXPORTED_FILE
 from .style import Action, showMessage
 from .communicate import Communicate
 from .table import Table
@@ -31,7 +31,8 @@ class MainWindow(QMainWindow):
     # #Menubar
     menu = self.menuBar()
     fileMenu = menu.addMenu("&File")
-    Action('&Open binary file', self, ['open'],       fileMenu, shortcut='Ctrl+L')
+    Action('&Open binary file',  self, ['open'],       fileMenu, shortcut='Ctrl+L')
+    Action('&Use exported .csv', self, ['useExported'],fileMenu, shortcut='Ctrl+U')
     if 'advanced' in configuration:
       fileMenu.addSeparator()
       Action('Save corr. .tags', self, ['saveTags'],   fileMenu)
@@ -125,6 +126,16 @@ class MainWindow(QMainWindow):
     elif command[0]=='loadPython':
       self.comm.binaryFile.loadPython()         # type: ignore[misc]
       self.comm.changeTable.emit()
+    elif command[0]=='useExported':
+      lastPath = self.configuration['lastDirectory'] or str(Path.home())
+      fileName = QFileDialog.getOpenFileName(self,'Open exported csv file', lastPath, '*.*')[0]
+      if fileName:
+        success = self.comm.binaryFile.useExportedFile(fileName)  # type: ignore[misc]
+        if success:
+          self.comm.binaryFile.fill()            # type: ignore[misc]
+          self.comm.changeTable.emit()
+        else:
+          showMessage(self, 'Could not use exported data', INFO_EXPORTED_FILE, 'Information')
     elif command[0]=='extractPython':
       self.comm.binaryFile.savePython()         # type: ignore[misc]
       pyFile = os.path.splitext(self.comm.binaryFile.fileName)[0]+'.py'
@@ -145,15 +156,17 @@ class MainWindow(QMainWindow):
     """
     if self.suggestFileOpen and self.comm.binaryFile is None:
       self.suggestFileOpen = False
-      # self.execute(['open'])
-      #for easy testing
-      fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/'+\
-                 'Membrane_Repeatability_05.mvl'
-      self.comm.binaryFile = BinaryFile(fileName)
-      if 'print_mode' in self.comm.configuration and self.comm.configuration['print_mode']=='hex':
-        self.comm.binaryFile.printMode='hex'
-      self.comm.binaryFile.loadTags()                              # type: ignore[misc]
-      self.comm.changeTable.emit()
+      ### DEFAULT CASE ###
+      self.execute(['open'])
+      ### FOR EASY TESTING
+      # fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/'+\
+      #            'Membrane_Repeatability_05.mvl'
+      # self.comm.binaryFile = BinaryFile(fileName)
+      # if 'print_mode' in self.comm.configuration and self.comm.configuration['print_mode']=='hex':
+      #   self.comm.binaryFile.printMode='hex'
+      # self.comm.binaryFile.loadTags()                              # type: ignore[misc]
+      # self.comm.changeTable.emit()
+      ### additional part for testing of form
       # from .form import Form
       # dialog     = Form(self.comm, 70840)
       # dialog.show()

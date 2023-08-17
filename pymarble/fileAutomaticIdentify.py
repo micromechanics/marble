@@ -7,7 +7,7 @@ from .fileClass import FileProtocol
 
 class Automatic():
   """ Mixin that includes all functions that identify sections """
-  def automatic(self:FileProtocol, methodOrder:str='x_z_p_a') -> None:
+  def automatic(self:FileProtocol, methodOrder:str='x_z_p_a', start:int=-1) -> None:
     '''
     Wrapper that calls the different methods. This is generally the first step
 
@@ -23,9 +23,6 @@ class Automatic():
       file
       methodOrder of methods: method order to be used.
     '''
-    if len(self.content)>1:
-      print("**ERROR: do not use automatic if content already exists")
-      return
     for method in methodOrder.split('_'):
       if self.verbose>1:
         print("Start method",method)
@@ -33,18 +30,18 @@ class Automatic():
       if method=='x':
         self.findXMLSection()
       elif method=='z':
-        self.findZeroSection(0)
+        self.findZeroSection(max(0, start))
       elif method=='a':
         # Runtime comparison for loop and map
         # map(lambda i: self.findAsciiSection(i) if self.content[i].dType=='b' else None, self.content)
         # map run time: 0m1.951s, 0m1.994s, 0m1.934s
         # for loop run time: 0m2.091s, 0m2.029s, 0m1.975s
         # for loop easy to read, keep for now
-        for startI in self.content:
+        for startI in self.content if start==-1 else [start]:
           if self.content[startI].dType=='b':
             self.findAsciiSection(startI)
       elif method=='p':
-        for startI in self.content:
+        for startI in self.content if start==-1 else [start]:
           section = self.content[startI]
           if section.dType=='b' and \
             section.length>= self.optAutomatic['minArray']*4 and \
@@ -125,7 +122,7 @@ class Automatic():
     return
 
 
-  def useExportedFile(self:FileProtocol, exportedFile:str) -> None:
+  def useExportedFile(self:FileProtocol, exportedFile:str) -> bool:
     '''
     Using exported file, try to find those occurrences in binary file. Zero at beginning taking
     somewhat into account. Difficult to account for trailing zeros since those difficult to
@@ -139,30 +136,30 @@ class Automatic():
 
     Args:
         exportedFile: file name of exported file: has to be np.loadtxt readable
-    '''
-    #identify number separators, decimal separators
-    with open(exportedFile,'r', encoding='ISO-8859-1') as fIn:
-      text = fIn.read()
-      numLines = text.count('\n')
-      relComma = text.count(',')/float(numLines)
-      relPoint = text.count('.')/float(numLines)
-      relSemicolon = text.count(';')/float(numLines)
-      relTab = text.count('\t')/float(numLines)
-      fIn.close()
-    print("Info file: num. lines:",numLines,'rel. ","',relComma,'rel. "."',relPoint,
-      'rel. ";"',relSemicolon,'rel. tab',relTab)
-    if relComma>0.99 and relTab>0.99:
-      print('  Tab separated numbers with ,-decimal')
-    if relPoint>0.99 and relTab>0.99:
-      print('  Tab separated numbers with .-decimal')
-    if relPoint>0.99 and relComma>0.99:
-      print('  ,-separated numbers with .-decimal. CSV file')
 
+    Returns:
+        bool: success
+    '''
+    # #identify number separators, decimal separators
+    # with open(exportedFile,'r', encoding='ISO-8859-1') as fIn:
+    #   text = fIn.read()
+    #   numLines = text.count('\n')
+    #   relComma = text.count(',')/float(numLines)
+    #   relPoint = text.count('.')/float(numLines)
+    #   relSemicolon = text.count(';')/float(numLines)
+    #   relTab = text.count('\t')/float(numLines)
+    #   fIn.close()
+    # print("Info file: num. lines:",numLines,'rel. ","',relComma,'rel. "."',relPoint,
+    #   'rel. ";"',relSemicolon,'rel. tab',relTab)
+    # if relComma>0.99 and relTab>0.99:
+    #   print('  Tab separated numbers with ,-decimal')
+    # if relPoint>0.99 and relTab>0.99:
+    #   print('  Tab separated numbers with .-decimal')
+    # if relPoint>0.99 and relComma>0.99:
+    #   print('  ,-separated numbers with .-decimal. CSV file')
     #load data
     dataTXT = np.loadtxt(exportedFile)
     lenData = dataTXT.shape[0]
-    # find count: location where the count is saved
-    count = self.findBytes(lenData, 'i',0)
     for col in range(dataTXT.shape[1]):
       idxMax = np.argmax(dataTXT[:,col])
       valMax = dataTXT[idxMax,col]
@@ -185,16 +182,17 @@ class Automatic():
             bestOffset, bestMax, bestDType = start, maxDiff, dType
       if bestOffset is None or bestMax is None or bestDType is None:
         print('**ERROR no fitting best value found')
-        return
+        return False
       prob = bestMax/valMax if bestDType=='d' else (bestMax/valMax)**2
       prob = min( int(np.log10(1./prob)*3+50), 90) #probability has max. value of 90
       if self.verbose>1:
         print('  Best fit: dType='+bestDType,' start='+str(bestOffset),' length='+str(lenData),
           ' end='+str(bestOffset+struct.calcsize(str(lenData)+bestDType)-1), ' probability='+str(prob))
-      section = Section(length=lenData, dType=bestDType, value='exportedData_col='+str(col+1),
-        prob=prob, count=[count])
+      count=[self.findAnchor(lenData)[0]]      #create link / enter property count; adopt shape correspondingly
+      section = Section(length=lenData, dType=bestDType, value='from exported data column '+str(col+1),
+        prob=prob, count=count, shape=[lenData], dClass='primary')
       self.content[bestOffset] = section
-    return
+    return True
 
 
   def findStreak(self:FileProtocol, dType:str='d', start:int=0) -> None:

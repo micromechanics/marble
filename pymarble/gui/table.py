@@ -139,8 +139,8 @@ class Table(QWidget):
     context = QMenu(self)
     if len(self.comm.binaryFile.content) == 1:
       Action('Automatic for time series', self, ['autoTime'], context)
-      Action('Automatic for other data',  self, ['autoElse'], context)
-    else:
+    Action('Automatic for general data',  self, ['autoElse'], context)
+    if len(self.comm.binaryFile.content) > 1:
       Action('Split into parts',          self, ['split'],    context)
     context.exec(point.globalPos())
     return

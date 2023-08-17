@@ -40,3 +40,14 @@ Contributors
 <br>
 The project was supported by HMC and FZJ in 2022 and 2021.
 """
+
+INFO_EXPORTED_FILE = """
+Use a format that is readable by the default of np.loadtxt<br><br>
+Example:<br>
+<tt>
+#time temperature<br>
+0.1   21.2<br>
+0.2   25.3<br>
+...
+</tt>
+"""
