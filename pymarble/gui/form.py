@@ -27,7 +27,8 @@ class Form(QDialog):
     if self.comm.binaryFile is None:
       return
     self.translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'plot byte value',\
-                              'B':'plot byte value','c':'plot byte value', 'i':'print numerical value'}
+                              'B':'plot byte value','c':'plot byte value', 'i':'print numerical value',
+                              'H':'2D graph of numerical value'}
     self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes',
                               'b':'byte = 1byte = 8bit','B':'byte = 1byte', 'c':'character = 1byte',
                               'i':'int = 4bytes','H':'unsigned short = 2byte = 16bit'}
@@ -99,13 +100,18 @@ class Form(QDialog):
     self.lengthW.valueChanged.connect(self.refresh)
     dimensionL.addWidget(self.lengthW, stretch=1)                          # type: ignore[call-arg]
     self.heightWidthW, heightWidthL = widgetAndLayout('H', dimensionL)
+    try:
+      self.widthW = QLineEdit(str(section.shape[0]))
+      self.heightW = QLineEdit(str(section.shape[1]))
+    except Exception:
+      print('exception',section.shape[1])
+      self.widthW = QLineEdit('1024')
+      self.heightW = QLineEdit('1024')
     heightWidthL.addWidget(QLabel('Width:'))
-    self.widthW = QLineEdit('1024')
     self.widthW.textChanged.connect(self.refresh)
     heightWidthL.addWidget(self.widthW, stretch=1)                          # type: ignore[call-arg]
     heightWidthL.addSpacing(minSpace)
     heightWidthL.addWidget(QLabel('Height:'))
-    self.heightW = QLineEdit('1024')
     self.heightW.textChanged.connect(self.refresh)
     heightWidthL.addWidget(self.heightW, stretch=1)                          # type: ignore[call-arg]
     self.heightWidthW.setHidden(True)

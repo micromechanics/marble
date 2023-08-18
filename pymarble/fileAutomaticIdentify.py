@@ -1,5 +1,6 @@
 """All functions that identify content in binary file automatically"""
 import math, struct, re, time, logging
+from typing import Optional
 import xml.etree.ElementTree as ET
 import numpy as np
 from .section import Section
@@ -7,7 +8,8 @@ from .fileClass import FileProtocol
 
 class Automatic():
   """ Mixin that includes all functions that identify sections """
-  def automatic(self:FileProtocol, methodOrder:str='x_z_p_a', start:int=-1) -> None:
+  def automatic(self:FileProtocol, methodOrder:str='x_z_p_a', start:int=-1, getMethods:bool=False) \
+    -> Optional[dict[str,str]]:
     '''
     Wrapper that calls the different methods. This is generally the first step
 
@@ -23,10 +25,13 @@ class Automatic():
       file
       methodOrder of methods: method order to be used.
     '''
+    allMethods = {}
     for method in methodOrder.split('_'):
       if self.verbose>1:
         print("Start method",method)
         startTime = time.time()
+      if getMethods:
+        allMethods |= {'a': 'Search for text / ascii'}
       if method == 'a':
         # Runtime comparison for loop and map
         # map(lambda i: self.findAsciiSection(i) if self.content[i].dType=='b' else None, self.content)
@@ -36,21 +41,32 @@ class Automatic():
         for startI in self.content if start==-1 else [start]:
           if self.content[startI].dType=='b':
             self.findAsciiSection(startI)
-      elif method == 'p':
+      if getMethods:
+        allMethods |= {'i': 'Search for image'}
+      if method == 'i':
+        for startI in self.content if start==-1 else [start]:
+          self.find2DImage(start)
+      if getMethods:
+        allMethods |= {'p': 'Search for time series data'}
+      if method == 'p':
         for startI in self.content if start==-1 else [start]:
           section = self.content[startI]
           if section.dType=='b' and \
               section.length>= self.optAutomatic['minArray']*4 and \
               section.entropy> self.optAutomatic['minEntropy']: #at least minArray 4byte size
             self.primaryTimeData(startI)
-      elif method == 'x':
+      if getMethods:
+        allMethods |= {'x': 'Search for xml data'}
+      if method == 'x':
         self.findXMLSection()
-      elif method == 'z':
+      if getMethods:
+        allMethods |= {'z': 'Search for sections with zero values'}
+      if method == 'z':
         self.findZeroSection(max(0, start))
       self.fill()
       if self.verbose>1:
         print(f'  End method {method}. Duration={str(round(time.time() - startTime))}sec')
-    return
+    return allMethods if getMethods else None
 
 
   def findZeroSection(self:FileProtocol, start:int=0) -> None:
@@ -367,5 +383,37 @@ class Automatic():
     Args:
       start: starting position of section; if none is given use entire file
     '''
-    #in development
-    print('Start',start, self.content[start])
+    section = self.content[start]
+    foundLocations = {}
+    for exponent in range(8,13):
+      for bit in ['H','b']:
+        dimension = 2**exponent
+        imgSize = struct.calcsize(f'{dimension**2}{bit}')
+        sizeByLength = imgSize /  section.length
+        if 0.1 < sizeByLength < 1.5:
+          if dimension not in foundLocations:
+            locations = np.array([int(i) for i  in self.findValue(dimension,'i',verbose=False)], dtype=int)
+            foundLocations[dimension] = locations
+          else:
+            locations = foundLocations[dimension]
+          if np.any(np.logical_and(4<=np.diff(locations), np.diff(locations)<= 400)):
+            startData = np.max(locations)+4
+            # self.file.seek(startData)
+            # data = struct.unpack(f'{dimension**2}{bit}', self.file.read(imgSize)) # read and convert
+            # use first two locations, if more than 2 are found
+            img = Section(length=dimension**2, dType=bit, value='automatically identified image',
+                          dClass='primary', count=list(locations[:2]), shape=[dimension, dimension], prob=99)
+            self.content[startData] = img
+            # create anchors
+            prevKvariables = 0
+            for startJ in self.content:
+              sectionJ = self.content[startJ]
+              if re.search(r'^k\d+=', sectionJ.key) and sectionJ.dType=='i':
+                prevKvariables += 1
+            self.content[locations[0]] = Section(length=1, key=f'k{prevKvariables+1}={dimension}',
+                                                 dType='i', prob=100, dClass='count', important=True)
+            self.content[locations[1]] = Section(length=1, key=f'k{prevKvariables+2}={dimension}',
+                                                 dType='i', prob=100, dClass='count', important=True)
+            del self.content[start]
+            break
+    return

@@ -33,6 +33,16 @@ firefox htmlcov/index.html
 rm -r htmlcov
 ```
 
+## Test with python only
+``` python
+from pymarble.file import BinaryFile
+bf = BinaryFile('tests/examples/1-11-OA_0000.emi')
+bf.loadTags()
+bf.automatic(methodOrder='i', start=814)
+methods = bf.automatic(methodOrder='_', getMethods=True)
+bf.printList()
+bf.printList(True)
+```
 
 ## Python data-types and their byteSize
 This table is helpful for developers to quickly find byte-lengths

@@ -22,15 +22,16 @@ class FileProtocol(Protocol):
   printMode: str
 
   # functions
+  automatic: Callable[[str],None]
   initContent: Callable[[],None]
   findBytes: Callable[[Union[str,float],str,int],int]
   findValue: Callable[[Union[str,float],str,bool,int],list[int]]
   findAnchor: Callable[[int], tuple[int, bool]]
-  automatic: Callable[[str],None]
   findXMLSection: Callable[[],None]
   findZeroSection: Callable[[int],None]
   findAsciiSection: Callable[[int],None]
   primaryTimeData: Callable[[int],None]
+  find2DImage: Callable[[int], None]
   fill: Callable[[],None]
   pretty: Callable[[int],str]
   pythonHeader: Callable[[],str]
