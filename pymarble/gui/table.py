@@ -29,6 +29,7 @@ class Table(QWidget):
     mainL.addWidget(self.table)
     self.setLayout(mainL)
     self.change()  #paint
+    self.methods = None
 
 
   @Slot()
@@ -111,6 +112,7 @@ class Table(QWidget):
     Args:
       command (list): command to execute
     """
+    start = self.rowIDs[self.table.currentRow()]
     if self.comm.binaryFile is None:
       return
     if command[0]   == 'autoTime': #look for xml data, zero data, primary data and ascii data
@@ -118,10 +120,14 @@ class Table(QWidget):
     elif command[0] == 'autoElse': #look for xml data, zero data and ascii data
       self.comm.binaryFile.automatic('x_z_a')    # type: ignore[misc]
     elif command[0] == 'split':
-      start = self.rowIDs[self.table.currentRow()]
       dialog = FormSplit(self.comm, start)
       dialog.exec()
       self.change()  #repaint
+    elif command[0] == 'remove':
+       del self.comm.binaryFile.content[start]
+       self.comm.binaryFile.fill()
+    elif command[0].startswith('_') and command[0].endswith('_'):
+      self.comm.binaryFile.automatic(command[0], start)
     else:
       logging.error('command unknown: %s', command)
     self.change()
@@ -137,12 +143,19 @@ class Table(QWidget):
     """
     if self.comm.binaryFile is None:
       return
+    if self.methods is None:
+      self.methods = self.comm.binaryFile.automatic('_',getMethods=True)
     context = QMenu(self)
     if len(self.comm.binaryFile.content) == 1:
       Action('Automatic for time series', self, ['autoTime'], context)
     Action('Automatic for general data',  self, ['autoElse'], context)
+    context.addSeparator()
+    for key, value in self.methods.items():
+      Action(value,                       self, [f'_{key}_'], context)
+    context.addSeparator()
     if len(self.comm.binaryFile.content) > 1:
       Action('Split into parts',          self, ['split'],    context)
+      Action('Remove information',        self, ['remove'],   context)
     context.exec(point.globalPos())
     return
 
