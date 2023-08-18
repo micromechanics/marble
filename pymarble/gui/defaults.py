@@ -51,3 +51,19 @@ Example:<br>
 ...
 </tt>
 """
+
+WARNING_LARGE_DATA = """
+<h3>Section has too much data</h3>
+<p>
+This much data results in problems plotting and printing. If one would choose to plot/print, it will take ages.
+Therefore, only $max_plot$ points are plotted and $max_print$ points are printed. This down scaling implies
+that only every $scale$ point is plotted / printed, respectively.
+</p>
+How to use marble:
+<ul>
+<li> Reduce the length to something appropriate and focus on the start: find the real start
+<li> With reduced length: move start up to focus on the end
+<li> Use math and remember the byte-size
+</ul>
+Never plot the entropy.
+"""

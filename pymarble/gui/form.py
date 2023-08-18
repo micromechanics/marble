@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QL
 from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
+from .defaults import WARNING_LARGE_DATA
 
 class Form(QDialog):
   """ Editor to change metadata of binary file """
@@ -27,12 +28,16 @@ class Form(QDialog):
       return
     self.translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'plot byte value',\
                               'B':'plot byte value','c':'plot byte value', 'i':'print numerical value'}
-    self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes','b':'byte = 1byte', \
-                              'i':'int = 4bytes','B':'byte = 1byte','c':'character = 1byte'}
+    self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes',
+                              'b':'byte = 1byte = 8bit','B':'byte = 1byte', 'c':'character = 1byte',
+                              'i':'int = 4bytes','H':'unsigned short = 2byte = 16bit'}
     self.translateDtypeInv = {v: k for k, v in self.translateDtype.items()}
+    self.colorbarPresent = False
     #definitions: no self.length etc. since content of textfields only truth
     section  = self.comm.binaryFile.content [start]
     self.lead = 20
+    self.critPlot = 50000
+    self.critPrint= 500
     space = 20
     minSpace = 5
 
@@ -45,8 +50,8 @@ class Form(QDialog):
     #graph
     self.graphW, graphL = widgetAndLayout('V', mainL)
     self.graph = MplCanvas(self, width=5, height=4, dpi=100)
-    graphToolbar = NavigationToolbar(self.graph, self)
-    graphL.addWidget(graphToolbar)
+    self.graphToolbar = NavigationToolbar(self.graph, self)
+    graphL.addWidget(self.graphToolbar)
     graphL.addWidget(self.graph)
     self.textEditW = QTextEdit()
     self.textEditW.hide()
@@ -60,9 +65,14 @@ class Form(QDialog):
     IconButton('fa.arrow-right', self, ['startUp'],   graphButtonL, 'increase start point')
     graphButtonL.addSpacing(200)
     self.plotCB = QComboBox()
-    self.plotCB.addItems(['plot numerical value','plot byte value','plot entropy',\
-                          'print numerical value', 'print byte value'])
+    plotTypes = ['plot numerical value','plot byte value','plot entropy','print numerical value',
+                 'print byte value','2D graph of numerical value']
+    if section.length > self.critPrint:
+      plotTypes += ['warning']
+    self.plotCB.addItems(plotTypes)
     self.plotCB.setCurrentText(self.translatePlot[section.dType])
+    if section.length > self.critPlot:
+      self.plotCB.setCurrentText('warning')
     self.plotCB.currentTextChanged.connect(self.refresh)
     # plotComboBox.changeEvent()
     graphButtonL.addWidget(self.plotCB)
@@ -81,12 +91,24 @@ class Form(QDialog):
     self.startW.valueChanged.connect(self.refresh)
     dimensionL.addWidget(self.startW, stretch=1)                           # type: ignore[call-arg]
     dimensionL.addSpacing(space)
-    dimensionL.addWidget(QLabel('Length:'))
+    self.lengthLabelW = QLabel('Length:')
+    dimensionL.addWidget(self.lengthLabelW)
     self.lengthW = QSpinBox()
     self.lengthW.setRange(0, self.comm.binaryFile.fileLength)
     self.lengthW.setValue(section.length)
     self.lengthW.valueChanged.connect(self.refresh)
     dimensionL.addWidget(self.lengthW, stretch=1)                          # type: ignore[call-arg]
+    self.heightWidthW, heightWidthL = widgetAndLayout('H', dimensionL)
+    heightWidthL.addWidget(QLabel('Width:'))
+    self.widthW = QLineEdit('1024')
+    self.widthW.textChanged.connect(self.refresh)
+    heightWidthL.addWidget(self.widthW, stretch=1)                          # type: ignore[call-arg]
+    heightWidthL.addSpacing(minSpace)
+    heightWidthL.addWidget(QLabel('Height:'))
+    self.heightW = QLineEdit('1024')
+    self.heightW.textChanged.connect(self.refresh)
+    heightWidthL.addWidget(self.heightW, stretch=1)                          # type: ignore[call-arg]
+    self.heightWidthW.setHidden(True)
     dimensionL.addSpacing(minSpace)
     self.dTypeCB = QComboBox()
     self.dTypeCB.setToolTip('data type')
@@ -183,12 +205,23 @@ class Form(QDialog):
     if self.comm.binaryFile is None:
       return
     # get values from text fields
+    if self.plotCB.currentText().startswith('2D graph'):
+      self.lengthW.setHidden(True)
+      self.lengthLabelW.setHidden(True)
+      self.heightWidthW.setHidden(False)
+      self.lengthW.setValue(int(self.widthW.text())*int(self.heightW.text()))
+      lead = 0
+    else:
+      self.lengthW.setHidden(False)
+      self.lengthLabelW.setHidden(False)
+      self.heightWidthW.setHidden(True)
+      lead = self.lead
     start       = self.startW.value()
     length      = self.lengthW.value()
     dType       = self.translateDtypeInv[self.dTypeCB.currentText()]
     byteSize    = struct.calcsize(dType)
-    startAll    = start-self.lead*byteSize
-    lengthAll   = length+2*self.lead
+    startAll    = start-lead*byteSize
+    lengthAll   = length+2*lead
     dTypeAll    = str(lengthAll)+dType
     byteSizeAll = struct.calcsize(dTypeAll)
     preData = bytearray(0)
@@ -206,24 +239,24 @@ class Form(QDialog):
     # depending on plot/print type
     if self.plotCB.currentText().endswith('byte value') or \
        (dType in ['b','B'] and self.plotCB.currentText().endswith('numerical value')):
-      valuesX = np.arange(-self.lead*byteSize, (length+self.lead)*byteSize)
+      valuesX = np.arange(-lead*byteSize, (length+lead)*byteSize)
       self.valuesY = list(dataAll)
-      labelY  = 'byte value'
       limitX  = length*byteSize
+      labelY  = 'byte value'
       limitY  = [0.0, 255.0]
       lineStyle= '.'
     elif self.plotCB.currentText().endswith('numerical value'):
-      valuesX = np.arange(-self.lead, length+self.lead)
+      valuesX = np.arange(-lead, length+lead)
       self.valuesY = list(struct.unpack(dTypeAll, dataAll))
-      labelY  = 'numerical value'
       limitX  = length
-      limitY  = [np.min(self.valuesY[self.lead:-self.lead])*0.8,
+      labelY  = 'numerical value'
+      limitY  = [np.min(self.valuesY[self.lead:-self.lead])*0.8,  #here self.lead to prevent it from being 0
                  np.max(self.valuesY[self.lead:-self.lead])*1.2]
       lineStyle= 'o-'
     elif self.plotCB.currentText().endswith('plot entropy'):
       dataBin = list(dataAll) #convert to byte-int
       blockSize = self.comm.binaryFile.optEntropy['blockSize']
-      valuesX = np.arange(-self.lead*byteSize, (length+self.lead-blockSize)*byteSize, byteSize)
+      valuesX = np.arange(-lead*byteSize, (length+lead-blockSize)*byteSize, byteSize)
       self.valuesY = []
       for startI in valuesX:
         _, counts = np.unique(dataBin[startI:startI+blockSize], return_counts=True)
@@ -233,10 +266,17 @@ class Form(QDialog):
       limitX  = (length-blockSize)*byteSize
       limitY  = [0.0, 7.8]
       lineStyle= '-'
+    elif self.plotCB.currentText().endswith('warning'):
+      pass
     else:
       logging.error('unknown value in form')
     # graph / print
     if self.plotCB.currentText().startswith('plot'):
+      if len(dataAll)>self.critPlot:
+        scaleDown = int(length/self.critPlot)
+        logging.info('Data too large: plot only every %sth point', scaleDown)
+        valuesX = valuesX[::scaleDown]
+        self.valuesY = self.valuesY[::scaleDown]
       self.graph.axes.cla()                        # Clear the canvas.
       self.graph.axes.axvline(0, color='k')
       self.graph.axes.axvline(limitX-1, color='k')  #plot from 0 to limit-1
@@ -246,8 +286,26 @@ class Form(QDialog):
       self.graph.axes.set_ylabel(labelY)
       self.graph.draw() # Trigger the canvas to update and redraw.
       self.textEditW.hide()
+      self.graphToolbar.show()
+      self.graph.show()
+    elif self.plotCB.currentText().startswith('2D graph'):
+      width, height = int(self.widthW.text()), int(self.heightW.text())
+      self.graph.axes.cla()                        # Clear the canvas.
+      img = self.graph.axes.imshow(np.reshape(self.valuesY, (height, width)), cmap='Greys_r')
+      if not self.colorbarPresent:
+        self.graph.axes.get_figure().colorbar(img)
+        self.colorbarPresent = True
+      self.graph.draw() # Trigger the canvas to update and redraw.
+      self.textEditW.hide()
+      self.graphToolbar.show()
       self.graph.show()
     elif self.plotCB.currentText().startswith('print'):
+      if len(dataAll)>self.critPrint:
+        scaleDown = int(length/self.critPrint)
+        logging.info('Data too large: print only every %sth point', scaleDown)
+        valuesX = valuesX[::scaleDown]
+        self.valuesY = self.valuesY[::scaleDown]
+        dataAll = dataAll[::scaleDown]
       self.textEditW.show()
       idxStart = np.argmin(np.abs(valuesX))
       idxEnd   = np.argmin(np.abs(valuesX-limitX))
@@ -261,8 +319,17 @@ class Form(QDialog):
         text += self.comm.binaryFile.byteToString(dataAll[idxEnd:], 1, 8)
       self.textEditW.setMarkdown(text)
       self.graph.hide()
+      self.graphToolbar.hide()
+    elif self.plotCB.currentText().endswith('warning'):
+      self.textEditW.show()
+      htmlText = WARNING_LARGE_DATA.replace('$max_plot$',str(self.critPlot))\
+                      .replace('$max_print$',str(self.critPrint))\
+                      .replace('$scale$',f'{int(length/self.critPlot)}th /{int(length/self.critPrint)}th')
+      self.textEditW.setHtml(htmlText)
+      self.graph.hide()
+      self.graphToolbar.hide()
     else:
-      logging.error('**ERROR unknown value in plot/print')
+      logging.error('unknown value in plot/print')
     return
 
 
@@ -322,7 +389,7 @@ class Form(QDialog):
       value = self.valueW.text()
       if re.search(r'\d+ floats with mean [\d\.e-]+, minimum [\d\.e-]+, maximum [\d\.e-]+', value) or \
          self.autoW.isChecked():
-        mean    = np.mean(self.valuesY[self.lead:-self.lead])
+        mean    = np.mean(self.valuesY[self.lead:-self.lead])  #here self.lead to prevent it from being 0
         minimum = np.min(self.valuesY[self.lead:-self.lead])
         maximum = np.max(self.valuesY[self.lead:-self.lead])
         if dType=='f':
