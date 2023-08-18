@@ -125,7 +125,10 @@ class Automatic():
       return
     xmlStart = xmlStartList[0]
     xmlEndIterator = re.finditer(b'<\/\w+>' ,data) #pylint: disable=anomalous-backslash-in-string
-    xmlEnd = [(i.start(),i.end(),i.group())   for i in xmlEndIterator][-1] #if start exist, end should too
+    xmlEndList = [(i.start(),i.end(),i.group())   for i in xmlEndIterator]
+    if not xmlEndList:
+      return
+    xmlEnd = xmlEndList[-1]
     if xmlStart[2][1:] == xmlEnd[2][2:] and xmlStart[1]<xmlEnd[0]:
       try:
         xmlString = data[xmlStart[0]:xmlEnd[1]]

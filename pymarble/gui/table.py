@@ -128,6 +128,7 @@ class Table(QWidget):
        self.comm.binaryFile.fill()
     elif command[0].startswith('_') and command[0].endswith('_'):
       self.comm.binaryFile.automatic(command[0], start)
+      self.comm.binaryFile.fill()
     else:
       logging.error('command unknown: %s', command)
     self.change()

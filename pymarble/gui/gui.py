@@ -13,6 +13,7 @@ from .communicate import Communicate
 from .table import Table
 from .tableHeader import TableHeader
 from .metaEditor  import MetaEditor
+from .rowTool import RowTool
 from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
@@ -53,6 +54,7 @@ class MainWindow(QMainWindow):
 
     toolsMenu = menu.addMenu("&Tools")
     Action('Edit &metadata',    self, ['metaEditor'], toolsMenu, shortcut='Ctrl+M')
+    Action('Find row data',     self, ['rowTool'],    toolsMenu)
 
     helpMenu = menu.addMenu("&Help")
     Action('&Website',          self, ['website'],        helpMenu)
@@ -115,6 +117,9 @@ class MainWindow(QMainWindow):
     elif command[0]=='metaEditor':
       dialog = MetaEditor(self.comm)
       dialog.exec()
+    elif command[0]=='rowTool':
+      dialog = RowTool(self.comm)
+      dialog.exec()
     elif command[0]=='saveTags':
       self.comm.binaryFile.saveTags()           # type: ignore[misc]
     elif command[0]=='loadTags':
@@ -154,19 +159,16 @@ class MainWindow(QMainWindow):
     if self.suggestFileOpen and self.comm.binaryFile is None:
       self.suggestFileOpen = False
       ### DEFAULT CASE ###
-      self.execute(['open'])
+      # self.execute(['open'])
       ### FOR EASY TESTING
-      # fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/'+\
-      #            'Membrane_Repeatability_05.mvl'
-      # self.comm.binaryFile = BinaryFile(fileName)
-      # if 'print_mode' in self.comm.configuration and self.comm.configuration['print_mode']=='hex':
-      #   self.comm.binaryFile.printMode='hex'
-      # self.comm.binaryFile.loadTags()                              # type: ignore[misc]
-      # self.comm.changeTable.emit()
+      fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/1.mst'
+      self.comm.binaryFile = BinaryFile(fileName)
+      self.comm.binaryFile.loadTags()                              # type: ignore[misc]
+      self.comm.changeTable.emit()
       ### additional part for testing of form
-      # from .form import Form
-      # dialog     = Form(self.comm, 70840)
-      # dialog.show()
+      from .rowTool import RowTool
+      dialog     = RowTool(self.comm)
+      dialog.show()
     return super().resizeEvent(event)
 
 

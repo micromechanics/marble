@@ -100,11 +100,10 @@ class Form(QDialog):
     self.lengthW.valueChanged.connect(self.refresh)
     dimensionL.addWidget(self.lengthW, stretch=1)                          # type: ignore[call-arg]
     self.heightWidthW, heightWidthL = widgetAndLayout('H', dimensionL)
-    try:
+    if len(section.shape)==2:
       self.widthW = QLineEdit(str(section.shape[0]))
       self.heightW = QLineEdit(str(section.shape[1]))
-    except Exception:
-      print('exception',section.shape[1])
+    else:
       self.widthW = QLineEdit('1024')
       self.heightW = QLineEdit('1024')
     heightWidthL.addWidget(QLabel('Width:'))
@@ -279,7 +278,7 @@ class Form(QDialog):
     # graph / print
     if self.plotCB.currentText().startswith('plot'):
       if len(dataAll)>self.critPlot:
-        scaleDown = int(length/self.critPlot)
+        scaleDown = max(int(length/self.critPlot), 1)
         logging.info('Data too large: plot only every %sth point', scaleDown)
         valuesX = valuesX[::scaleDown]
         self.valuesY = self.valuesY[::scaleDown]
@@ -307,7 +306,7 @@ class Form(QDialog):
       self.graph.show()
     elif self.plotCB.currentText().startswith('print'):
       if len(dataAll)>self.critPrint:
-        scaleDown = int(length/self.critPrint)
+        scaleDown = max(int(length/self.critPrint), 1)
         logging.info('Data too large: print only every %sth point', scaleDown)
         valuesX = valuesX[::scaleDown]
         self.valuesY = self.valuesY[::scaleDown]
@@ -380,7 +379,7 @@ class Form(QDialog):
       shape  = [int(i) for i in self.shapeW.text()[1:-1].split(',') if len(i)>0]
       binaryFile = self.comm.binaryFile
       #find count in file
-      if dType in ['f','d','H']:      #TODO_P1 makes sense for 1D data, but not 2D data
+      if dType in ['f','d','H']:
         lengthSearch = min(length, int(np.prod(shape))) #remember garbage at end of data-set
         #create link / enter property count; adopt shape correspondingly
         count =[self.comm.binaryFile.findAnchor(lengthSearch)[0]]     # type: ignore[misc]
