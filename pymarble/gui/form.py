@@ -377,7 +377,7 @@ class Form(QDialog):
       if dType in ['f','d','H']:
         lengthSearch = min(length, int(np.prod(shape))) #remember garbage at end of data-set
         #create link / enter property count; adopt shape correspondingly
-        count =[self.comm.binaryFile.findAnchor(lengthSearch)[0]]     # type: ignore[misc]
+        count =[self.comm.binaryFile.findAnchor(lengthSearch, start)[0]]     # type: ignore[misc]
         shape = []
         for iCount in count:
           binaryFile.file.seek(iCount)

@@ -28,7 +28,7 @@ class FileProtocol(Protocol):
   initContent: Callable[[],None]
   findBytes: Callable[[Union[str,float],str,int],int]
   findValue: Callable[[Union[str,float],str,bool,int],list[int]]
-  findAnchor: Callable[[int], tuple[int, bool]]
+  findAnchor: Callable[[int,int], tuple[int, bool]]
   findXMLSection: Callable[[],None]
   findZeroSection: Callable[[int],None]
   findAsciiSection: Callable[[int],None]

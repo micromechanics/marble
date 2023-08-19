@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
   def __init__(self, configuration:dict[str,Any]) -> None:
     #global setting
     super().__init__()
-    self.setWindowTitle('MARBLE for Python')
+    self.setWindowTitle('MARBLE')
     self.setWindowState(Qt.WindowMaximized) # type: ignore
     resourcesDir = Path(__file__).parent/'Resources'
     self.setWindowIcon(QIcon(QPixmap(resourcesDir/'Icons'/'favicon64.png')))
@@ -91,6 +91,7 @@ class MainWindow(QMainWindow):
           fOut.write(json.dumps(self.configuration, indent=2))
         self.comm.binaryFile = BinaryFile(fileName)
         self.comm.changeTable.emit()
+        self.setWindowTitle(f'MARBLE: {fileName.split(os.sep)[-1]}')
     elif command[0]=='website':
       webbrowser.open('https://pypi.org/project/pymarble/')
     elif command[0]=='about':

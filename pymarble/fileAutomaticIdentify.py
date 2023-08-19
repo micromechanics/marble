@@ -207,7 +207,8 @@ class Automatic():
       if self.verbose>1:
         print(f'  Best fit: dType={bestDType} start={bestOffset} length={lenData} end=',
               f'{bestOffset+struct.calcsize(str(lenData)+bestDType)-1}, probability={prob}')
-      count=[self.findAnchor(lenData)[0]]      #create link / enter property count; adopt shape correspondingly
+      # create link / enter property count; adopt shape correspondingly
+      count=[self.findAnchor(lenData, bestOffset)[0]]
       section = Section(length=lenData, dType=bestDType, value=f'from exported data column {col+1}',
         prob=prob, count=count, shape=[lenData], dClass='primary')
       self.content[bestOffset] = section

@@ -118,7 +118,7 @@ class Util():
       if section.shape != [] and np.prod(section.shape)<length:
         # garbage at end of data-set
         length = np.prod(section.shape)
-      anchor, runFill = self.findAnchor(length)
+      anchor, runFill = self.findAnchor(length, start)
       #create link / enter property count
       if section.count == []:
         section.setData(count=[anchor])
