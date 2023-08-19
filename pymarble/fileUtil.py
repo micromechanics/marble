@@ -249,7 +249,7 @@ class Util():
     return
 
 
-  def findAnchor(self:FileProtocol, lengthSearch:int) -> tuple[int, bool]:
+  def findAnchor(self:FileProtocol, lengthSearch:int, maxOffset:int=-1) -> tuple[int, bool]:
     """
     find anchor in data, in previously identified anchors
 
@@ -269,9 +269,11 @@ class Util():
         break
       if re.search(r'^k\d+=', section.key) and section.dType=='i':
         prevKvariables += 1
+    if anchor is not None and anchor<=maxOffset-4:
+      anchor = None
     if anchor is None:    #only if not already found: create new
       anchor = self.findBytes(lengthSearch,'i',0)
-      if anchor>=0:
+      if anchor>=0 and anchor<=maxOffset-4:
         self.content[anchor] = Section(length=1, key=f'k{prevKvariables+1}={lengthSearch}',
                                        dType='i', prob=100, dClass='count', important=True)
         createdNew = True

@@ -22,6 +22,16 @@ dClass2Color = {
   "count":   "#cccccc"
 }
 
+
+translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'plot byte value',\
+                          'B':'plot byte value','c':'plot byte value', 'i':'print numerical value',
+                          'H':'2D graph of numerical value'}
+translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes',
+                          'b':'byte = 1byte = 8bit','B':'byte = 1byte', 'c':'character = 1byte',
+                          'i':'int = 4bytes','H':'unsigned short = 2byte = 16bit'}
+translateDtypeInv = {v: k for k, v in translateDtype.items()}
+
+
 ABOUT_TEXT = """
 <h3>MARBLE for python</h3>
 Scientific instruments produce proprietary binary data that contains a multitude of primary and metadata.

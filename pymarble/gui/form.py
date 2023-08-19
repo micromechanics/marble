@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QL
 from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
-from .defaults import WARNING_LARGE_DATA
+from .defaults import WARNING_LARGE_DATA, translateDtype, translateDtypeInv, translatePlot
 
 class Form(QDialog):
   """ Editor to change metadata of binary file """
@@ -26,13 +26,6 @@ class Form(QDialog):
     self.comm = comm
     if self.comm.binaryFile is None:
       return
-    self.translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'plot byte value',\
-                              'B':'plot byte value','c':'plot byte value', 'i':'print numerical value',
-                              'H':'2D graph of numerical value'}
-    self.translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes',
-                              'b':'byte = 1byte = 8bit','B':'byte = 1byte', 'c':'character = 1byte',
-                              'i':'int = 4bytes','H':'unsigned short = 2byte = 16bit'}
-    self.translateDtypeInv = {v: k for k, v in self.translateDtype.items()}
     self.colorbarPresent = False
     #definitions: no self.length etc. since content of textfields only truth
     section  = self.comm.binaryFile.content [start]
@@ -71,7 +64,7 @@ class Form(QDialog):
     if section.length > self.critPrint:
       plotTypes += ['warning']
     self.plotCB.addItems(plotTypes)
-    self.plotCB.setCurrentText(self.translatePlot[section.dType])
+    self.plotCB.setCurrentText(translatePlot[section.dType])
     if section.length > self.critPlot:
       self.plotCB.setCurrentText('warning')
     self.plotCB.currentTextChanged.connect(self.refresh)
@@ -117,8 +110,8 @@ class Form(QDialog):
     dimensionL.addSpacing(minSpace)
     self.dTypeCB = QComboBox()
     self.dTypeCB.setToolTip('data type')
-    self.dTypeCB.addItems(list(self.translateDtype.values()))
-    self.dTypeCB.setCurrentText(self.translateDtype[section.dType])
+    self.dTypeCB.addItems(list(translateDtype.values()))
+    self.dTypeCB.setCurrentText(translateDtype[section.dType])
     self.dTypeCB.currentTextChanged.connect(self.refresh)
     dimensionL.addWidget(self.dTypeCB)
     dimensionL.addSpacing(space)
@@ -223,7 +216,7 @@ class Form(QDialog):
       lead = self.lead
     start       = self.startW.value()
     length      = self.lengthW.value()
-    dType       = self.translateDtypeInv[self.dTypeCB.currentText()]
+    dType       = translateDtypeInv[self.dTypeCB.currentText()]
     byteSize    = struct.calcsize(dType)
     startAll    = start-lead*byteSize
     lengthAll   = length+2*lead
@@ -347,7 +340,7 @@ class Form(QDialog):
     """
     start    = int(self.startW.text())
     length   = int(self.lengthW.text())
-    dType    = self.translateDtypeInv[self.dTypeCB.currentText()]
+    dType    = translateDtypeInv[self.dTypeCB.currentText()]
     byteSize = struct.calcsize(dType)
     if command[0] == 'startDown':
       start -= byteSize
@@ -375,7 +368,7 @@ class Form(QDialog):
     elif btn.text().endswith('Save') and self.comm.binaryFile is not None:
       start  = self.startW.value()
       length = self.lengthW.value()
-      dType  = self.translateDtypeInv[self.dTypeCB.currentText()]
+      dType  = translateDtypeInv[self.dTypeCB.currentText()]
       shape  = [int(i) for i in self.shapeW.text()[1:-1].split(',') if len(i)>0]
       binaryFile = self.comm.binaryFile
       #find count in file

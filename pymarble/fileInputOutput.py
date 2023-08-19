@@ -88,6 +88,8 @@ class InputOutput():
       fOut.write('  </filename>\n')
       fOut.write(f'  <meta>{json.dumps(self.meta)}' + '</meta>\n')
       fOut.write(f'  <periodicity>{json.dumps(self.periodicity)}</periodicity>\n')
+      fOut.write(f'  <row_meta>{json.dumps(self.rowFormatMeta)}</row_meta>\n')
+      fOut.write(f'  <row_segments>{json.dumps([int(i) for i in self.rowFormatSegments])}</row_segments>\n')
       fOut.write('</wxHexEditor_XML_TAG>\n')
     return
 
@@ -102,6 +104,7 @@ class InputOutput():
       return
     tree = ET.parse(tagsFile)
     root = tree.getroot()
+    # metadata
     meta = root.find('meta')
     if meta is None:
       logging.error('could not loadTags metadata')
@@ -112,6 +115,17 @@ class InputOutput():
       logging.error('could not loadTags periodicity')
       return
     self.periodicity = json.loads(str(periodicity.text))
+    rowFormatMeta = root.find('row_meta')
+    if rowFormatMeta is None:
+      logging.error('could not loadTags rowFormatMeta')
+      return
+    self.rowFormatMeta = json.loads(str(rowFormatMeta.text))
+    rowFormatSegments = root.find('row_segments')
+    if rowFormatSegments is None:
+      logging.error('could not loadTags rowFormatSegments')
+      return
+    self.rowFormatSegments = set(json.loads(str(rowFormatSegments.text)))
+    # other data: that of list
     filename = root.find('filename')
     for tag in list(filename):   # type: ignore[arg-type]
       start = int(tag.find('start_offset').text)
@@ -124,6 +138,7 @@ class InputOutput():
     Output file content to .py file
     header has formalized description of file-structure
     '''
+    print('Note: save row format data')
     pyFile = os.path.splitext(self.fileName)[0]+'.py'
     with open(pyFile, 'w', encoding='utf-8') as fOut:
       # PYTHON PART

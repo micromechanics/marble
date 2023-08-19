@@ -31,15 +31,17 @@ class BinaryFile(InputOutput, Automatic, Util, Commandline):
     self.fileType   = fileType  #'disk': read directly from disk; 'ram' copy file in ram and work in virt. disk
                                 #'data': #futureFeature copy file into data & work on different sections
                                 #   in parallel
-    self.fileName                  = fileName
-    self.fileLength                = -1
-    self.content                   = SortedDict()
-    self.periodicity:dict[str,int] = {}
-    self.file                      = io.BytesIO()
-    self.printMode                 = 'dec' #      printMode: dec-decimal, hex-hexadecimal
-    self.verbose                   = verbose
-    self.meta                      = {'vendor':'', 'label':'', 'software':'',\
-                                      'ext':os.path.splitext(fileName)[1][1:], 'endian':'small'}
+    self.fileName          = fileName
+    self.fileLength        = -1
+    self.content           = SortedDict()
+    self.periodicity:dict[str,int]         = {}
+    self.rowFormatMeta:list[dict[str,str]] = []
+    self.rowFormatSegments = set()
+    self.file              = io.BytesIO()
+    self.printMode         = 'dec' #      printMode: dec-decimal, hex-hexadecimal
+    self.verbose           = verbose
+    self.meta              = {'vendor':'', 'label':'', 'software':'',\
+                              'ext':os.path.splitext(fileName)[1][1:], 'endian':'small'}
 
     self.initContent()
     return

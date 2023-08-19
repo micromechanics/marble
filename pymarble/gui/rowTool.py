@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QL
 from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
-from .defaults import WARNING_LARGE_DATA
+from .defaults import WARNING_LARGE_DATA, translateDtype, translateDtypeInv
 
 class RowTool(QDialog):
   """ Editor to identify data saved in rows """
@@ -27,7 +27,6 @@ class RowTool(QDialog):
     if self.comm.binaryFile is None:
       return
     self.space = 20
-    minSpace = 5
 
     # GUI elements
     self.setWindowTitle('Identify rows of data')
@@ -45,6 +44,7 @@ class RowTool(QDialog):
     #main row
     content = self.comm.binaryFile.content
     _, startBarL = widgetAndLayout('H', mainL)
+    #Text format: if you change here: change also below
     segmentLabels = {i:f'start: {i} - {content[i].value}' for i in content if content[i].dClass=='primary'}
     segmentLabels[-1] = 'Custom start, length, dType'
     self.start         = list(segmentLabels.keys())[-2]
@@ -61,15 +61,45 @@ class RowTool(QDialog):
     self.numberW.valueChanged.connect(lambda: self.execute(['changeNumber']))
     startBarL.addWidget(self.numberW)
 
-    #custom rows
+    #row custom for dimensions
+    self.dimensionsW, dimensionL = widgetAndLayout('H', mainL)
+    dimensionL.addWidget(QLabel('Start:'))
+    self.startW = QSpinBox()
+    self.startW.setRange(0, self.comm.binaryFile.fileLength)
+    self.startW.setSingleStep(struct.calcsize(content[self.start].dType))
+    self.startW.setValue(self.start)
+    self.startW.valueChanged.connect(self.refresh)
+    dimensionL.addWidget(self.startW, stretch=1)                           # type: ignore[call-arg]
+    dimensionL.addSpacing(self.space)
+    self.lengthLabelW = QLabel('Length:')
+    dimensionL.addWidget(self.lengthLabelW)
+    self.lengthW = QSpinBox()
+    self.lengthW.setRange(0, self.comm.binaryFile.fileLength)
+    self.lengthW.setValue(content[self.start].length)
+    self.lengthW.valueChanged.connect(self.refresh)
+    dimensionL.addWidget(self.lengthW, stretch=1)                          # type: ignore[call-arg]
+    dimensionL.addSpacing(self.space)
+    self.dTypeCB = QComboBox()
+    self.dTypeCB.setToolTip('data type')
+    self.dTypeCB.addItems(list(translateDtype.values()))
+    self.dTypeCB.setCurrentText(translateDtype[content[self.start].dType])
+    self.dTypeCB.currentTextChanged.connect(self.refresh)
+    dimensionL.addWidget(self.dTypeCB)
+    self.dimensionsW.hide()
+
+    #custom rows: initial fill
     _, self.propertyRowsL = widgetAndLayout('V', mainL)
     self.keyWs = []
     self.unitWs= []
     self.linkWs= []
     self.plotWs= []
     self.propertyRowsWs = []
-    for i in range(2):
-      self.addRow(i)
+    #   use existing data and fill
+    rowFormatMeta = self.comm.binaryFile.rowFormatMeta
+    numRows = max(2, len(rowFormatMeta))
+    for i in range(numRows):
+      self.addRow(i,    rowFormatMeta[i] if i<len(rowFormatMeta) else {} )
+    self.numberW.setValue(numRows)
 
     #final button box
     buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
@@ -78,18 +108,18 @@ class RowTool(QDialog):
     self.refresh()
 
 
-  def addRow(self, i):
+  def addRow(self, i:int, initValues:dict[str,str]={}):
     propertyRowW, propertyRowL = widgetAndLayout('H', self.propertyRowsL)
     propertyRowL.addWidget(QLabel('key:'))
-    self.keyWs.append(QLineEdit(''))
+    self.keyWs.append(QLineEdit(initValues['key'] if 'key' in initValues else ''))
     propertyRowL.addWidget(self.keyWs[i])
     propertyRowL.addSpacing(self.space)
     propertyRowL.addWidget(QLabel('unit:'))
-    self.unitWs.append(QLineEdit(''))
+    self.unitWs.append(QLineEdit(initValues['unit'] if 'unit' in initValues else ''))
     propertyRowL.addWidget(self.unitWs[i])
     propertyRowL.addSpacing(self.space)
     propertyRowL.addWidget(QLabel('link:'))
-    self.linkWs.append(QLineEdit(''))
+    self.linkWs.append(QLineEdit(initValues['link'] if 'link' in initValues else ''))
     propertyRowL.addWidget(self.linkWs[i], stretch=1)
     propertyRowL.addSpacing(self.space)
     propertyRowL.addWidget(QLabel('plot:'))
@@ -98,23 +128,32 @@ class RowTool(QDialog):
     self.plotWs[i].stateChanged.connect(self.refresh)
     propertyRowL.addWidget(self.plotWs[i])
     self.propertyRowsWs.append(propertyRowW)
-
+    return
 
 
   def refresh(self) -> None:
     """ repaint form incl. graph """
     if self.comm.binaryFile is None:
       return
-    start      = self.start
-    section    = self.comm.binaryFile.content[start]
-    byteSize   = section.byteSize()
-    byteFormat = section.size()
+    if self.dimensionsW.isHidden():     #use given segment information
+      start      = int(self.sectionCB.currentText().split(' - ')[0][7:]) #change here if text format changes
+      self.start = start
+      section    = self.comm.binaryFile.content[start]
+      byteFormat = section.size()
+      byteSize   = section.byteSize()
+    else:                               #use information as given by this gui's start, length
+      start      = self.startW.value()
+      byteFormat = str(int(self.lengthW.text())*self.numberW.value())+\
+                   translateDtypeInv[self.dTypeCB.currentText()]
+      byteSize   = struct.calcsize(byteFormat)
     #use data
     self.comm.binaryFile.file.seek(start)
-    data = struct.unpack(byteFormat ,self.comm.binaryFile.file.read(byteSize))
+    dataBin = self.comm.binaryFile.file.read(byteSize)
+    if len(dataBin)<byteSize:
+      dataBin = dataBin + bytearray(byteSize-len(dataBin))
+    data = struct.unpack(byteFormat, dataBin)
     self.graph.axes.cla()                        # Clear the canvas
     numberCurves = self.numberW.value()
-
     for i in range(numberCurves):
       if self.plotWs[i].isChecked():
         label = self.keyWs[i].text() or f'curve {i+1}'
@@ -144,20 +183,42 @@ class RowTool(QDialog):
           self.plotWs.pop()
           widget = self.propertyRowsWs.pop()
           widget.setParent(None)
-    elif command[0] == 'comboBox':
-      print('show row with start, length, dtype') #TODO_P1
-    else:
-      logging.error('Command unknown %s', command)
+    elif command[0] == 'comboBox' and self.sectionCB.currentText()=='Custom start, length, dType':
+      self.dimensionsW.show()
+      self.sectionCB.hide()
+      self.numberW.setEnabled(False)
+      self.startW.setValue(self.start)
+      section = self.comm.binaryFile.content[self.start]
+      self.lengthW.setValue(int(section.length/self.numberW.value()))
+      self.dTypeCB.setCurrentText(translateDtype[section.dType])
+      self.refresh()
     self.refresh()
     return
 
 
   def save(self, btn:IconButton) -> None:
-    # sourcery skip: extract-method
     """ save selectedList to configuration and exit """
     if btn.text().endswith('Cancel'):
       self.reject()
-    elif btn.text().endswith('Save') and self.comm.binaryFile is not None:  #TODO_P1 HOW
+    elif btn.text().endswith('Save') and self.comm.binaryFile is not None:
+      if self.dimensionsW.isHidden():
+        start      = self.start
+        section    = self.comm.binaryFile.content[start]
+        shape      = [int(section.length/self.numberW.value()), self.numberW.value()]
+      else:
+        start      = self.startW.value()
+        shape      = [int(self.lengthW.text()), self.numberW.value()]
+      count = [self.comm.binaryFile.findAnchor(shape[0], start)[0],
+               self.comm.binaryFile.findAnchor(shape[1], start)[0]]
+      section = Section(length=np.prod(shape), dType=translateDtypeInv[self.dTypeCB.currentText()],
+                        key='primary data in rows', value='primary data in rows', dClass='primary',
+                        shape=shape, count=count, prob=100, important=True, entropy=-1)
+      del self.comm.binaryFile.content[self.start]
+      self.comm.binaryFile.content[start] = section
+      self.comm.binaryFile.rowFormatMeta = [{'key':self.keyWs[i].text(), 'unit':self.unitWs[i].text(),
+                                            'link':self.linkWs[i].text()} for i in range(self.numberW.value())]
+      self.comm.binaryFile.rowFormatSegments.add(start)
+      self.comm.changeTable.emit()
       self.accept()
     else:
       logging.error('unknown command %s', btn.text())

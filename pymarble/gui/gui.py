@@ -34,15 +34,13 @@ class MainWindow(QMainWindow):
     fileMenu = menu.addMenu("&File")
     Action('&Open binary file',  self, ['open'],       fileMenu, shortcut='Ctrl+L')
     Action('&Use exported .csv', self, ['useExported'],fileMenu, shortcut='Ctrl+U')
-    if 'advanced' in configuration:
-      fileMenu.addSeparator()
-      Action('Save corr. .tags', self, ['saveTags'],   fileMenu)
-      Action('Load corr. .tags', self, ['loadTags'],   fileMenu)
     fileMenu.addSeparator()
+    Action('Open corr. .tags', self, ['loadTags'],   fileMenu)
+    Action('Save corr. .tags', self, ['saveTags'],   fileMenu)
+    fileMenu.addSeparator()
+    Action('Open python-file',   self, ['loadPython'], fileMenu)
     Action('&Save python-file',  self, ['savePython'], fileMenu)
     Action('Save and e&xtract',  self, ['extractPython'], fileMenu)
-    if 'advanced' in configuration:
-      Action('Load python-file',   self, ['loadPython'], fileMenu)
     fileMenu.addSeparator()
     Action('&Exit',             self, ['exit'],       fileMenu)
 
