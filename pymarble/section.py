@@ -182,7 +182,7 @@ class Section:
       #garbage case: lots of garbage behind real data specified by shape
       variables = [content[i].key.split('=')[0] for i in self.count]
       return (
-          f'addData({relPos}, str({str(self.length)})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}", shape=['
+          f'addData({relPos}, str({self.length})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}", shape=['
           + ','.join(variables)) + '])\n'
     logging.error("section.py: UNDEFINED shape, count, length: %s, %s, %s", self.shape,self.count,self.length)
     return 'print("**ERROR occurred during deciphering")\n'
