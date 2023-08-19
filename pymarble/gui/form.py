@@ -7,6 +7,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, \
                               QSpinBox, QCheckBox, QWidget, QTextEdit  # pylint: disable=no-name-in-module
+from PySide6.QtGui import QFont  # pylint: disable=no-name-in-module
 from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
@@ -50,6 +51,7 @@ class Form(QDialog):
     self.textEditW = QTextEdit()
     self.textEditW.hide()
     self.textEditW.setReadOnly(True)
+    self.textEditW.setFont(QFont('Monospace', pointSize=12))
     mainL.addWidget(self.textEditW)
 
     #buttons below graph
@@ -310,9 +312,10 @@ class Form(QDialog):
         text += ' '+'  '.join([f'**{i:.3e}**' for i in self.valuesY[idxStart:idxEnd]])
         text += ' '+'  '.join([f'{i:.3e}'     for i in self.valuesY[idxEnd:]])
       else:
-        text  = self.comm.binaryFile.byteToString(dataAll[:idxStart], 1, 8)
-        text += f'  **{self.comm.binaryFile.byteToString(dataAll[idxStart:idxEnd], 1, 8)}**  '
-        text += self.comm.binaryFile.byteToString(dataAll[idxEnd:], 1, 8)
+        textArray = self.comm.binaryFile.byteToString(dataAll, 1).split(' ')
+        textArray = textArray[:self.lead]+[f'**{i}**' for i in textArray[self.lead:-self.lead]]+ \
+                    textArray[-self.lead:]
+        text  = '    '.join([' '.join(textArray[i:i+8]) for i in range(0, len(textArray), 8)])
       self.textEditW.setMarkdown(text)
       self.graph.hide()
       self.graphToolbar.hide()
@@ -395,11 +398,11 @@ class Form(QDialog):
         else:
           value = 'Unknown datatype'
       entropy = -1.0
+      dClass = '' if self.dClassCB.currentText()=='unknown' else self.dClassCB.currentText()
       section = Section(length=length, dType=dType,
                         key=self.keyW.text(), unit=self.unitW.text(), value=value,
-                        link=self.linkW.text(), dClass=self.dClassCB.currentText(),
-                        count=count, shape=shape, prob=200, entropy=entropy,
-                        important=self.importantW.isChecked())
+                        link=self.linkW.text(), dClass=dClass, count=count, shape=shape,
+                        prob=200, entropy=entropy, important=self.importantW.isChecked())
       #first save section with semi-infinite probability, fill/clean, save real section
       binaryFile.content[start] = section
       binaryFile.fill()                                   # type: ignore[misc]

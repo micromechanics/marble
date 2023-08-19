@@ -117,7 +117,7 @@ class RowTool(QDialog):
       initValues (dict): initial values
     """
     propertyRowW, propertyRowL = widgetAndLayout('H', self.propertyRowsL)
-    propertyRowL.addWidget(QLabel('key:'))
+    propertyRowL.addWidget(QLabel(f'{i+1:02d}  key:'))
     self.keyWs.append(QLineEdit(initValues.get('key', '')))
     propertyRowL.addWidget(self.keyWs[i])
     propertyRowL.addSpacing(self.space)
