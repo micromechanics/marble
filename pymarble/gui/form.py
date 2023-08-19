@@ -264,9 +264,7 @@ class Form(QDialog):
       limitX  = (length-blockSize)*byteSize
       limitY  = [0.0, 7.8]
       lineStyle= '-'
-    elif self.plotCB.currentText().endswith('warning'):
-      pass
-    else:
+    elif not self.plotCB.currentText().endswith('warning'):
       logging.error('unknown value in form')
     # graph / print
     if self.plotCB.currentText().startswith('plot'):

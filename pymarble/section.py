@@ -138,7 +138,7 @@ class Section:
     return [getattr(self, i) for i in SECTION_OUTPUT_ORDER]
 
 
-  def toPY(self,relPos:int, content:Optional[dict[int,Section]]=None, hdf:Optional[str]=None) ->Optional[str]:
+  def toPY(self,relPos:int, content:Optional[dict[int,Section]]=None, hdf:Optional[str]=None) -> Optional[str]:
     '''
     Return one-line string in python format for body of .py file
     - not used for save/load of structure information
@@ -155,31 +155,35 @@ class Section:
     if self.dType=='c' or self.dClass=='metadata':
       length = str(self.length) if self.dType=='c' else f'"{self.size()}"'  #default: char or
       key = self.key.replace(':','_')
-      return 'addAttrs('+str(relPos)+', '+length+', '+hdf+', "'+key+'")\n'
+      return f'addAttrs({relPos}, {length}, {hdf}, "{key}' + '")\n'
     if self.dType=='i':
       variable = self.key.split('=')[0]
       if content is not None and isinstance(content, str):
         variable = content
-      return variable+' = readData('+str(relPos)+', "'+self.size()+'")[0]\n'
+      return f'{variable} = readData({relPos}, "{self.size()}' + '")[0]\n'
     #if data with dTypes: d,f,H
-    if len(self.shape) in [0,1] and len(self.count)==1  and np.prod(self.shape)==self.length:
+    # sourcery skip: merge-nested-ifs
+    if len(self.shape) in {0,1} and len(self.count)==1  and np.prod(self.shape)==self.length:
       #default case: shape (un)identified and one count
       if content is not None:
         variable = content[self.count[0]].key.split('=')[0]
-        return 'addData('+str(relPos)+', str('+variable+')+"'+self.dType+'", '+hdf+', "'\
-            +self.key+'", "'+self.unit+'")\n'
+        return (
+            f'addData({relPos}, str({variable})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}'
+            + '")\n')
     if len(self.shape) == len(self.count) and np.prod(self.shape)==self.length and content is not None:
       #case: image with x,y count and shape
       variables = [content[i].key.split('=')[0] for i in self.count]
       prodVariables = '*'.join(variables)
-      return 'addData('+str(relPos)+', str('+prodVariables+')+"'+self.dType+'", '+hdf+', "'\
-          +self.key+'", "'+self.unit+'", shape=['+','.join(variables)+'])\n'
+      return (
+          f'addData({relPos}, str({prodVariables})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}", shape=['
+          + ','.join(variables)) + '])\n'
     if len(self.shape)>0 and len(self.shape)==len(self.count) and \
-       self.length>np.prod(self.shape) and content is not None:
+           self.length>np.prod(self.shape) and content is not None:
       #garbage case: lots of garbage behind real data specified by shape
       variables = [content[i].key.split('=')[0] for i in self.count]
-      return 'addData('+str(relPos)+', str('+str(self.length)+')+"'+self.dType+'", '+hdf+', "'\
-          +self.key+'", "'+self.unit+'", shape=['+','.join(variables)+'])\n'
+      return (
+          f'addData({relPos}, str({str(self.length)})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}", shape=['
+          + ','.join(variables)) + '])\n'
     logging.error("section.py: UNDEFINED shape, count, length: %s, %s, %s", self.shape,self.count,self.length)
     return 'print("**ERROR occurred during deciphering")\n'
 

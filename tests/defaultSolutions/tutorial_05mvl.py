@@ -675,5 +675,5 @@ length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 8,b,,,,,[],0,0.0,False,b'unknown binary string'
 -1,d,time,s,,primary,[44],100,5.0265,True,b''
 -1,f,displacement,mm,,primary,[44],100,5.0539,True,b''
--1,f,force,N,https://en.wikipedia.org/wiki/Force,primary,[44],100,-1.0,True,b''
+-1,f,force,N,https://en.wikipedia.org/wiki/Force,primary,[44],100,4.1571,True,b'unknown binary string'
 '''

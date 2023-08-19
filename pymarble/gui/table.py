@@ -1,5 +1,6 @@
 """ Main table in app """
 import logging
+from typing import Optional
 import numpy as np
 from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
@@ -29,7 +30,7 @@ class Table(QWidget):
     mainL.addWidget(self.table)
     self.setLayout(mainL)
     self.change()  #paint
-    self.methods = None
+    self.methods:Optional[dict[str,str]] = None
 
 
   @Slot()
@@ -124,11 +125,11 @@ class Table(QWidget):
       dialog.exec()
       self.change()  #repaint
     elif command[0] == 'remove':
-       del self.comm.binaryFile.content[start]
-       self.comm.binaryFile.fill()
+      del self.comm.binaryFile.content[start]
+      self.comm.binaryFile.fill()                                 # type: ignore[misc]
     elif command[0].startswith('_') and command[0].endswith('_'):
-      self.comm.binaryFile.automatic(command[0], start)
-      self.comm.binaryFile.fill()
+      self.comm.binaryFile.automatic(command[0], start)           # type: ignore[misc]
+      self.comm.binaryFile.fill()                                 # type: ignore[misc]
     else:
       logging.error('command unknown: %s', command)
     self.change()
@@ -145,7 +146,9 @@ class Table(QWidget):
     if self.comm.binaryFile is None:
       return
     if self.methods is None:
-      self.methods = self.comm.binaryFile.automatic('_',getMethods=True)
+      self.methods = self.comm.binaryFile.automatic('_',getMethods=True)  # type: ignore[misc]
+    if self.methods is None:
+      return
     context = QMenu(self)
     if len(self.comm.binaryFile.content) == 1:
       Action('Automatic for time series', self, ['autoTime'], context)

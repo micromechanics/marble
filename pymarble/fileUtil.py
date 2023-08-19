@@ -61,29 +61,28 @@ class Util():
     '''
     if dType=='s' and isinstance(value, str):
       searchString = bytes(value, 'utf-8').hex()
+    elif dType in {'i', 'H'}:
+      value = int(value)
+      searchString = struct.pack(dType,value).hex()
+    elif dType in {'f', 'd'}:
+      value = float(value)
+      searchString = struct.pack(dType,value).hex()
+      searchString = searchString[2:]  #chop of first byte (two chars) to allow for close values not precise
     else:
-      if dType in ['i', 'H']:
-        value = int(value)
-        searchString = struct.pack(dType,value).hex()
-      elif dType in ['f', 'd']:
-        value = float(value)
-        searchString = struct.pack(dType,value).hex()
-        searchString = searchString[2:]  #chop of first byte (two chars) to allow for close values not precise
-      else:
-        logging.error("NOT TESTED dTypes")
+      logging.error("NOT TESTED dTypes")
     self.file.seek(offset)
     data = self.file.read()
     found = data.hex().find(searchString)
     if found%2==1:                       #if odd: this is not a valid result, cause value not found
       found = -2
     found = int(found/2)                 #divide by 2 because byte has 2 chars
-    if dType in ['f', 'd']:
+    if dType in {'f', 'd'}:
       found -= 1                         #subtract because first byte was cutoff
     if self.verbose>0:
       if found<0:
         print('Number not found in file')
       else:
-        print(self.pretty(found), 'found value '+str(value))
+        print(f'{self.pretty(found)}  found value {value}')
     return found
 
 
@@ -262,6 +261,8 @@ class Util():
     anchor = None
     createdNew = False
     prevKvariables = 0
+    if maxOffset<0:
+      maxOffset = self.fileLength
     for startJ in self.content:
       section = self.content[startJ]
       if section.key.endswith(str(lengthSearch)) and section.dType=='i':
@@ -273,7 +274,7 @@ class Util():
       anchor = None
     if anchor is None:    #only if not already found: create new
       anchor = self.findBytes(lengthSearch,'i',0)
-      if anchor>=0 and anchor<=maxOffset-4:
+      if 0 <= anchor <= maxOffset-4:
         self.content[anchor] = Section(length=1, key=f'k{prevKvariables+1}={lengthSearch}',
                                        dType='i', prob=100, dClass='count', important=True)
         createdNew = True

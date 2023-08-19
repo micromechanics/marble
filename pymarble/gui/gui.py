@@ -157,16 +157,15 @@ class MainWindow(QMainWindow):
     if self.suggestFileOpen and self.comm.binaryFile is None:
       self.suggestFileOpen = False
       ### DEFAULT CASE ###
-      # self.execute(['open'])
+      self.execute(['open'])
       ### FOR EASY TESTING
-      fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/1.mst'
-      self.comm.binaryFile = BinaryFile(fileName)
-      self.comm.binaryFile.loadTags()                              # type: ignore[misc]
-      self.comm.changeTable.emit()
+      # fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/1.mst'
+      # self.comm.binaryFile = BinaryFile(fileName)
+      # self.comm.binaryFile.loadTags()                              # type: ignore[misc]
+      # self.comm.changeTable.emit()
       ### additional part for testing of form
-      from .rowTool import RowTool
-      dialog     = RowTool(self.comm)
-      dialog.show()
+      # dialog     = RowTool(self.comm)
+      # dialog.show()
     return super().resizeEvent(event)
 
 

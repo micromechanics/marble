@@ -17,8 +17,11 @@ class InputOutput():
     """
     self.file                      = io.BytesIO()
     self.periodicity:dict[str,int] = {}
+    self.rowFormatMeta:list[dict[str,str]] = []
+    self.rowFormatSegments:set[int]= set()
     self.meta                      = {'vendor':'', 'label':'', 'software':''}
     self.fileLength                = -1
+
 
   def initContent(self:FileProtocol) -> None:
     '''
@@ -138,7 +141,7 @@ class InputOutput():
     Output file content to .py file
     header has formalized description of file-structure
     '''
-    print('Note: save row format data')
+    print('Note: save row format data: when remove this, also adopt the default solutions')
     pyFile = os.path.splitext(self.fileName)[0]+'.py'
     with open(pyFile, 'w', encoding='utf-8') as fOut:
       # PYTHON PART

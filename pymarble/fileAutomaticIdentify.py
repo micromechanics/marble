@@ -25,7 +25,7 @@ class Automatic():
       file
       methodOrder of methods: method order to be used.
     '''
-    allMethods = {}
+    allMethods:dict[str,str] = {}
     for method in methodOrder.split('_'):
       if self.verbose>1:
         print("Start method",method)
@@ -395,11 +395,11 @@ class Automatic():
         sizeByLength = imgSize /  section.length
         if 0.1 < sizeByLength < 1.5:
           if dimension not in foundLocations:
-            locations = np.array([int(i) for i  in self.findValue(dimension,'i',verbose=False)], dtype=int)
+            locations = np.array([int(i) for i  in self.findValue(dimension,'i',False,0)], dtype=np.int32)
             foundLocations[dimension] = locations
           else:
             locations = foundLocations[dimension]
-          if np.any(np.logical_and(4<=np.diff(locations), np.diff(locations)<= 400)):
+          if np.any(np.logical_and(np.diff(locations)>=4, np.diff(locations)<= 400)):
             startData = np.max(locations)+4
             # self.file.seek(startData)
             # data = struct.unpack(f'{dimension**2}{bit}', self.file.read(imgSize)) # read and convert
