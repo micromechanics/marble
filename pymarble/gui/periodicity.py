@@ -1,16 +1,13 @@
 """ Editor to identify periodicity: multiple tests in one file """
-import struct, logging
+import logging
 from typing import Optional
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, \
-                              QSpinBox, QCheckBox, QWidget  # pylint: disable=no-name-in-module
-from ..section import Section
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QComboBox, QWidget  # pylint: disable=no-name-in-module
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
-from .defaults import translateDtype, translateDtypeInv
 
 class Periodicity(QDialog):
   """ Editor to identify periodicity: multiple tests in one file """
@@ -70,8 +67,9 @@ class Periodicity(QDialog):
     buttonBox.clicked.connect(self.save)
     mainL.addWidget(buttonBox)
     self.skipEvery = self.comm.binaryFile.optEntropy['skipEvery']
-    self.entropy   = self.comm.binaryFile.entropy(average=False)
-    self.xValues   = np.arange(len(self.entropy))*self.skipEvery
+    self.entropy   = self.comm.binaryFile.entropy(average=False)       # type: ignore[misc]
+    length         = len(self.entropy) if isinstance(self.entropy, list) else 1
+    self.xValues   = np.arange(length)*self.skipEvery
     self.refresh()
 
 
@@ -79,7 +77,6 @@ class Periodicity(QDialog):
     """ repaint form incl. graph """
     if self.comm.binaryFile is None:
       return
-    count = int(self.countCB.currentText().split(' - ')[0][3:])
     start = int(self.startCB.currentText().split(' - ')[0][3:])
     end   = int(self.lastCB.currentText().split(' - ')[0][3:])
     sectionEnd = self.comm.binaryFile.content[end]
@@ -104,15 +101,16 @@ class Periodicity(QDialog):
     if self.comm.binaryFile is None:
       return
     if command[0] == 'changeNumber':
-      while self.numberW.value() != len(self.plotWs):
-        if   self.numberW.value() > len(self.plotWs):
-          self.addRow(self.numberW.value()-1)
-        elif self.numberW.value() < len(self.plotWs):
-          self.keyWs.pop()
-          self.unitWs.pop()
-          self.linkWs.pop()
-          self.plotWs.pop()
-          widget = self.propertyRowsWs.pop()
+      print('here')
+      # while self.numberW.value() != len(self.plotWs):
+      #   if   self.numberW.value() > len(self.plotWs):
+      #     self.addRow(self.numberW.value()-1)
+      #   elif self.numberW.value() < len(self.plotWs):
+      #     self.keyWs.pop()
+      #     self.unitWs.pop()
+      #     self.linkWs.pop()
+      #     self.plotWs.pop()
+      #     widget = self.propertyRowsWs.pop()
     self.refresh()
     return
 
@@ -125,7 +123,7 @@ class Periodicity(QDialog):
       count = self.countCB.currentText().split(' - ')[0][3:]
       start = self.startCB.currentText().split(' - ')[0][3:]
       end   = self.lastCB.currentText().split(' - ')[0][3:]
-      self.comm.binaryFile.periodicity =  {'count':count, 'start':start, 'end':end}
+      self.comm.binaryFile.periodicity =  {'count':int(count), 'start':int(start), 'end':int(end)}
       self.accept()
     else:
       logging.error('unknown command %s', btn.text())
