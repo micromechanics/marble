@@ -45,7 +45,7 @@ fi
 # - note that these tests are not saved to file
 if [[ -n "$1" ]] && [ $1 = m ]; then
   ./marbleCLI.py tests/examples/alone.idr 'it; l'
-  ./marbleCLI.py tests/examples/alone.idr 'it; r 64016 1582|d|test; d 64016'
+  ./marbleCLI.py tests/examples/alone.idr 'it; r 64016 1562|d|test; d 64016'
 fi
 
 # Lets clean up everything: assuming the length is 1562

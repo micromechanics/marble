@@ -154,7 +154,7 @@ class Form(QDialog):
     _, dClassL = widgetAndLayout('H', mainL)
     dClassL.addWidget(QLabel('dClass:'))
     self.dClassCB = QComboBox()
-    self.dClassCB.addItems(['metadata','primary','unknown'])
+    self.dClassCB.addItems(['metadata','primary','unknown','count'])
     self.dClassCB.setCurrentText(section.dClass)
     dClassL.addWidget(self.dClassCB)
     dClassL.addSpacing(space)
@@ -187,7 +187,6 @@ class Form(QDialog):
       self.keyW.setDisabled(True)
       self.valueW.setDisabled(True)
       self.unitW.setDisabled(True)
-      self.dClassCB.setDisabled(True)
       self.linkW.setDisabled(True)
       self.countW.setDisabled(True)
       self.shapeW.setDisabled(True)
@@ -218,6 +217,7 @@ class Form(QDialog):
       lead = self.lead
     start       = self.startW.value()
     length      = self.lengthW.value()
+    #TODO update shape too from length
     dType       = translateDtypeInv[self.dTypeCB.currentText()]
     byteSize    = struct.calcsize(dType)
     startAll    = start-lead*byteSize
@@ -298,6 +298,7 @@ class Form(QDialog):
       self.graphToolbar.show()
       self.graph.show()
     elif self.plotCB.currentText().startswith('print'):
+      # - if integer and integer is small print as 0001
       if len(dataAll)>self.critPrint:
         scaleDown = max(int(length/self.critPrint), 1)
         logging.info('Data too large: print only every %sth point', scaleDown)

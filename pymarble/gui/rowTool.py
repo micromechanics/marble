@@ -117,7 +117,13 @@ class RowTool(QDialog):
       initValues (dict): initial values
     """
     propertyRowW, propertyRowL = widgetAndLayout('H', self.propertyRowsL)
-    propertyRowL.addWidget(QLabel(f'{i+1:02d}  key:'))
+    propertyRowL.addWidget(QLabel(f'{i+1:02d}  plot:'))
+    self.plotWs.append(QCheckBox())
+    self.plotWs[i].setChecked(True)
+    self.plotWs[i].stateChanged.connect(self.refresh)
+    propertyRowL.addWidget(self.plotWs[i])
+    propertyRowL.addSpacing(self.space)
+    propertyRowL.addWidget(QLabel('key:'))
     self.keyWs.append(QLineEdit(initValues.get('key', '')))
     propertyRowL.addWidget(self.keyWs[i])
     propertyRowL.addSpacing(self.space)
@@ -128,12 +134,6 @@ class RowTool(QDialog):
     propertyRowL.addWidget(QLabel('link:'))
     self.linkWs.append(QLineEdit(initValues.get('link', '')))
     propertyRowL.addWidget(self.linkWs[i], stretch=1)             # type: ignore[call-arg]
-    propertyRowL.addSpacing(self.space)
-    propertyRowL.addWidget(QLabel('plot:'))
-    self.plotWs.append(QCheckBox())
-    self.plotWs[i].setChecked(True)
-    self.plotWs[i].stateChanged.connect(self.refresh)
-    propertyRowL.addWidget(self.plotWs[i])
     self.propertyRowsWs.append(propertyRowW)
     return
 

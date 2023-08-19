@@ -1,6 +1,6 @@
 """All functions that identify content in binary file automatically"""
 import math, struct, re, time, logging
-from typing import Optional
+from typing import Optional, Union
 import xml.etree.ElementTree as ET
 import numpy as np
 from .section import Section
@@ -329,7 +329,7 @@ class Automatic():
     return
 
 
-  def entropy(self:FileProtocol, start:int=-1, plot:bool=False) -> float:
+  def entropy(self:FileProtocol, start:int=-1, average:bool=True) -> Union[float,list[float]]:
     '''
     inspired by but not more than inspired by
     - http://blog.dkbza.org/2007/05/scanning-data-for-entropy-anomalies.html
@@ -364,19 +364,11 @@ class Automatic():
       counts    = counts/blockSize
       yValue    = np.sum(-counts*np.log2(counts))
       results.append(yValue)
-    if plot:
-      import matplotlib.pyplot as plt
-      plt.plot(startPoints, results, '-')
-      plt.xlim(left=0)
-      plt.ylim(bottom=0)
-      plt.xlabel('offset')
-      plt.ylabel('entropy')
-      plt.show()
     if start in self.content:
       self.content[start].entropy = np.average(results)
-    elif not plot and self.verbose>0:
+    elif self.verbose>0:
       print('Average entropy:', np.round(np.average(results),4))
-    return np.average(results)
+    return np.average(results) if average else results
 
 
   def find2DImage(self:FileProtocol, start:int) -> None:

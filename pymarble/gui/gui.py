@@ -14,6 +14,7 @@ from .table import Table
 from .tableHeader import TableHeader
 from .metaEditor  import MetaEditor
 from .rowTool import RowTool
+from .periodicity import Periodicity
 from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
@@ -35,8 +36,8 @@ class MainWindow(QMainWindow):
     Action('&Open binary file',  self, ['open'],       fileMenu, shortcut='Ctrl+L')
     Action('&Use exported .csv', self, ['useExported'],fileMenu, shortcut='Ctrl+U')
     fileMenu.addSeparator()
-    Action('Open corr. .tags', self, ['loadTags'],   fileMenu)
-    Action('Save corr. .tags', self, ['saveTags'],   fileMenu)
+    Action('Open corr. .tags', self, ['loadTags'],   fileMenu,  shortcut='Ctrl+T')
+    Action('Save corr. .tags', self, ['saveTags'],   fileMenu,  shortcut='F4')
     fileMenu.addSeparator()
     Action('Open python-file',   self, ['loadPython'], fileMenu)
     Action('&Save python-file',  self, ['savePython'], fileMenu)
@@ -53,6 +54,7 @@ class MainWindow(QMainWindow):
     toolsMenu = menu.addMenu("&Tools")
     Action('Edit &metadata',    self, ['metaEditor'], toolsMenu, shortcut='Ctrl+M')
     Action('Find row data',     self, ['rowTool'],    toolsMenu)
+    Action('Periodicity tool',  self, ['periodicity'],toolsMenu)
 
     helpMenu = menu.addMenu("&Help")
     Action('&Website',          self, ['website'],        helpMenu)
@@ -118,6 +120,9 @@ class MainWindow(QMainWindow):
     elif command[0]=='rowTool':
       dialog = RowTool(self.comm)
       dialog.exec()
+    elif command[0]=='periodicity':
+      dialog = Periodicity(self.comm)
+      dialog.exec()
     elif command[0]=='saveTags':
       self.comm.binaryFile.saveTags()           # type: ignore[misc]
     elif command[0]=='loadTags':
@@ -157,12 +162,12 @@ class MainWindow(QMainWindow):
     if self.suggestFileOpen and self.comm.binaryFile is None:
       self.suggestFileOpen = False
       ### DEFAULT CASE ###
-      self.execute(['open'])
+      # self.execute(['open'])
       ### FOR EASY TESTING
-      # fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/1.mst'
-      # self.comm.binaryFile = BinaryFile(fileName)
-      # self.comm.binaryFile.loadTags()                              # type: ignore[misc]
-      # self.comm.changeTable.emit()
+      fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/alone.idr'
+      self.comm.binaryFile = BinaryFile(fileName)
+      self.comm.binaryFile.loadTags()                              # type: ignore[misc]
+      self.comm.changeTable.emit()
       ### additional part for testing of form
       # dialog     = RowTool(self.comm)
       # dialog.show()
