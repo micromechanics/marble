@@ -16,7 +16,6 @@ class FileProtocol(Protocol):
   periodicity: dict[str,int]
   rowFormatMeta: list[dict[str,str]]
   rowFormatSegments: set[int]
-  optGeneral: dict[str, int]
   optFind: dict[str, float]
   optAutomatic: dict[str, int]
   optEntropy: dict[str,int]

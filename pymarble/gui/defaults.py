@@ -3,7 +3,12 @@
 defaultConfiguration = {
   "lastDirectory": "",
   "columns": ["start", "length", "key", "value"],
+  "optFind": {"maxError":1e-4},
+  "optAutomatic": {"minChars":10,   "minArray": 50, "maxExp":11, "minZeros":16, "minEntropy":3},
+  "optEntropy": {"blockSize":256, "skipEvery":5}
 }
+# the opt...: properties are the same as in file.py
+#
 # additional options
 # advanced: anything: e.g. true
 # print_mode hex

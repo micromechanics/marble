@@ -1,5 +1,6 @@
 """module that describes binary file that is to be deciphered"""
 import os, io
+from typing import Any
 from sortedcontainers import SortedDict
 from .fileClass import FileProtocol
 from .fileInputOutput import InputOutput
@@ -11,7 +12,8 @@ class BinaryFile(InputOutput, Automatic, Util, Commandline):
   """
   class that describes binary file that is to be deciphered
   """
-  def __init__(self:FileProtocol, fileName:str, verbose:int=1, fileType:str='disk'):
+  def __init__(self:FileProtocol, fileName:str, verbose:int=1, fileType:str='disk',
+               config:dict[str,dict[str,Any]]={}):
     '''
     initialize
 
@@ -19,14 +21,18 @@ class BinaryFile(InputOutput, Automatic, Util, Commandline):
       filename: name of file
       verbose: verbose output. 0=no output; 1=minmal; 2=more
       fileType: disk or data
+      config: configuration from file
 
     '''
     super().__init__()
-    #All options should be here. GUI can change these defaults
-    self.optGeneral   = {'maxSize':-1}
+    #All options should be here. GUI can change these defaults and these are also present in defaults.py
     self.optFind      = {'maxError':1e-4}
     self.optAutomatic = {'minChars':10,   'minArray': 50, 'maxExp':11, 'minZeros':16, 'minEntropy':3}
     self.optEntropy   = {'blockSize':256, 'skipEvery':5}
+    if config:
+      self.optFind      |= config['optFind']
+      self.optAutomatic |= config['optAutomatic']
+      self.optEntropy   |= config['optEntropy']
 
     self.fileType   = fileType  #'disk': read directly from disk; 'ram' copy file in ram and work in virt. disk
                                 #'data': #futureFeature copy file into data & work on different sections

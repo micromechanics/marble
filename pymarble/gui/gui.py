@@ -13,6 +13,7 @@ from .communicate import Communicate
 from .table import Table
 from .tableHeader import TableHeader
 from .metaEditor  import MetaEditor
+from .configurationEditor import ConfigurationEditor
 from .rowTool import RowTool
 from .periodicity import Periodicity
 from .misc import restart
@@ -52,9 +53,12 @@ class MainWindow(QMainWindow):
     Action('Table columns',     self, ['tableHeader'],viewMenu)
 
     toolsMenu = menu.addMenu("&Tools")
-    Action('Edit &metadata',    self, ['metaEditor'], toolsMenu, shortcut='Ctrl+M')
-    Action('Find row data',     self, ['rowTool'],    toolsMenu)
-    Action('Periodicity tool',  self, ['periodicity'],toolsMenu)
+    Action('Edit &metadata',          self, ['metaEditor'],    toolsMenu, shortcut='Ctrl+M')
+    Action('Define row data in file', self, ['rowTool'],       toolsMenu)
+    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu)
+    toolsMenu.addSeparator()
+    Action('Configuration',           self, ['configuration'], toolsMenu, shortcut='F1')
+
 
     helpMenu = menu.addMenu("&Help")
     Action('&Website',          self, ['website'],        helpMenu)
@@ -89,7 +93,7 @@ class MainWindow(QMainWindow):
         self.configuration['lastDirectory'] = str(Path(fileName).parent)
         with open(Path.home()/'.pyMARBLE.json', 'w', encoding='utf-8') as fOut:
           fOut.write(json.dumps(self.configuration, indent=2))
-        self.comm.binaryFile = BinaryFile(fileName)
+        self.comm.binaryFile = BinaryFile(fileName, config=self.configuration)
         self.comm.changeTable.emit()
         self.setWindowTitle(f'MARBLE: {fileName.split(os.sep)[-1]}')
     elif command[0]=='website':
@@ -106,6 +110,9 @@ class MainWindow(QMainWindow):
       self.changeStatusbar()
     elif command[0]=='tableHeader':
       dialog = TableHeader(self.comm)
+      dialog.exec()
+    elif command[0]=='configuration':
+      dialog = ConfigurationEditor(self.comm)
       dialog.exec()
     elif command[0]=='restart':
       restart()
@@ -166,8 +173,8 @@ class MainWindow(QMainWindow):
       # self.execute(['open'])
       ### FOR EASY TESTING
       fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/alone.idr'
-      self.comm.binaryFile = BinaryFile(fileName)
-      self.comm.binaryFile.loadTags()                              # type: ignore[misc]
+      self.comm.binaryFile = BinaryFile(fileName, config=self.configuration)
+      # self.comm.binaryFile.loadTags()                              # type: ignore[misc]
       self.comm.changeTable.emit()
       ### additional part for testing of form
       # dialog     = RowTool(self.comm)
