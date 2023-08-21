@@ -5,8 +5,8 @@ import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QComboBox, QWidget  # pylint: disable=no-name-in-module
-from .style import IconButton, widgetAndLayout
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QComboBox, QWidget, QLineEdit  # pylint: disable=no-name-in-module
+from .style import IconButton, widgetAndLayout, showMessage
 from .communicate import Communicate
 
 class Periodicity(QDialog):
@@ -23,7 +23,12 @@ class Periodicity(QDialog):
     self.comm = comm
     if self.comm.binaryFile is None:
       return
+    self.domain = 64
     self.space = 20
+    content = self.comm.binaryFile.content
+    listCounts=[f'at {i} - {content[i].key}:{content[i].value}' for i in content if content[i].dClass=='count']
+    listOther =[f'at {i} - {content[i].key}:{content[i].value}' for i in content if content[i].dClass!='count'
+                and content[i].important]
 
     # GUI elements
     self.setWindowTitle('Identify multiple tests in one file')
@@ -39,33 +44,51 @@ class Periodicity(QDialog):
     graphL.addWidget(self.graph, stretch=1)                               # type: ignore[call-arg]
 
     #main row
-    #fBIN.periodicity =  dict(zip(['count','start','end'],[int(i) for i in command.split()[1:]]))
-    content = self.comm.binaryFile.content
-    listCounts=[f'at {i} - {content[i].key}:{content[i].value}' for i in content if content[i].dClass=='count']
-    listOther =[f'at {i} - {content[i].key}:{content[i].value}' for i in content if content[i].dClass!='count']
     _, mainBarL = widgetAndLayout('H', mainL)
+    self.plotCB = QComboBox()
+    self.plotCB.addItems(['Plot entropy', 'Plot byte value'])
+    self.plotCB.currentTextChanged.connect(self.refresh)
+    mainBarL.addWidget(self.plotCB, stretch=1)                        # type: ignore[call-arg]
+    mainBarL.addSpacing(self.space)
+    self.widgetCB = QComboBox()
+    self.widgetCB.addItems(['Select one section', 'Enter numbers directly'])
+    self.widgetCB.currentTextChanged.connect(lambda: self.execute(['widgetCB']))
+    mainBarL.addWidget(self.widgetCB, stretch=1)                        # type: ignore[call-arg]
+    mainBarL.addSpacing(self.space*3)
     mainBarL.addWidget(QLabel('Count:'))
     self.countCB = QComboBox()
     self.countCB.addItems(listCounts)
-    self.countCB.currentTextChanged.connect(lambda: self.execute(['countCB']))
+    self.countCB.currentTextChanged.connect(self.refresh)
     mainBarL.addWidget(self.countCB, stretch=1)                        # type: ignore[call-arg]
-    mainBarL.addSpacing(self.space*2)
+    self.countLE = QLineEdit('')
+    self.countLE.textChanged.connect(self.refresh)
+    self.countLE.hide()
+    mainBarL.addWidget(self.countLE, stretch=1)
+    mainBarL.addSpacing(self.space)
     mainBarL.addWidget(QLabel('Start:'))
     self.startCB = QComboBox()
     self.startCB.addItems(listOther)
-    self.startCB.currentTextChanged.connect(lambda: self.execute(['startCB']))
+    self.startCB.currentTextChanged.connect(self.refresh)
     mainBarL.addWidget(self.startCB, stretch=1)                        # type: ignore[call-arg]
-    mainBarL.addSpacing(self.space*2)
+    self.startLE = QLineEdit('')
+    self.startLE.textChanged.connect(self.refresh)
+    self.startLE.hide()
+    mainBarL.addWidget(self.startLE, stretch=1)
+    mainBarL.addSpacing(self.space)
     mainBarL.addWidget(QLabel('Last:'))
     self.lastCB = QComboBox()
     self.lastCB.addItems(listOther)
-    self.lastCB.currentTextChanged.connect(lambda: self.execute(['lastCB']))
+    self.lastCB.currentTextChanged.connect(self.refresh)
     mainBarL.addWidget(self.lastCB, stretch=1)                        # type: ignore[call-arg]
+    self.lastLE = QLineEdit('')
+    self.lastLE.textChanged.connect(self.refresh)
+    self.lastLE.hide()
+    mainBarL.addWidget(self.lastLE, stretch=1)
 
     #final button box
-    buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-    buttonBox.clicked.connect(self.save)
-    mainL.addWidget(buttonBox)
+    self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+    self.buttonBox.clicked.connect(self.save)
+    mainL.addWidget(self.buttonBox)
     self.skipEvery = self.comm.binaryFile.optEntropy['skipEvery']
     self.entropy   = self.comm.binaryFile.entropy(average=False)       # type: ignore[misc]
     length         = len(self.entropy) if isinstance(self.entropy, list) else 1
@@ -77,16 +100,62 @@ class Periodicity(QDialog):
     """ repaint form incl. graph """
     if self.comm.binaryFile is None:
       return
-    start = int(self.startCB.currentText().split(' - ')[0][3:])
-    end   = int(self.lastCB.currentText().split(' - ')[0][3:])
-    sectionEnd = self.comm.binaryFile.content[end]
+    if self.widgetCB.currentText()=='Select one section':
+      start = int(self.startCB.currentText().split(' - ')[0][3:])
+      endOffset   = int(self.lastCB.currentText().split(' - ')[0][3:])
+      sectionEnd = self.comm.binaryFile.content[endOffset]
+      end = endOffset+sectionEnd.byteSize()
+    else:
+      if self.startLE.text()=='' or self.lastLE.text()=='':
+        start = end = 0
+      else:
+        start = int(self.startLE.text())
+        end   = int(self.lastLE.text())
+    #start plotting
     self.graph.axes.cla()                        # Clear the canvas
-    self.graph.axes.plot(self.xValues, self.entropy)
-    self.graph.axes.axvline(start, c='r', linewidth=2)
-    self.graph.axes.axvline(end+sectionEnd.byteSize(), c='r', linewidth=2)
-    self.graph.axes.set_xlabel('increment')
-    self.graph.axes.set_xlim(left=0)
-    self.graph.axes.set_ylabel('entropy')
+    if self.plotCB.currentText()=='Plot entropy':
+      self.graph.axes.plot(self.xValues, self.entropy, label='default')
+      offset = end-start
+      self.graph.axes.plot(self.xValues-offset, self.entropy, '--', label='shifed by one period')
+      self.graph.axes.legend()
+      self.graph.axes.axvline(start, c='r', linewidth=2)
+      self.graph.axes.axvline(end+1, c='r', linewidth=2)
+      self.graph.axes.set_xlim(left=0)
+      self.graph.axes.set_ylabel('entropy')
+      self.graph.axes.set_xlabel('increment')
+    else:
+      xValues = np.arange(-self.domain, self.domain, 1)
+      # line 1
+      startD = start-self.domain
+      endD   = start+self.domain
+      preData = bytearray(0)
+      if startD < 0:
+        preData = bytearray(-startD)
+        startD = 0
+      self.comm.binaryFile.file.seek(startD)
+      data = self.comm.binaryFile.file.read(endD-startD)
+      data = preData+data if len(preData)>1 else data
+      try:
+        self.graph.axes.plot(xValues, list(data), 'o-', label='default')
+      except Exception:  #do not plot if input numbers not correct
+        pass
+      # line 2
+      startD = end+1 - self.domain
+      endD   = end+1 + self.domain
+      preData = bytearray(0)
+      if startD < 0:
+        preData = bytearray(-startD)
+        startD = 0
+      self.comm.binaryFile.file.seek(startD)
+      data = self.comm.binaryFile.file.read(endD-startD)
+      try:
+        self.graph.axes.plot(xValues, list(data), 'o--', label='shifted by one period')
+      except Exception:  #do not plot if input numbers not correct
+        pass
+      self.graph.axes.legend()
+      self.graph.axes.axvline(0, c='r', linewidth=2)
+      self.graph.axes.set_ylabel('byte value')
+      self.graph.axes.set_xlabel('period start')
     self.graph.draw() # Trigger the canvas to update and redraw.
     return
 
@@ -100,17 +169,29 @@ class Periodicity(QDialog):
     """
     if self.comm.binaryFile is None:
       return
-    if command[0] == 'changeNumber':
-      print('here')
-      # while self.numberW.value() != len(self.plotWs):
-      #   if   self.numberW.value() > len(self.plotWs):
-      #     self.addRow(self.numberW.value()-1)
-      #   elif self.numberW.value() < len(self.plotWs):
-      #     self.keyWs.pop()
-      #     self.unitWs.pop()
-      #     self.linkWs.pop()
-      #     self.plotWs.pop()
-      #     widget = self.propertyRowsWs.pop()
+    if command[0] == 'widgetCB':
+      if self.widgetCB.currentText()=='Select one section':
+        self.countCB.setDisabled(False)
+        self.startCB.show()
+        self.lastCB.show()
+        self.startLE.hide()
+        self.lastLE.hide()
+        self.buttonBox.buttons()[0].setDisabled(False)
+      else:
+        self.countCB.setDisabled(True)
+        self.startCB.hide()
+        self.lastCB.hide()
+        self.startLE.show()
+        self.lastLE.show()
+        start = int(self.startCB.currentText().split(' - ')[0][3:])
+        endOffset   = int(self.lastCB.currentText().split(' - ')[0][3:])
+        sectionEnd = self.comm.binaryFile.content[endOffset]
+        end = endOffset+sectionEnd.byteSize()
+        self.startLE.setText(str(start))
+        self.lastLE.setText(str(end))
+        self.buttonBox.buttons()[0].setDisabled(True)
+    else:
+      print('**ERROR unknown command', command)
     self.refresh()
     return
 
@@ -119,14 +200,15 @@ class Periodicity(QDialog):
     """ save selectedList to configuration and exit """
     if btn.text().endswith('Cancel'):
       self.reject()
-    elif btn.text().endswith('Save') and self.comm.binaryFile is not None:
+    elif btn.text().endswith('Save') and self.comm.binaryFile is not None and  \
+         self.widgetCB.currentText()=='Select one section':
       count = self.countCB.currentText().split(' - ')[0][3:]
       start = self.startCB.currentText().split(' - ')[0][3:]
       end   = self.lastCB.currentText().split(' - ')[0][3:]
       self.comm.binaryFile.periodicity =  {'count':int(count), 'start':int(start), 'end':int(end)}
       self.accept()
     else:
-      logging.error('unknown command %s', btn.text())
+      showMessage(self, 'Information','Can only save when you select sections', 'Information')
     return
 
 

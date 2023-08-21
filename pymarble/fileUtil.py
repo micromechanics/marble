@@ -149,6 +149,13 @@ class Util():
       return
     rerun = True
     while rerun:  #loop until all changes made
+      #some tests at start: use for debugging
+      # print('Start')
+      # for start in self.content:
+      #   section = self.content[start]
+      #   if section.dType=='B' and section.value=='unknown binary string':
+      #     print('**ERROR: dtype==B and section.value==unknown binary string', start, section)
+
       rerun = False
       toDelete = []
       starts = list(self.content)
@@ -194,7 +201,12 @@ class Util():
               rerun = True
             section.length = int((starts[idx+1]-start)/struct.calcsize(section.dType))
             self.file.seek(start)
-            section.value   = 'unknown binary string' #self.byteToString(self.file.read(section.length),1)
+            if section.dType == 'b':
+              section.value   = 'unknown binary string' #self.byteToString(self.file.read(section.length),1)
+            elif section.dType == 'B':
+              section.value   = f'Zeros {section.length}'
+            else:
+              logging.error(f'Shorten something of non-binary type {start}: {section}')
             self.content[start] = section
             self.entropy(start, False)   #set entropy
             if self.verbose>1:
@@ -226,6 +238,24 @@ class Util():
           text = 'unknown binary string' #self.byteToString(self.file.read(self.fileLength-newStart),1)
           self.content[newStart] = Section(length=self.fileLength-newStart, dType='b', value=text)
           self.entropy(newStart, False)
+
+      #merge sequential binary sections
+      pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
+      pairsRepair = [[i,j] for i,j in pairsAll if self.content[i].dType=='b' and self.content[j].dType=='b']
+      while pairsRepair:
+        for first, second in pairsRepair:
+          self.content[first].length += self.content[second].length
+          self.content[first].shape  = [self.content[first].length]
+          del self.content[second]
+        pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
+        pairsRepair = [[i,j] for i,j in pairsAll if self.content[i].dType=='b' and self.content[j].dType=='b']
+
+      # #some tests at end: use for debugging
+      # print('End')
+      # for start in self.content:
+      #   section = self.content[start]
+      #   if section.dType=='B' and section.value=='unknown binary string':
+      #     print('**ERROR: dtype==B and section.value==unknown binary string', start, section)
     return
 
 

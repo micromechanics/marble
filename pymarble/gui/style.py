@@ -20,29 +20,6 @@ iconsDocTypes = {'Measurements':'fa5s.thermometer-half',
 shortCuts = {'measurement':'m', 'sample':'s', 'procedure':'p', 'instrument':'i', 'x0':'space'}
 
 
-
-def getColor(configuration:dict[str,Any], color:str) -> str:
-  """
-  get color from theme
-
-  Args:
-    configuration (dict): configuration to get theme
-    color (str): color to get [primary, primaryLight, secondary, secondaryLight, secondaryDark, primaryText,
-                 secondaryText]
-
-  Returns:
-    str: #123456 color code
-  """
-  themeName = configuration['theme']
-  ## For dark-blue:
-  ## {'primaryColor': '#448aff', 'primaryLightColor': '#83b9ff', 'secondaryColor': '#232629',
-  ##  'secondaryLightColor': '#4f5b62','secondaryDarkColor': '#31363b', 'primaryTextColor': '#000000',
-  ##  'secondaryTextColor': '#ffffff'}
-  if themeName == 'none':
-    return '#000000'
-  return get_theme(f'{themeName}.xml')[f'{color}Color']
-
-
 class TextButton(QPushButton):
   """ Button that has only text"""
   def __init__(self, label:str, widget:QWidget, command:list[str]=[],
@@ -68,15 +45,10 @@ class TextButton(QPushButton):
       self.setToolTip(tooltip)
     if style:
       self.setStyleSheet(style)
-    else:
-      primaryColor = getColor(widget.comm.configuration, 'primary')
-      secTextColor = getColor(widget.comm.configuration, 'secondaryText')
-      self.setStyleSheet(f'border-width: 0px; background-color: {primaryColor}; color: {secTextColor}')
     if hide:
       self.hide()
     if iconName:
-      color = 'black' if widget is None else getColor(widget.comm.configuration, 'primary')
-      icon = qta.icon(iconName, color=color, scale_factor=1)
+      icon = qta.icon(iconName, color='black', scale_factor=1)
       self.setIcon(icon)
     if layout is not None:
       layout.addWidget(self)
@@ -97,8 +69,7 @@ class IconButton(QPushButton):
       hide (bool): hidden or shown initially
     """
     super().__init__()
-    color = 'black' if widget is None else getColor(widget.comm.configuration, 'primary')
-    icon = qta.icon(iconName, color=color, scale_factor=1)
+    icon = qta.icon(iconName, color='black', scale_factor=1)
     self.setIcon(icon)
     self.clicked.connect(lambda: widget.execute(command))
     self.setFixedHeight(30)

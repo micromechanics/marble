@@ -55,9 +55,9 @@ class MainWindow(QMainWindow):
     toolsMenu = menu.addMenu("&Tools")
     Action('Edit &metadata',          self, ['metaEditor'],    toolsMenu, shortcut='Ctrl+M')
     Action('Define row data in file', self, ['rowTool'],       toolsMenu)
-    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu)
+    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu, shortcut='F1')
     toolsMenu.addSeparator()
-    Action('Configuration',           self, ['configuration'], toolsMenu, shortcut='F1')
+    Action('Configuration',           self, ['configuration'], toolsMenu)
 
 
     helpMenu = menu.addMenu("&Help")
@@ -65,6 +65,7 @@ class MainWindow(QMainWindow):
     Action('&About',            self, ['about'],        helpMenu)
     #shortcuts for advanced usage (user should not need)
     QShortcut('F9', self, lambda : self.execute(['restart']))
+    QShortcut('F10',self, lambda : self.execute(['repaint']))
 
     self.statusBarW =QLabel('Initialize...')
     self.toggleState = {'F5':'all', 'F6':'all', 'F7':'all'}
@@ -116,6 +117,9 @@ class MainWindow(QMainWindow):
       dialog.exec()
     elif command[0]=='restart':
       restart()
+    elif command[0]=='repaint':
+      self.comm.binaryFile.fill()
+      self.comm.changeTable.emit()
     # ------------------------
     #check for existing file: as remainder use open file
     # ------------------------
@@ -174,6 +178,7 @@ class MainWindow(QMainWindow):
       ### FOR EASY TESTING
       fileName = '/home/steffen/FZJ/DataScience/MARBLE_RFF/Software2/tests/examples/alone.idr'
       self.comm.binaryFile = BinaryFile(fileName, config=self.configuration)
+      self.comm.binaryFile.verbose = 99
       # self.comm.binaryFile.loadTags()                              # type: ignore[misc]
       self.comm.changeTable.emit()
       ### additional part for testing of form
