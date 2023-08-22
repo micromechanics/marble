@@ -242,10 +242,10 @@ class Util():
       pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
       pairsRepair = [[i,j] for i,j in pairsAll if self.content[i].dType=='b' and self.content[j].dType=='b']
       while pairsRepair:
-        for first, second in pairsRepair:
-          self.content[first].length += self.content[second].length
-          self.content[first].shape  = [self.content[first].length]
-          del self.content[second]
+        first, second = pairsRepair[0]  #just take the first and then rebuild to prevent overlapping
+        self.content[first].length += self.content[second].length
+        self.content[first].shape  = [self.content[first].length]
+        del self.content[second]
         pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
         pairsRepair = [[i,j] for i,j in pairsAll if self.content[i].dType=='b' and self.content[j].dType=='b']
 

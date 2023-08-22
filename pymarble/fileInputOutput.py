@@ -157,7 +157,7 @@ class InputOutput():
         line = self.content[start].toPY(start, 'numberOfTests')
         fOut.write('  fIn.seek(0)\n')
         fOut.write('  '+line)
-        self.content[start].dClass='metadata'
+        self.content[start].dClass='metadata'  #count->metadata
       #body: things other than foor loop
       fOut.write('  fIn.seek(0)\n')
       lastOutput = 0
@@ -203,6 +203,8 @@ class InputOutput():
       fOut.write('# version= 1.0\n')
       fOut.write(f'# meta={json.dumps(self.meta)}\n')
       fOut.write(f'# periodicity={json.dumps(self.periodicity)}\n')
+      fOut.write(f'# rowFormatMeta={json.dumps(self.rowFormatMeta)}\n')
+      fOut.write(f'# rowFormatSegments={json.dumps(list(self.rowFormatSegments))}\n')
       fOut.write(f'# length={len(self.content)}\n')
       dataframe = pd.DataFrame()
       for start in self.content:
@@ -218,6 +220,10 @@ class InputOutput():
       del dataframe['shape']
       dataframe.to_csv(fOut, index=False)
       fOut.write("'''\n")
+    #revert count->metadata so it can be saved again
+    if 'count' in self.periodicity:
+      start = int(self.periodicity['count'])
+      self.content[start].dClass='count'
     return
 
 
@@ -245,6 +251,18 @@ class InputOutput():
         self.periodicity = json.loads(line[14:])
       else:
         logging.error('python does not match loadPython periodicity')
+        return
+      line = fIn.readline().strip()
+      if line.startswith('# rowFormatMeta='):
+        self.rowFormatMeta = json.loads(line[14:])
+      else:
+        logging.error('python does not match loadPython rowFormatMeta')
+        return
+      line = fIn.readline().strip()
+      if line.startswith('# rowFormatSegments='):
+        self.rowFormatSegments = set(json.loads(line[14:]))
+      else:
+        logging.error('python does not match loadPython rowFormatSegments')
         return
       line = fIn.readline().strip()
       if not line.startswith('# length='):

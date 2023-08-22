@@ -122,7 +122,7 @@ class Table(QWidget):
     """
     if command[0] == 'itemChanged':
       item = command[1]
-      if item.row() not in self.rowIDs:
+      if item.row() >= len(self.rowIDs):
         return
       start = self.rowIDs[item.row()]
       colName  = self.tableHeaders[item.column()]
