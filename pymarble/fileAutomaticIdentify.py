@@ -3,13 +3,14 @@ import math, struct, re, time, logging
 from typing import Optional, Union
 import xml.etree.ElementTree as ET
 import numpy as np
+from PySide6.QtWidgets import QWidget                            # pylint: disable=no-name-in-module
 from .section import Section
 from .fileClass import FileProtocol
 
 class Automatic():
   """ Mixin that includes all functions that identify sections """
-  def automatic(self:FileProtocol, methodOrder:str='x_z_p_a', start:int=-1, getMethods:bool=False) \
-    -> Optional[dict[str,str]]:
+  def automatic(self:FileProtocol, methodOrder:str='x_z_p_a', start:int=-1, getMethods:bool=False,
+                progress:Optional[QWidget]=None) -> Optional[dict[str,str]]:
     '''
     Wrapper that calls the different methods. This is generally the first step
 
@@ -26,7 +27,9 @@ class Automatic():
       methodOrder of methods: method order to be used.
     '''
     allMethods:dict[str,str] = {}
-    for method in methodOrder.split('_'):
+    if progress is not None:
+      progress.setValue(2)
+    for idx, method in enumerate(methodOrder.split('_')):
       if self.verbose>1:
         print("Start method",method)
         startTime = time.time()
@@ -64,8 +67,12 @@ class Automatic():
       if method == 'z':
         self.findZeroSection(max(0, start))
       self.fill()
+      if progress is not None:
+        progress.setValue(int((idx+1)*100/len(methodOrder.split('_'))))
       if self.verbose>1:
         print(f'  End method {method}. Duration={str(round(time.time() - startTime))}sec')
+    if progress is not None:
+      progress.reset()
     return allMethods if getMethods else None
 
 

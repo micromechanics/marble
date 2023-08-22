@@ -2,7 +2,7 @@
 import os, logging, webbrowser, json, subprocess
 from typing import Any
 from pathlib import Path
-from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog, QStatusBar, QLabel # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog, QStatusBar, QLabel, QProgressBar # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt                                        # pylint: disable=no-name-in-module
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QResizeEvent    # pylint: disable=no-name-in-module
 
@@ -74,11 +74,15 @@ class MainWindow(QMainWindow):
     self.toggleState = {'F5':'all', 'F6':'all', 'F7':'all'}
     self.setStatusBar(QStatusBar(self))
     self.statusBar().addWidget(self.statusBarW)
+    self.progressbar = QProgressBar(self)
+    self.progressbar.setMinimum(0)
+    self.progressbar.setMaximum(100)
+    self.statusBar().addPermanentWidget(self.progressbar)
     self.changeStatusbar()
 
     #Content
     self.configuration = configuration
-    self.comm = Communicate(None, self.configuration)
+    self.comm = Communicate(None, self.configuration, self.progressbar)
     self.table = Table(self.comm)
     self.setCentralWidget(self.table)      # Set the central widget of the Window
     self.suggestFileOpen = True

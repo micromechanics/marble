@@ -134,7 +134,7 @@ class Table(QWidget):
     if self.comm.binaryFile is None:
       return
     if command[0]   == 'autoTime': #look for xml data, zero data, primary data and ascii data
-      self.comm.binaryFile.automatic('x_z_p_a')  # type: ignore[misc]
+      self.comm.binaryFile.automatic('x_z_p_a', progress=self.comm.progress)  # type: ignore[misc]
     elif command[0] == 'autoElse': #look for xml data, zero data and ascii data
       self.comm.binaryFile.automatic('x_z_a')    # type: ignore[misc]
     elif command[0] == 'split':
