@@ -32,7 +32,7 @@ class Form(QDialog):
     section  = self.comm.binaryFile.content [start]
     self.lead = 20
     self.critPlot = 50000
-    self.critPrint= 500
+    self.critPrint= 200
     space = 20
     minSpace = 5
 
@@ -61,8 +61,8 @@ class Form(QDialog):
     IconButton('fa.arrow-right', self, ['startUp'],   graphButtonL, 'increase start point')
     graphButtonL.addSpacing(200)
     self.plotCB = QComboBox()
-    plotTypes = ['plot numerical value','plot byte value','plot entropy','print numerical value',
-                 'print byte value','2D graph of numerical value']
+    plotTypes = ['plot numerical value', 'plot byte value', 'plot entropy','2D graph of numerical value',
+                 'print numerical value','print byte value','print character']
     if section.length > self.critPrint:
       plotTypes += ['warning']
     self.plotCB.addItems(plotTypes)
@@ -113,7 +113,7 @@ class Form(QDialog):
     self.dTypeCB = QComboBox()
     self.dTypeCB.setToolTip('data type')
     self.dTypeCB.addItems(list(translateDtype.values()))
-    self.dTypeCB.setCurrentText(translateDtype[section.dType])
+    self.dTypeCB.setCurrentText(translateDtype[section.dType.lower()])
     self.dTypeCB.currentTextChanged.connect(self.refresh)
     dimensionL.addWidget(self.dTypeCB)
     dimensionL.addSpacing(space)
@@ -237,7 +237,7 @@ class Form(QDialog):
     if len(dataAll)<byteSizeAll:
       dataAll = dataAll + bytearray(byteSizeAll-len(dataAll))
     # depending on plot/print type
-    if self.plotCB.currentText().endswith('byte value') or \
+    if self.plotCB.currentText().endswith('byte value') or self.plotCB.currentText().endswith('character') or\
        (dType in ['b','B'] and self.plotCB.currentText().endswith('numerical value')):
       valuesX = np.arange(-lead*byteSize, (length+lead)*byteSize)
       self.valuesY = list(dataAll)
@@ -309,15 +309,30 @@ class Form(QDialog):
       idxStart = np.argmin(np.abs(valuesX))
       idxEnd   = np.argmin(np.abs(valuesX-limitX))
       if labelY == 'numerical value':
-        text  = '  '.join([f'{i:.3e}'         for i in self.valuesY[:idxStart]])
-        text += ' '+'  '.join([f'**{i:.3e}**' for i in self.valuesY[idxStart:idxEnd]])
-        text += ' '+'  '.join([f'{i:.3e}'     for i in self.valuesY[idxEnd:]])
-      else:
+        if np.all(self.valuesY[idxStart:idxEnd])<1000 and dType in ['f','d']:
+          text  =      '\t'.join([f'{i:7.3f}'    for i in self.valuesY[:idxStart]])
+          text += '\t'+'\t'.join([f'**{i:.3f}**' for i in self.valuesY[idxStart:idxEnd]])
+          text += '\t'+'\t'.join([f'{i:7.3f}'    for i in self.valuesY[idxEnd:]])
+        elif np.all(self.valuesY[idxStart:idxEnd])<10000 and dType in ['i']:
+          text  =      '\t'.join([f'{i:6}'     for i in self.valuesY[:idxStart]])
+          text += '\t'+'\t'.join([f'**{i:6}**' for i in self.valuesY[idxStart:idxEnd]])
+          text += '\t'+'\t'.join([f'{i:6}'     for i in self.valuesY[idxEnd:]])
+        else:
+          text  =     '\t'.join([f'{i:9.3e}'    for i in self.valuesY[:idxStart]])
+          text += '\t'+'\t'.join([f'**{i:.3e}**' for i in self.valuesY[idxStart:idxEnd]])
+          text += '\t'+'\t'.join([f'{i:9.3e}'    for i in self.valuesY[idxEnd:]])
+        self.textEditW.setMarkdown(text)
+      elif self.plotCB.currentText().endswith('byte value'):
         textArray = self.comm.binaryFile.byteToString(dataAll, 1).split(' ')
         textArray = textArray[:self.lead]+[f'**{i}**' for i in textArray[self.lead:-self.lead]]+ \
                     textArray[-self.lead:]
         text  = '    '.join([' '.join(textArray[i:i+8]) for i in range(0, len(textArray), 8)])
-      self.textEditW.setMarkdown(text)
+        self.textEditW.setMarkdown(text)
+      else: #character
+        text = bytearray(dataAll).decode('utf-8', errors='replace').replace('\x00','~')
+        text = f'<font color="#888888">{text[:idxStart]}</font><b>{text[idxStart:idxEnd]}</b>'+\
+               f'<font color="#888888">{text[idxEnd:]}</font>'
+        self.textEditW.setHtml(text)
       self.graph.hide()
       self.graphToolbar.hide()
     elif self.plotCB.currentText().endswith('warning'):
@@ -386,9 +401,13 @@ class Form(QDialog):
           shape.append(int(iLength))
       else:
         count  = [int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0]
+        if dType in ['b','c']:  #check if small b=random bytes or B=zeros
+          self.comm.binaryFile.file.seek(start)
+          data = self.comm.binaryFile.file.read(length)
+          if dType == 'b':
+            dType = 'B' if np.all(np.array(list(data), dtype=np.uint8)==0) else 'b'
       value = self.valueW.text()
-      if re.search(r'\d+ floats with mean [\d\.e-]+, minimum [\d\.e-]+, maximum [\d\.e-]+', value) or \
-         self.autoW.isChecked():
+      if self.autoW.isChecked():
         mean    = np.mean(self.valuesY[self.lead:-self.lead])  #here self.lead to prevent it from being 0
         minimum = np.min(self.valuesY[self.lead:-self.lead])
         maximum = np.max(self.valuesY[self.lead:-self.lead])
@@ -396,6 +415,8 @@ class Form(QDialog):
           value = f'{length} floats with mean {mean:.4f}, minimum {minimum:.4f}, maximum {maximum:.4f}'
         elif dType=='d':
           value = f'{length} doubles with mean {mean:.3e}, minimum {minimum:.3e}, maximum {maximum:.3e}'
+        elif dType=='c':
+          value = bytearray(data).decode('utf-8', errors='replace').replace('\x00','~')
         else:
           value = 'Unknown datatype'
       entropy = -1.0

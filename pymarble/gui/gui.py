@@ -16,6 +16,7 @@ from .metaEditor  import MetaEditor
 from .configurationEditor import ConfigurationEditor
 from .rowTool import RowTool
 from .periodicity import Periodicity
+from .searchTool import SearchTool
 from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
@@ -37,12 +38,13 @@ class MainWindow(QMainWindow):
     Action('&Open binary file',  self, ['open'],       fileMenu, shortcut='Ctrl+L')
     Action('&Use exported .csv', self, ['useExported'],fileMenu, shortcut='Ctrl+U')
     fileMenu.addSeparator()
-    Action('Open corr. .tags', self, ['loadTags'],   fileMenu,  shortcut='Ctrl+T')
-    Action('Save corr. .tags', self, ['saveTags'],   fileMenu,  shortcut='F4')
+    Action('Open corr. .tags',   self, ['loadTags'],   fileMenu,  shortcut='Ctrl+T')
+    Action('Save corr. .tags',   self, ['saveTags'],   fileMenu,  shortcut='F4')
     fileMenu.addSeparator()
-    Action('Open python-file',   self, ['loadPython'], fileMenu)
-    Action('&Save python-file',  self, ['savePython'], fileMenu)
-    Action('Save and e&xtract',  self, ['extractPython'], fileMenu)
+    Action('Open python-file',         self, ['loadPython'], fileMenu)
+    Action('&Save python-file',        self, ['savePython'], fileMenu)
+    Action('&Convert to hdf5',         self, ['extractPython'], fileMenu)
+    Action('&Convert file(s) to hdf5', self, ['extractMany'], fileMenu)
     fileMenu.addSeparator()
     Action('&Exit',             self, ['exit'],       fileMenu)
 
@@ -55,7 +57,8 @@ class MainWindow(QMainWindow):
     toolsMenu = menu.addMenu("&Tools")
     Action('Edit &metadata',          self, ['metaEditor'],    toolsMenu, shortcut='Ctrl+M')
     Action('Define row data in file', self, ['rowTool'],       toolsMenu)
-    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu, shortcut='F1')
+    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu)
+    Action('Search tool',             self, ['searchTool'],    toolsMenu, shortcut='F1')
     toolsMenu.addSeparator()
     Action('Configuration',           self, ['configuration'], toolsMenu)
 
@@ -88,8 +91,9 @@ class MainWindow(QMainWindow):
     Args:
       command (list): list of commands
     """
+    lastPath = self.configuration['lastDirectory'] or str(Path.home())
+    pyFile   = f'{os.path.splitext(self.comm.binaryFile.fileName)[0]}.py'
     if command[0]=='open':
-      lastPath = self.configuration['lastDirectory'] or str(Path.home())
       if fileName := QFileDialog.getOpenFileName(self,'Open proprietary binary file', lastPath, '*.*')[0]:
         self.configuration['lastDirectory'] = str(Path(fileName).parent)
         with open(Path.home()/'.pyMARBLE.json', 'w', encoding='utf-8') as fOut:
@@ -135,6 +139,9 @@ class MainWindow(QMainWindow):
     elif command[0]=='periodicity':
       dialog = Periodicity(self.comm)
       dialog.exec()
+    elif command[0]=='searchTool':
+      dialog = SearchTool(self.comm)
+      dialog.exec()
     elif command[0]=='saveTags':
       self.comm.binaryFile.saveTags()           # type: ignore[misc]
     elif command[0]=='loadTags':
@@ -146,7 +153,6 @@ class MainWindow(QMainWindow):
       self.comm.binaryFile.loadPython()         # type: ignore[misc]
       self.comm.changeTable.emit()
     elif command[0]=='useExported':
-      lastPath = self.configuration['lastDirectory'] or str(Path.home())
       if fileName := QFileDialog.getOpenFileName(self,'Open exported csv file', lastPath, '*.*')[0]:
         if self.comm.binaryFile.useExportedFile(fileName):  # type: ignore[misc]
           self.comm.binaryFile.fill()            # type: ignore[misc]
@@ -155,10 +161,17 @@ class MainWindow(QMainWindow):
           showMessage(self, 'Could not use exported data', INFO_EXPORTED_FILE, 'Information')
     elif command[0]=='extractPython':
       self.comm.binaryFile.savePython()         # type: ignore[misc]
-      pyFile = f'{os.path.splitext(self.comm.binaryFile.fileName)[0]}.py'
       result = subprocess.run(['python3', pyFile, self.comm.binaryFile.fileName], stdout=subprocess.PIPE, \
                               check=False)
       showMessage(self, 'Result of extraction', result.stdout.decode('utf-8'), 'Information')
+    elif command[0]=='extractMany':
+      self.comm.binaryFile.savePython()         # type: ignore[misc]
+      fileNames = QFileDialog.getOpenFileNames(self,'Convert many file(s)', lastPath, '*.*')[0]
+      results = ''
+      for fileName in fileNames:
+        result = subprocess.run(['python3', pyFile, fileName], stdout=subprocess.PIPE, check=False)
+        results += f"{fileName.split(os.sep)[-1]}: {result.stdout.decode('utf-8')}"
+      showMessage(self, 'Result of extraction', results, 'Information')
     else:
       logging.error('unknown command %s', command)
     return

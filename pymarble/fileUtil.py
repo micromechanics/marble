@@ -56,10 +56,10 @@ class Util():
 
     Args:
       value: value to be found
-      dType: ['d','f','i', 's'] data-type: double or int or string
+      dType: ['d','f','i', 's','c'] data-type: double or int or string
       offset: offset to start from
     '''
-    if dType=='s' and isinstance(value, str):
+    if dType in {'s','c'} and isinstance(value, str):
       searchString = bytes(value, 'utf-8').hex()
     elif dType in {'i', 'H'}:
       value = int(value)
@@ -163,7 +163,8 @@ class Util():
         section = self.content[start]
         if section.length==0 and section.dType=='b':  #if byte of zero length
           toDelete.append(start)
-        elif section.length<self.optAutomatic['minArray'] and section.dType in ['f','d']:
+        elif section.length<self.optAutomatic['minArray'] and section.dType in ['f','d'] and \
+             section.dClass!='metadata':
           #if data less that supposed
           toDelete.append(start)
         elif idx+1<len(starts) and section.dType=='c' and self.content[starts[idx+1]].dType=='B':

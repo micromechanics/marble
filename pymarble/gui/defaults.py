@@ -31,9 +31,9 @@ dClass2Color = {
 translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'plot byte value',\
                           'B':'plot byte value','c':'plot byte value', 'i':'print numerical value',
                           'H':'2D graph of numerical value'}
-translateDtype    = {'f':'float = 4bytes','d':'double = 8bytes',
-                          'b':'byte = 1byte = 8bit','B':'byte = 1byte', 'c':'character = 1byte',
-                          'i':'int = 4bytes','H':'unsigned short = 2byte = 16bit'}
+translateDtype    = {'b':'byte = 1byte = 8bit', 'c':'character = 1byte',
+                     'H':'unsigned short = 2byte = 16bit', 'i':'int = 4bytes',
+                     'f':'float = 4bytes','d':'double = 8bytes',}
 translateDtypeInv = {v: k for k, v in translateDtype.items()}
 
 

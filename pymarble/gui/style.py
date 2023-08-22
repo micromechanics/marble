@@ -22,7 +22,7 @@ shortCuts = {'measurement':'m', 'sample':'s', 'procedure':'p', 'instrument':'i',
 
 class TextButton(QPushButton):
   """ Button that has only text"""
-  def __init__(self, label:str, widget:QWidget, command:list[str]=[],
+  def __init__(self, label:str, widget:Optional[QWidget], command:list[str]=[],
                layout:Optional[QLayout]=None, tooltip:str='', checkable:bool=False, style:str='',
                hide:bool=False, iconName:str=''):
     """

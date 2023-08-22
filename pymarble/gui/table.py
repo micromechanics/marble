@@ -24,6 +24,7 @@ class Table(QWidget):
     self.table.verticalHeader().hide()
     self.table.clicked.connect(self.cellClicked)
     self.table.doubleClicked.connect(self.cell2Clicked)
+    self.table.itemChanged.connect(lambda x: self.execute(['itemChanged',x]))
     header = self.table.horizontalHeader()
     header.setSectionsMovable(True)
     header.setStretchLastSection(True)
@@ -56,6 +57,9 @@ class Table(QWidget):
           self.table.setColumnWidth(idx, defaultWidth*extraSize)
         else:
           self.table.setColumnWidth(idx, defaultWidth)
+    for idx,title in enumerate(self.tableHeaders):
+      if title in ['start','length','count','shape','entropy','link','dType']:
+        self.table.horizontalHeaderItem(idx).setBackground(hexToColor('#d8e0f4'))
     self.table.setRowCount(len(content))
     self.rowIDs  = []
     # use content to build models
@@ -89,7 +93,10 @@ class Table(QWidget):
           item = QTableWidgetItem(self.comm.binaryFile.pretty(start))        # type: ignore[misc]
         else:
           item = QTableWidgetItem(str(rowData[key]))
-        item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
+        if key in ['unit','key','value']:
+          item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled | Qt.ItemIsEditable)   # type: ignore[operator]
+        else:
+          item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
         item.setBackground(hexToColor(dClass2Color[rowData['dClass']]))
         self.table.setItem(row, col, item)
       self.rowIDs.append(start)
@@ -113,6 +120,16 @@ class Table(QWidget):
     Args:
       command (list): command to execute
     """
+    if command[0] == 'itemChanged':
+      item = command[1]
+      if item.row() not in self.rowIDs:
+        return
+      start = self.rowIDs[item.row()]
+      colName  = self.tableHeaders[item.column()]
+      if colName not in ['unit','key','value']:
+        return
+      setattr(self.comm.binaryFile.content[start], colName, item.data(Qt.EditRole))
+      return
     start = self.rowIDs[self.table.currentRow()]
     if self.comm.binaryFile is None:
       return
@@ -200,6 +217,9 @@ class Table(QWidget):
     Args:
       item (QStandardItem): cell clicked
     """
+    colName  = self.tableHeaders[item.column()]
+    if colName in ['unit','key','value']:
+      return
     row = item.row()
     start = self.rowIDs[row]
     dialog = Form(self.comm, start)
