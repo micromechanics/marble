@@ -1,5 +1,5 @@
 """ Editor to change metadata of binary file """
-import struct, re, logging
+import struct, logging
 from typing import Optional
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas

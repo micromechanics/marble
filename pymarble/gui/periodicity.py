@@ -1,5 +1,4 @@
 """ Editor to identify periodicity: multiple tests in one file """
-import logging
 from typing import Optional
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -63,7 +62,7 @@ class Periodicity(QDialog):
     self.countLE = QLineEdit('')
     self.countLE.textChanged.connect(self.refresh)
     self.countLE.hide()
-    mainBarL.addWidget(self.countLE, stretch=1)
+    mainBarL.addWidget(self.countLE, stretch=1)                        # type: ignore[call-arg]
     mainBarL.addSpacing(self.space)
     mainBarL.addWidget(QLabel('Start:'))
     self.startCB = QComboBox()
@@ -73,7 +72,7 @@ class Periodicity(QDialog):
     self.startLE = QLineEdit('')
     self.startLE.textChanged.connect(self.refresh)
     self.startLE.hide()
-    mainBarL.addWidget(self.startLE, stretch=1)
+    mainBarL.addWidget(self.startLE, stretch=1)                        # type: ignore[call-arg]
     mainBarL.addSpacing(self.space)
     mainBarL.addWidget(QLabel('Last:'))
     self.lastCB = QComboBox()
@@ -83,7 +82,7 @@ class Periodicity(QDialog):
     self.lastLE = QLineEdit('')
     self.lastLE.textChanged.connect(self.refresh)
     self.lastLE.hide()
-    mainBarL.addWidget(self.lastLE, stretch=1)
+    mainBarL.addWidget(self.lastLE, stretch=1)                        # type: ignore[call-arg]
 
     #final button box
     self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)

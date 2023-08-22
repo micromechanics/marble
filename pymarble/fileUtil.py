@@ -206,8 +206,6 @@ class Util():
               section.value   = 'unknown binary string' #self.byteToString(self.file.read(section.length),1)
             elif section.dType == 'B':
               section.value   = f'Zeros {section.length}'
-            else:
-              logging.error(f'Shorten something of non-binary type {start}: {section}')
             self.content[start] = section
             self.entropy(start, False)   #set entropy
             if self.verbose>1:

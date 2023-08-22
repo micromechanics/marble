@@ -160,13 +160,12 @@ except:
 # version= 1.0
 # meta={"vendor": "", "label": "", "software": "", "ext": "mvl", "endian": "small"}
 # periodicity={}
-# length=514
+# length=509
 length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 44,b,,,,,[],0,3.3841,False,b'unknown binary string'
 1,i,k1=195,,,count,[],100,0.9183,True,b''
 2319,B,,,,,[],10,0.0,False,b'unknown binary string'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-456,b,,,,,[],0,2.2935,False,b'unknown binary string'
+457,b,,,,,[],0,0.0,False,b'unknown binary string'
 32,B,,,,,[],10,0.0,False,b'Zeros 32'
 128,b,,,,,[],0,2.069,False,b'unknown binary string'
 130,B,,,,,[],10,0.0,False,b'Zeros 130'
@@ -343,8 +342,7 @@ length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 139,B,,,,,[],10,0.0,False,b'Zeros 139'
 12,b,,,,,[],0,2.0049,False,b'unknown binary string'
 40,c,force_label,,,metadata,[],100,2.5151,True,b'Force/Width'
-32,b,,,,,[],0,1.34,False,b'unknown binary string'
-78,b,,,,,[],0,2.3338,False,b'unknown binary string'
+110,b,,,,,[],0,1.34,False,b'unknown binary string'
 18,B,,,,,[],10,0.0,False,b'Zeros 18'
 30,b,,,,,[],0,2.1318,False,b'unknown binary string'
 18,B,,,,,[],10,0.0,False,b'Zeros 18'
@@ -524,8 +522,7 @@ length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 10,c,,,,,[],30,2.9477,False,b'Material:'
 4,b,,,,,[],0,1.585,False,b'unknown binary string'
 170,c,,,,,[],32,0.6522,False,b'File name:'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-18,b,,,,,[],0,3.6169,False,b'unknown binary string'
+20,b,,,,,[],0,0.0,False,b'unknown binary string'
 182,B,,,,,[],10,0.0,False,b'Zeros 182'
 11,b,,,,,[],0,2.9219,False,b'unknown binary string'
 189,B,,,,,[],10,0.0,False,b'Zeros 189'
@@ -543,8 +540,7 @@ length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 36,B,,,,,[],10,0.0,False,b'Zeros 36'
 20,b,,,,,[],0,0.0,False,b'unknown binary string'
 940,c,,,,,[],36,0.0563,False,b'Administrator'
-65,b,,,,,[],0,0.0,False,b'unknown binary string'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
+68,b,,,,,[],0,0.0,False,b'unknown binary string'
 268,B,,,,,[],10,0.0,False,b'Zeros 268'
 8,b,,,,,[],0,0.8631,False,b'unknown binary string'
 32,c,some_name,,,metadata,[],100,2.7412,True,"b'Tensile, Membrne'"
@@ -635,8 +631,7 @@ length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 257,B,,,,,[],10,0.0,False,b'Zeros 257'
 20,b,,,,,[],0,0.4855,False,b'unknown binary string'
 273,c,path_name,,,metadata,[],100,1.4575,True,b''
-3,b,,,,,[],0,0.0,False,b'unknown binary string'
-17,b,,,,,[],0,1.0613,False,b'unknown binary string'
+20,b,,,,,[],0,0.0,False,b'unknown binary string'
 259,B,,,,,[],10,0.0,False,b'Zeros 259'
 1,b,,,,,[],0,0.0,False,b'unknown binary string'
 40,B,,,,,[],10,0.0,False,b'Zeros 40'
@@ -671,7 +666,7 @@ length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 21,b,,,,,[],0,1.054,False,b'unknown binary string'
 27,B,,,,,[],10,0.0,False,b'Zeros 27'
 1,b,,,,,[],0,0.0,False,b'unknown binary string'
-535,B,,,,,[],10,0.0,False,b'unknown binary string'
+535,B,,,,,[],10,0.0,False,b'Zeros 535'
 8,b,,,,,[],0,0.0,False,b'unknown binary string'
 -1,d,time,s,,primary,[44],100,5.0265,True,b''
 -1,f,displacement,mm,,primary,[44],100,5.0539,True,b''

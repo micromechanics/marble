@@ -1,7 +1,8 @@
 """ Editor to change metadata of binary file """
 import logging
+from typing import Any
 from PySide6.QtWidgets import QDialog, QFormLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, QTextEdit  # pylint: disable=no-name-in-module
-from .style import TextButton, widgetAndLayout, showMessage
+from .style import TextButton, showMessage
 from .communicate import Communicate
 from ..section import Section
 
@@ -45,7 +46,10 @@ class SearchTool(QDialog):
   def execute(self, _:list[str]) -> None:
     """ Execute command
     """
+    if self.comm.binaryFile is None:
+      return
     dType = self.searchDTypeCB.currentText()
+    value:Any = 0
     if dType in {'f','d'}:
       value = float(self.searchValue.text())
     elif dType in {'i'}:
@@ -59,9 +63,9 @@ class SearchTool(QDialog):
       if dType == 'c':
         result = 'Cannot search for value of character. Use "Search by bytes".'
       else:
-        result = ' '.join(self.comm.binaryFile.findValue(value, dType, verbose=False))
+        result = ' '.join(self.comm.binaryFile.findValue(value, dType, verbose=False))     # type: ignore[misc]
     else:
-      result = str(self.comm.binaryFile.findBytes(value, dType))
+      result = str(self.comm.binaryFile.findBytes(value, dType))                           # type: ignore[misc]
     self.searchResult.setText(result)
     return
 

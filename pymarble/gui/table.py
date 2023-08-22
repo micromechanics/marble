@@ -1,6 +1,6 @@
 """ Main table in app """
 import logging
-from typing import Optional
+from typing import Optional, Any
 import numpy as np
 from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
@@ -94,7 +94,7 @@ class Table(QWidget):
         else:
           item = QTableWidgetItem(str(rowData[key]))
         if key in ['unit','key','value']:
-          item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled | Qt.ItemIsEditable)   # type: ignore[operator]
+          item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled | Qt.ItemIsEditable)# type: ignore
         else:
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
         item.setBackground(hexToColor(dClass2Color[rowData['dClass']]))
@@ -113,7 +113,7 @@ class Table(QWidget):
     return
 
 
-  def execute(self, command:list[str]) -> None:
+  def execute(self, command:list[Any]) -> None:
     """
     execute actions from context menu, etc.
 
@@ -126,7 +126,7 @@ class Table(QWidget):
         return
       start = self.rowIDs[item.row()]
       colName  = self.tableHeaders[item.column()]
-      if colName not in ['unit','key','value']:
+      if colName not in ['unit','key','value'] or self.comm.binaryFile is None:
         return
       setattr(self.comm.binaryFile.content[start], colName, item.data(Qt.EditRole))
       return

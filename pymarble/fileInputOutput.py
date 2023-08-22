@@ -141,7 +141,6 @@ class InputOutput():
     Output file content to .py file
     header has formalized description of file-structure
     '''
-    print('Note: save row format data: when remove this, also adopt the default solutions')
     pyFile = os.path.splitext(self.fileName)[0]+'.py'
     with open(pyFile, 'w', encoding='utf-8') as fOut:
       # PYTHON PART

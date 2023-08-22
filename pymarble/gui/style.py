@@ -1,13 +1,12 @@
 """ all styling of buttons and other general widgets, some defined colors... """
 import logging
-from typing import Callable, Optional, Any
+from typing import Callable, Optional
 from PySide6.QtWidgets import QPushButton, QLabel, QSizePolicy, QMessageBox, QLayout, QWidget, QMenu, \
                               QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout # pylint: disable=no-name-in-module
 from PySide6.QtGui import QImage, QPixmap, QAction, QKeySequence, QMouseEvent, QColor    # pylint: disable=no-name-in-module
 from PySide6.QtCore import QByteArray, Qt           # pylint: disable=no-name-in-module
 from PySide6.QtSvgWidgets import QSvgWidget         # pylint: disable=no-name-in-module
 import qtawesome as qta
-from qt_material import get_theme
 
 space = {'0':0, 's':5, 'm':10, 'l':20, 'xl':200} #spaces: padding and margin
 
@@ -40,7 +39,8 @@ class TextButton(QPushButton):
     self.setText(label)
     self.setCheckable(checkable)
     self.setChecked(checkable)
-    self.clicked.connect(lambda: widget.execute(command))
+    if widget is not None:
+      self.clicked.connect(lambda: widget.execute(command))
     if tooltip:
       self.setToolTip(tooltip)
     if style:

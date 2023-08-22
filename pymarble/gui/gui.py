@@ -92,7 +92,8 @@ class MainWindow(QMainWindow):
       command (list): list of commands
     """
     lastPath = self.configuration['lastDirectory'] or str(Path.home())
-    pyFile   = f'{os.path.splitext(self.comm.binaryFile.fileName)[0]}.py'
+    pyFile   = '' if self.comm.binaryFile is None else \
+               f'{os.path.splitext(self.comm.binaryFile.fileName)[0]}.py'
     if command[0]=='open':
       if fileName := QFileDialog.getOpenFileName(self,'Open proprietary binary file', lastPath, '*.*')[0]:
         self.configuration['lastDirectory'] = str(Path(fileName).parent)
@@ -121,15 +122,15 @@ class MainWindow(QMainWindow):
       dialog.exec()
     elif command[0]=='restart':
       restart()
-    elif command[0]=='repaint':
-      self.comm.binaryFile.fill()
-      self.comm.changeTable.emit()
     # ------------------------
     #check for existing file: as remainder use open file
     # ------------------------
     elif self.comm.binaryFile is None:
       showMessage(self, 'Error', 'An open file is required to execute the command.','Critical')
     #commands that require open binary file
+    elif command[0]=='repaint':
+      self.comm.binaryFile.fill()           # type: ignore[misc]
+      self.comm.changeTable.emit()
     elif command[0]=='metaEditor':
       dialog = MetaEditor(self.comm)
       dialog.exec()

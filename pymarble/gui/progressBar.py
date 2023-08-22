@@ -2,7 +2,7 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QProgressBar   # pylint: disable=no-name-in-module
 from .communicate import Communicate
 
-class progressBar(QDialog):
+class ProgessBar(QDialog):
   """ Progress bar """
   #INCOMPLETE SINCE I DON'T KNOW HOW TO DO IT
   def __init__(self, comm:Communicate, progressBar:QProgressBar):
