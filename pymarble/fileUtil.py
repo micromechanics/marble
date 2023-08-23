@@ -281,6 +281,7 @@ class Util():
 
     Args:
       lengthSearch (int): number to search
+      maxOffset (int):    find anchor before this offset
 
     Returns:
       int: offset where anchor is located
@@ -331,7 +332,7 @@ class Util():
     convert bytestring to easy to read string
 
     Args:
-        aString: byte-string
+        aBytes: byte-string
         spaceEvery: white-space for easy reading
     '''
     aString = aBytes.hex().upper()

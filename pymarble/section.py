@@ -67,6 +67,10 @@ class Section:
 
     Args:
        data (str,dict): string of | separated list with possible spaces
+       count: where are the anchor points to find the size of the array
+       dClass: data class: metadata, primary, count, ''
+       shape: shape of the array
+
     '''
     if isinstance(data, str):
       dataList = [i.strip() for i in data.split('|')]
@@ -139,8 +143,10 @@ class Section:
     - not used for save/load of structure information
 
     Args:
-      relPos: relative offset for reading compared to last
-      content: list of content from calling entity
+      offset: current start position
+      lastOffset: last offset position
+      variable: variable used to this section
+      binaryFile: to get list of content from calling entity
       hdf: hdf5Branch to save into
     '''
     if hdf is None:

@@ -347,8 +347,8 @@ class Automatic():
     - entropy > 4 real data
 
     Args:
-      start: starting position of section; if -1 is given use entire file
-      plot: plot graph at end
+      start (int): starting position of section; if -1 is given use entire file
+      average (bool): return avelage value or all-values
 
     Return:
       entropy

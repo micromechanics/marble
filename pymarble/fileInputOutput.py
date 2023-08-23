@@ -315,6 +315,7 @@ class InputOutput():
     Args:
         start: starting location
         plotMode: plot as 1d time-series (1) or as 2d image (2)
+        show (bool): show on screen; false-return axis
     '''
     if start not in self.content:
       print("**ERROR: cannot print at start",start,'. I exit')
