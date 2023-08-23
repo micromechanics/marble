@@ -37,7 +37,7 @@ def newVersion(level=2, message=''):
   version = '.'.join([str(i) for i in version])
   print('======== Version '+version+' =======')
   #update python files
-  filesToUpdate = {'pasta_eln/__init__.py':'__version__ = ', 'docs/source/conf.py':'version = '}
+  filesToUpdate = {'pymarble/__init__.py':'__version__ = '}
   for path in filesToUpdate:
     with open(path, encoding='utf-8') as fIn:
       fileOld = fIn.readlines()
