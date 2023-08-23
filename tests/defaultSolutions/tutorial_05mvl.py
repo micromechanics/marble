@@ -165,514 +165,514 @@ except:
 # rowFormatMeta=[]
 # rowFormatSegments=[]
 # length=509
-length,dType,key,unit,link,dClass,count,prob,entropy,important,value
-44,b,,,,,[],0,3.3841,False,b'unknown binary string'
-1,i,k1=195,,,count,[],100,0.9183,True,b''
-2319,B,,,,,[],10,0.0,False,b'unknown binary string'
-457,b,,,,,[],0,0.0,False,b'unknown binary string'
-32,B,,,,,[],10,0.0,False,b'Zeros 32'
-128,b,,,,,[],0,2.069,False,b'unknown binary string'
-130,B,,,,,[],10,0.0,False,b'Zeros 130'
-19,b,,,,,[],0,0.9142,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-323,B,,,,,[],10,0.0,False,b'Zeros 323'
-253,b,,,,,[],0,2.2706,False,b'unknown binary string'
-67,B,,,,,[],10,0.0,False,b'Zeros 67'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-143,B,,,,,[],10,0.0,False,b'Zeros 143'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-175,B,,,,,[],10,0.0,False,b'Zeros 175'
-1261,b,,,,,[],0,1.222,False,b'unknown binary string'
-99,B,,,,,[],10,0.0,False,b'Zeros 99'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-143,B,,,,,[],10,0.0,False,b'Zeros 143'
-328,b,,,,,[],0,1.5189,False,b'unknown binary string'
-400,B,,,,,[],10,0.0,False,b'Zeros 400'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-16,B,,,,,[],10,0.0,False,b'Zeros 16'
-8,b,,,,,[],0,2.1281,False,b'unknown binary string'
-16,B,,,,,[],10,0.0,False,b'Zeros 16'
-32,b,,,,,[],0,1.7609,False,b'unknown binary string'
-16,B,,,,,[],10,0.0,False,b'Zeros 16'
-32,b,,,,,[],0,1.6562,False,b'unknown binary string'
-16,B,,,,,[],10,0.0,False,b'Zeros 16'
-32,b,,,,,[],0,1.6604,False,b'unknown binary string'
-18,B,,,,,[],10,0.0,False,b'Zeros 18'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-123,B,,,,,[],10,0.0,False,b'Zeros 123'
-52,c,displacement_label,,,metadata,[],100,1.7606,True,b'Corr. Le in F0'
-4,b,,,,,[],0,0.0,False,b'unknown binary string'
-24,B,,,,,[],10,0.0,False,b'Zeros 24'
-4,b,,,,,[],0,0.0,False,b'unknown binary string'
-24,B,,,,,[],10,0.0,False,b'Zeros 24'
-4,b,,,,,[],0,0.0,False,b'unknown binary string'
-24,B,,,,,[],10,0.0,False,b'Zeros 24'
-4,b,,,,,[],0,0.0,False,b'unknown binary string'
-904,B,,,,,[],10,0.0,False,b'Zeros 904'
-30,b,,,,,[],0,2.2336,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-6,b,,,,,[],0,1.9219,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-7,b,,,,,[],0,2.2516,False,b'unknown binary string'
-25,B,,,,,[],10,0.0,False,b'Zeros 25'
-37,b,,,,,[],0,1.0579,False,b'unknown binary string'
-43,B,,,,,[],10,0.0,False,b'Zeros 43'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-31,B,,,,,[],10,0.0,False,b'Zeros 31'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-31,B,,,,,[],10,0.0,False,b'Zeros 31'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-29,B,,,,,[],10,0.0,False,b'Zeros 29'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-31,B,,,,,[],10,0.0,False,b'Zeros 31'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-31,B,,,,,[],10,0.0,False,b'Zeros 31'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-31,B,,,,,[],10,0.0,False,b'Zeros 31'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-31,B,,,,,[],10,0.0,False,b'Zeros 31'
-9,b,,,,,[],0,2.75,False,b'unknown binary string'
-184,B,,,,,[],10,0.0,False,b'Zeros 184'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-159,B,,,,,[],10,0.0,False,b'Zeros 159'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-30,B,,,,,[],10,0.0,False,b'Zeros 30'
-2,b,,,,,[],0,0.0,False,b'unknown binary string'
-199,B,,,,,[],10,0.0,False,b'Zeros 199'
-119,b,,,,,[],0,2.5428,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-29,b,,,,,[],0,1.2988,False,b'unknown binary string'
-215,B,,,,,[],10,0.0,False,b'Zeros 215'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-583,B,,,,,[],10,0.0,False,b'Zeros 583'
-5,b,,,,,[],0,0.8113,False,b'unknown binary string'
-703,B,,,,,[],10,0.0,False,b'Zeros 703'
-96,b,,,,,[],0,2.8253,False,b'unknown binary string'
-40,B,,,,,[],10,0.0,False,b'Zeros 40'
-48,b,,,,,[],0,3.5331,False,b'unknown binary string'
-696,B,,,,,[],10,0.0,False,b'Zeros 696'
-5,b,,,,,[],0,1.5,False,b'unknown binary string'
-139,B,,,,,[],10,0.0,False,b'Zeros 139'
-12,b,,,,,[],0,2.0049,False,b'unknown binary string'
-40,c,force_label,,,metadata,[],100,2.5151,True,b'Force/Width'
-110,b,,,,,[],0,1.34,False,b'unknown binary string'
-18,B,,,,,[],10,0.0,False,b'Zeros 18'
-30,b,,,,,[],0,2.1318,False,b'unknown binary string'
-18,B,,,,,[],10,0.0,False,b'Zeros 18'
-30,b,,,,,[],0,2.1318,False,b'unknown binary string'
-18,B,,,,,[],10,0.0,False,b'Zeros 18'
-30,b,,,,,[],0,2.1318,False,b'unknown binary string'
-18,B,,,,,[],10,0.0,False,b'Zeros 18'
-78,b,,,,,[],0,2.0437,False,b'unknown binary string'
-18,B,,,,,[],10,0.0,False,b'Zeros 18'
-31,b,,,,,[],0,2.2716,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.3199,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.5736,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.3199,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.4817,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-31,b,,,,,[],0,2.5736,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-14,b,,,,,[],0,2.3535,False,b'unknown binary string'
-2194,B,,,,,[],10,0.0,False,b'Zeros 2194'
-83,b,,,,,[],0,4.5801,False,b'unknown binary string'
-225,B,,,,,[],10,0.0,False,b'Zeros 225'
-75,b,,,,,[],0,0.406,False,b'unknown binary string'
-525,B,,,,,[],10,0.0,False,b'Zeros 525'
-103,b,,,,,[],0,4.317,False,b'unknown binary string'
-225,B,,,,,[],10,0.0,False,b'Zeros 225'
-75,b,,,,,[],0,0.406,False,b'unknown binary string'
-525,B,,,,,[],10,0.0,False,b'Zeros 525'
-103,b,,,,,[],0,4.317,False,b'unknown binary string'
-225,B,,,,,[],10,0.0,False,b'Zeros 225'
-75,b,,,,,[],0,0.406,False,b'unknown binary string'
-525,B,,,,,[],10,0.0,False,b'Zeros 525'
-103,b,,,,,[],0,4.317,False,b'unknown binary string'
-225,B,,,,,[],10,0.0,False,b'Zeros 225'
-75,b,,,,,[],0,0.406,False,b'unknown binary string'
-525,B,,,,,[],10,0.0,False,b'Zeros 525'
-20,b,,,,,[],0,0.9133,False,b'unknown binary string'
-261,B,,,,,[],10,0.0,False,b'Zeros 261'
-14,b,,,,,[],0,1.1401,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-25,B,,,,,[],10,0.0,False,b'Zeros 25'
-403,b,,,,,[],0,1.5513,False,b'unknown binary string'
-39,B,,,,,[],10,0.0,False,b'Zeros 39'
-77,b,,,,,[],0,1.7468,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-8,b,,,,,[],0,0.0,False,b'unknown binary string'
-76,B,,,,,[],10,0.0,False,b'Zeros 76'
-24,b,,,,,[],0,2.4343,False,b'unknown binary string'
-64,c,process_name,,,metadata,[],100,3.166,True,b'Universal Tensile / Compression Test'
-79,b,,,,,[],0,1.8184,False,b'unknown binary string'
-257,B,,,,,[],10,0.0,False,b'Zeros 257'
-19,b,,,,,[],0,1.6122,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-25,B,,,,,[],10,0.0,False,b'Zeros 25'
-403,b,,,,,[],0,1.5513,False,b'unknown binary string'
-39,B,,,,,[],10,0.0,False,b'Zeros 39'
-77,b,,,,,[],0,1.7468,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-8,b,,,,,[],0,0.0,False,b'unknown binary string'
-76,B,,,,,[],10,0.0,False,b'Zeros 76'
-24,b,,,,,[],0,2.4343,False,b'unknown binary string'
-64,c,,,,,[],40,3.166,False,b'Universal Tensile / Compression Test'
-79,b,,,,,[],0,1.8184,False,b'unknown binary string'
-257,B,,,,,[],10,0.0,False,b'Zeros 257'
-19,b,,,,,[],0,1.6122,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-25,B,,,,,[],10,0.0,False,b'Zeros 25'
-403,b,,,,,[],0,1.5513,False,b'unknown binary string'
-39,B,,,,,[],10,0.0,False,b'Zeros 39'
-77,b,,,,,[],0,1.7468,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-8,b,,,,,[],0,0.0,False,b'unknown binary string'
-76,B,,,,,[],10,0.0,False,b'Zeros 76'
-24,b,,,,,[],0,2.4343,False,b'unknown binary string'
-64,c,,,,,[],40,3.166,False,b'Universal Tensile / Compression Test'
-79,b,,,,,[],0,1.8184,False,b'unknown binary string'
-257,B,,,,,[],10,0.0,False,b'Zeros 257'
-19,b,,,,,[],0,1.6122,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-25,B,,,,,[],10,0.0,False,b'Zeros 25'
-403,b,,,,,[],0,1.5513,False,b'unknown binary string'
-39,B,,,,,[],10,0.0,False,b'Zeros 39'
-77,b,,,,,[],0,1.7468,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-8,b,,,,,[],0,0.0,False,b'unknown binary string'
-76,B,,,,,[],10,0.0,False,b'Zeros 76'
-24,b,,,,,[],0,2.4343,False,b'unknown binary string'
-64,c,,,,,[],40,3.166,False,b'Universal Tensile / Compression Test'
-79,b,,,,,[],0,1.8184,False,b'unknown binary string'
-257,B,,,,,[],10,0.0,False,b'Zeros 257'
-19,b,,,,,[],0,1.6122,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-25,B,,,,,[],10,0.0,False,b'Zeros 25'
-403,b,,,,,[],0,1.5513,False,b'unknown binary string'
-39,B,,,,,[],10,0.0,False,b'Zeros 39'
-77,b,,,,,[],0,1.7468,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-8,b,,,,,[],0,0.0,False,b'unknown binary string'
-76,B,,,,,[],10,0.0,False,b'Zeros 76'
-24,b,,,,,[],0,2.4343,False,b'unknown binary string'
-64,c,,,,,[],40,3.166,False,b'Universal Tensile / Compression Test'
-79,b,,,,,[],0,1.8184,False,b'unknown binary string'
-257,B,,,,,[],10,0.0,False,b'Zeros 257'
-19,b,,,,,[],0,1.6122,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-25,B,,,,,[],10,0.0,False,b'Zeros 25'
-403,b,,,,,[],0,1.5513,False,b'unknown binary string'
-39,B,,,,,[],10,0.0,False,b'Zeros 39'
-77,b,,,,,[],0,1.7468,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-8,b,,,,,[],0,0.0,False,b'unknown binary string'
-76,B,,,,,[],10,0.0,False,b'Zeros 76'
-24,b,,,,,[],0,2.4343,False,b'unknown binary string'
-64,c,,,,,[],40,3.166,False,b'Universal Tensile / Compression Test'
-79,b,,,,,[],0,1.8184,False,b'unknown binary string'
-260,B,,,,,[],10,0.0,False,b'Zeros 260'
-33,b,,,,,[],0,3.4056,False,b'unknown binary string'
-124,B,,,,,[],10,0.0,False,b'Zeros 124'
-32,b,,,,,[],0,1.7249,False,b'unknown binary string'
-91,B,,,,,[],10,0.0,False,b'Zeros 91'
-189,b,,,,,[],0,2.5675,False,b'unknown binary string'
-88,B,,,,,[],10,0.0,False,b'Zeros 88'
-158,b,,,,,[],0,3.4956,False,b'unknown binary string'
-78,B,,,,,[],10,0.0,False,b'Zeros 78'
-172,b,,,,,[],0,2.438,False,b'unknown binary string'
-144,B,,,,,[],10,0.0,False,b'Zeros 144'
-158,b,,,,,[],0,3.4956,False,b'unknown binary string'
-78,B,,,,,[],10,0.0,False,b'Zeros 78'
-172,b,,,,,[],0,2.438,False,b'unknown binary string'
-144,B,,,,,[],10,0.0,False,b'Zeros 144'
-158,b,,,,,[],0,3.4956,False,b'unknown binary string'
-78,B,,,,,[],10,0.0,False,b'Zeros 78'
-172,b,,,,,[],0,2.438,False,b'unknown binary string'
-144,B,,,,,[],10,0.0,False,b'Zeros 144'
-20,b,,,,,[],0,1.3605,False,b'unknown binary string'
-10,c,,,,,[],30,2.9477,False,b'Operator:'
-4,b,,,,,[],0,1.585,False,b'unknown binary string'
-10,c,,,,,[],30,2.9477,False,b'Material:'
-4,b,,,,,[],0,1.585,False,b'unknown binary string'
-170,c,,,,,[],32,0.6522,False,b'File name:'
-20,b,,,,,[],0,0.0,False,b'unknown binary string'
-182,B,,,,,[],10,0.0,False,b'Zeros 182'
-11,b,,,,,[],0,2.9219,False,b'unknown binary string'
-189,B,,,,,[],10,0.0,False,b'Zeros 189'
-13,b,,,,,[],0,3.0221,False,b'unknown binary string'
-195,B,,,,,[],10,0.0,False,b'Zeros 195'
-10,b,,,,,[],0,1.88,False,b'unknown binary string'
-386,B,,,,,[],10,0.0,False,b'Zeros 386'
-6,b,,,,,[],0,1.5219,False,b'unknown binary string'
-130,B,,,,,[],10,0.0,False,b'Zeros 130'
-19,b,,,,,[],0,3.7255,False,b'unknown binary string'
-17,B,,,,,[],10,0.0,False,b'Zeros 17'
-5,b,,,,,[],0,0.0,False,b'unknown binary string'
-41,B,,,,,[],10,0.0,False,b'Zeros 41'
-62,b,,,,,[],0,1.5076,False,b'unknown binary string'
-36,B,,,,,[],10,0.0,False,b'Zeros 36'
-20,b,,,,,[],0,0.0,False,b'unknown binary string'
-940,c,,,,,[],36,0.0563,False,b'Administrator'
-68,b,,,,,[],0,0.0,False,b'unknown binary string'
-268,B,,,,,[],10,0.0,False,b'Zeros 268'
-8,b,,,,,[],0,0.8631,False,b'unknown binary string'
-32,c,some_name,,,metadata,[],100,2.7412,True,"b'Tensile, Membrne'"
-88,b,,,,,[],0,2.8479,False,b'unknown binary string'
-560,B,,,,,[],10,0.0,False,b'Zeros 560'
-4,b,,,,,[],0,0.9183,False,b'unknown binary string'
-876,B,,,,,[],10,0.0,False,b'Zeros 876'
-96,b,,,,,[],0,0.0,False,b'unknown binary string'
-768,B,,,,,[],10,0.0,False,b'Zeros 768'
-1040,c,,,,,[],40,0.0085,False,"b'Tensile, Membrane'"
-397,b,,,,,[],0,1.0414,False,b'unknown binary string'
-35,B,,,,,[],10,0.0,False,b'Zeros 35'
-29,b,,,,,[],0,0.8113,False,b'unknown binary string'
-1407,B,,,,,[],10,0.0,False,b'Zeros 1407'
-642,b,,,,,[],0,1.6646,False,b'unknown binary string'
-1906,B,,,,,[],10,0.0,False,b'Zeros 1906'
-120,b,,,,,[],0,0.0,False,b'unknown binary string'
-132,B,,,,,[],10,0.0,False,b'Zeros 132'
-40,b,,,,,[],0,0.0,False,b'unknown binary string'
-304,B,,,,,[],10,0.0,False,b'Zeros 304'
-20,b,,,,,[],0,0.0,False,b'unknown binary string'
-1888,B,,,,,[],10,0.0,False,b'Zeros 1888'
-8,b,,,,,[],0,2.5216,False,b'unknown binary string'
-24,B,,,,,[],10,0.0,False,b'Zeros 24'
-32,c,,,,,[],34,2.3506,False,b'Batch number'
-32,c,,,,,[],34,2.1327,False,b'Order number'
-32,c,,,,,[],40,2.6316,False,b'Customer number'
-8,b,,,,,[],0,2.8074,False,b'unknown binary string'
-24,B,,,,,[],10,0.0,False,b'Zeros 24'
-32,c,,,,,[],30,1.8497,False,b'Department'
-32,c,,,,,[],34,2.2216,False,b'Additional 1'
-32,c,,,,,[],34,2.2216,False,b'Additional 2'
-32,c,,,,,[],34,2.2216,False,b'Additional 3'
-32,c,,,,,[],34,2.2216,False,b'Additional 4'
-32,c,,,,,[],34,2.2216,False,b'Additional 5'
-32,c,,,,,[],34,2.2216,False,b'Additional 6'
-32,c,,,,,[],34,2.2216,False,b'Additional 7'
-32,c,,,,,[],34,2.2216,False,b'Additional 8'
-32,c,,,,,[],34,2.2216,False,b'Additional 9'
-32,c,,,,,[],36,2.4039,False,b'Additional 10'
-32,c,,,,,[],36,2.3394,False,b'Additional 11'
-32,c,,,,,[],36,2.4039,False,b'Additional 12'
-32,c,,,,,[],36,2.4039,False,b'Additional 13'
-32,c,,,,,[],36,2.4039,False,b'Additional 14'
-32,c,,,,,[],36,2.4039,False,b'Additional 15'
-32,c,,,,,[],36,2.4039,False,b'Additional 16'
-32,c,,,,,[],36,2.4039,False,b'Additional 17'
-32,c,,,,,[],36,2.4039,False,b'Additional 18'
-960,c,,,,,[],36,0.0061,False,b'Additional 19'
-32,b,,,,,[],0,1.2092,False,b'unknown binary string'
-36,B,,,,,[],10,0.0,False,b'Zeros 36'
-32,b,,,,,[],0,1.2092,False,b'unknown binary string'
-2068,B,,,,,[],10,0.0,False,b'Zeros 2068'
-64,b,,,,,[],0,1.8984,False,b'unknown binary string'
-60,B,,,,,[],10,0.0,False,b'Zeros 60'
-64,b,,,,,[],0,1.8984,False,b'unknown binary string'
-60,B,,,,,[],10,0.0,False,b'Zeros 60'
-64,b,,,,,[],0,1.8984,False,b'unknown binary string'
-56,B,,,,,[],10,0.0,False,b'Zeros 56'
-68,b,,,,,[],0,1.8656,False,b'unknown binary string'
-56,B,,,,,[],10,0.0,False,b'Zeros 56'
-68,b,,,,,[],0,1.8656,False,b'unknown binary string'
-56,B,,,,,[],10,0.0,False,b'Zeros 56'
-68,b,,,,,[],0,1.8656,False,b'unknown binary string'
-56,B,,,,,[],10,0.0,False,b'Zeros 56'
-87,b,,,,,[],0,2.4705,False,b'unknown binary string'
-106,B,,,,,[],10,0.0,False,b'Zeros 106'
-5,b,,,,,[],0,1.5,False,b'unknown binary string'
-97,B,,,,,[],10,0.0,False,b'Zeros 97'
-5,b,,,,,[],0,1.5,False,b'unknown binary string'
-8420,B,,,,,[],10,0.0,False,b'Zeros 8420'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-75,B,,,,,[],10,0.0,False,b'Zeros 75'
-15,b,,,,,[],0,2.4037,False,b'unknown binary string'
-105,B,,,,,[],10,0.0,False,b'Zeros 105'
-14,b,,,,,[],0,2.1888,False,b'unknown binary string'
-106,B,,,,,[],10,0.0,False,b'Zeros 106'
-14,b,,,,,[],0,1.8543,False,b'unknown binary string'
-554,B,,,,,[],10,0.0,False,b'Zeros 554'
-140,b,,,,,[],0,1.265,False,b'unknown binary string'
-632,B,,,,,[],10,0.0,False,b'Zeros 632'
-233,b,,,,,[],0,1.2461,False,b'unknown binary string'
-155,B,,,,,[],10,0.0,False,b'Zeros 155'
-72,c,,,,,[],40,2.0107,False,b'Membrane_Repeatability'
-7,b,,,,,[],0,0.65,False,b'unknown binary string'
-73,B,,,,,[],10,0.0,False,b'Zeros 73'
-7,b,,,,,[],0,0.65,False,b'unknown binary string'
-257,B,,,,,[],10,0.0,False,b'Zeros 257'
-20,b,,,,,[],0,0.4855,False,b'unknown binary string'
-273,c,path_name,,,metadata,[],100,1.4575,True,b''
-20,b,,,,,[],0,0.0,False,b'unknown binary string'
-259,B,,,,,[],10,0.0,False,b'Zeros 259'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-40,B,,,,,[],10,0.0,False,b'Zeros 40'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-26,B,,,,,[],10,0.0,False,b'Zeros 26'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-263,B,,,,,[],10,0.0,False,b'Zeros 263'
-33,b,,,,,[],0,2.1417,False,b'unknown binary string'
-107,B,,,,,[],10,0.0,False,b'Zeros 107'
-237,b,,,,,[],0,1.5891,False,b'unknown binary string'
-163,B,,,,,[],10,0.0,False,b'Zeros 163'
-77,b,,,,,[],0,0.8113,False,b'unknown binary string'
-5531,B,,,,,[],10,0.0,False,b'Zeros 5531'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-63,B,,,,,[],10,0.0,False,b'Zeros 63'
-32,b,,,,,[],0,0.0,False,b'unknown binary string'
-74,B,,,,,[],10,0.0,False,b'Zeros 74'
-3,b,,,,,[],0,1.0,False,b'unknown binary string'
-259,B,,,,,[],10,0.0,False,b'Zeros 259'
-53,b,,,,,[],0,1.0983,False,b'unknown binary string'
-311,B,,,,,[],10,0.0,False,b'Zeros 311'
-53,b,,,,,[],0,1.0983,False,b'unknown binary string'
-311,B,,,,,[],10,0.0,False,b'Zeros 311'
-53,b,,,,,[],0,1.0983,False,b'unknown binary string'
-1167,B,,,,,[],10,0.0,False,b'Zeros 1167'
-13,b,,,,,[],0,1.2075,False,b'unknown binary string'
-519,B,,,,,[],10,0.0,False,b'Zeros 519'
-158,b,,,,,[],0,3.2511,False,b'unknown binary string'
-58,B,,,,,[],10,0.0,False,b'Zeros 58'
-57,b,,,,,[],0,2.6018,False,b'unknown binary string'
-23,B,,,,,[],10,0.0,False,b'Zeros 23'
-21,b,,,,,[],0,1.054,False,b'unknown binary string'
-27,B,,,,,[],10,0.0,False,b'Zeros 27'
-1,b,,,,,[],0,0.0,False,b'unknown binary string'
-535,B,,,,,[],10,0.0,False,b'Zeros 535'
-8,b,,,,,[],0,0.0,False,b'unknown binary string'
--1,d,time,s,,primary,[44],100,5.0265,True,b''
--1,f,displacement,mm,,primary,[44],100,5.0539,True,b''
--1,f,force,N,https://en.wikipedia.org/wiki/Force,primary,[44],100,4.1571,True,b'unknown binary string'
+length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
+44,b,,,,,[],[72400],0,3.38,False,unknown binary string
+1,i,k1=195,,,count,[],[1],100,0.92,True,
+2319,B,,,,,[],[2323],10,0.0,False,unknown binary string
+457,b,,,,,[],[457],0,0.0,False,unknown binary string
+32,B,,,,,[],[32],10,0.0,False,Zeros 32
+128,b,,,,,[],[128],0,2.07,False,unknown binary string
+130,B,,,,,[],[130],10,0.0,False,Zeros 130
+19,b,,,,,[],[19],0,0.91,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+323,B,,,,,[],[323],10,0.0,False,Zeros 323
+253,b,,,,,[],[253],0,2.27,False,unknown binary string
+67,B,,,,,[],[67],10,0.0,False,Zeros 67
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+143,B,,,,,[],[143],10,0.0,False,Zeros 143
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+175,B,,,,,[],[175],10,0.0,False,Zeros 175
+1261,b,,,,,[],[1261],0,1.22,False,unknown binary string
+99,B,,,,,[],[99],10,0.0,False,Zeros 99
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+143,B,,,,,[],[143],10,0.0,False,Zeros 143
+328,b,,,,,[],[328],0,1.52,False,unknown binary string
+400,B,,,,,[],[400],10,0.0,False,Zeros 400
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+16,B,,,,,[],[16],10,0.0,False,Zeros 16
+8,b,,,,,[],[8],0,2.13,False,unknown binary string
+16,B,,,,,[],[16],10,0.0,False,Zeros 16
+32,b,,,,,[],[32],0,1.76,False,unknown binary string
+16,B,,,,,[],[16],10,0.0,False,Zeros 16
+32,b,,,,,[],[32],0,1.66,False,unknown binary string
+16,B,,,,,[],[16],10,0.0,False,Zeros 16
+32,b,,,,,[],[32],0,1.66,False,unknown binary string
+18,B,,,,,[],[18],10,0.0,False,Zeros 18
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+123,B,,,,,[],[123],10,0.0,False,Zeros 123
+52,c,displacement_label,,,metadata,[],[52],100,1.76,True,Corr. Le in F0
+4,b,,,,,[],[4],0,0.0,False,unknown binary string
+24,B,,,,,[],[24],10,0.0,False,Zeros 24
+4,b,,,,,[],[4],0,0.0,False,unknown binary string
+24,B,,,,,[],[24],10,0.0,False,Zeros 24
+4,b,,,,,[],[4],0,0.0,False,unknown binary string
+24,B,,,,,[],[24],10,0.0,False,Zeros 24
+4,b,,,,,[],[4],0,0.0,False,unknown binary string
+904,B,,,,,[],[904],10,0.0,False,Zeros 904
+30,b,,,,,[],[30],0,2.23,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+6,b,,,,,[],[6],0,1.92,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+7,b,,,,,[],[7],0,2.25,False,unknown binary string
+25,B,,,,,[],[25],10,0.0,False,Zeros 25
+37,b,,,,,[],[37],0,1.06,False,unknown binary string
+43,B,,,,,[],[43],10,0.0,False,Zeros 43
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+31,B,,,,,[],[31],10,0.0,False,Zeros 31
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+31,B,,,,,[],[31],10,0.0,False,Zeros 31
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+29,B,,,,,[],[29],10,0.0,False,Zeros 29
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+31,B,,,,,[],[31],10,0.0,False,Zeros 31
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+31,B,,,,,[],[31],10,0.0,False,Zeros 31
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+31,B,,,,,[],[31],10,0.0,False,Zeros 31
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+31,B,,,,,[],[31],10,0.0,False,Zeros 31
+9,b,,,,,[],[9],0,2.75,False,unknown binary string
+184,B,,,,,[],[184],10,0.0,False,Zeros 184
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+159,B,,,,,[],[159],10,0.0,False,Zeros 159
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+30,B,,,,,[],[30],10,0.0,False,Zeros 30
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+199,B,,,,,[],[199],10,0.0,False,Zeros 199
+119,b,,,,,[],[119],0,2.54,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+29,b,,,,,[],[29],0,1.3,False,unknown binary string
+215,B,,,,,[],[215],10,0.0,False,Zeros 215
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+583,B,,,,,[],[583],10,0.0,False,Zeros 583
+5,b,,,,,[],[5],0,0.81,False,unknown binary string
+703,B,,,,,[],[703],10,0.0,False,Zeros 703
+96,b,,,,,[],[96],0,2.83,False,unknown binary string
+40,B,,,,,[],[40],10,0.0,False,Zeros 40
+48,b,,,,,[],[48],0,3.53,False,unknown binary string
+696,B,,,,,[],[696],10,0.0,False,Zeros 696
+5,b,,,,,[],[5],0,1.5,False,unknown binary string
+139,B,,,,,[],[139],10,0.0,False,Zeros 139
+12,b,,,,,[],[12],0,2.0,False,unknown binary string
+40,c,force_label,,,metadata,[],[40],100,2.52,True,Force/Width
+110,b,,,,,[],[110],0,1.34,False,unknown binary string
+18,B,,,,,[],[18],10,0.0,False,Zeros 18
+30,b,,,,,[],[30],0,2.13,False,unknown binary string
+18,B,,,,,[],[18],10,0.0,False,Zeros 18
+30,b,,,,,[],[30],0,2.13,False,unknown binary string
+18,B,,,,,[],[18],10,0.0,False,Zeros 18
+30,b,,,,,[],[30],0,2.13,False,unknown binary string
+18,B,,,,,[],[18],10,0.0,False,Zeros 18
+78,b,,,,,[],[78],0,2.04,False,unknown binary string
+18,B,,,,,[],[18],10,0.0,False,Zeros 18
+31,b,,,,,[],[31],0,2.27,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.32,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.57,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.32,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.48,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+31,b,,,,,[],[31],0,2.57,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+14,b,,,,,[],[14],0,2.35,False,unknown binary string
+2194,B,,,,,[],[2194],10,0.0,False,Zeros 2194
+83,b,,,,,[],[83],0,4.58,False,unknown binary string
+225,B,,,,,[],[225],10,0.0,False,Zeros 225
+75,b,,,,,[],[75],0,0.41,False,unknown binary string
+525,B,,,,,[],[525],10,0.0,False,Zeros 525
+103,b,,,,,[],[103],0,4.32,False,unknown binary string
+225,B,,,,,[],[225],10,0.0,False,Zeros 225
+75,b,,,,,[],[75],0,0.41,False,unknown binary string
+525,B,,,,,[],[525],10,0.0,False,Zeros 525
+103,b,,,,,[],[103],0,4.32,False,unknown binary string
+225,B,,,,,[],[225],10,0.0,False,Zeros 225
+75,b,,,,,[],[75],0,0.41,False,unknown binary string
+525,B,,,,,[],[525],10,0.0,False,Zeros 525
+103,b,,,,,[],[103],0,4.32,False,unknown binary string
+225,B,,,,,[],[225],10,0.0,False,Zeros 225
+75,b,,,,,[],[75],0,0.41,False,unknown binary string
+525,B,,,,,[],[525],10,0.0,False,Zeros 525
+20,b,,,,,[],[20],0,0.91,False,unknown binary string
+261,B,,,,,[],[261],10,0.0,False,Zeros 261
+14,b,,,,,[],[14],0,1.14,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+25,B,,,,,[],[25],10,0.0,False,Zeros 25
+403,b,,,,,[],[403],0,1.55,False,unknown binary string
+39,B,,,,,[],[39],10,0.0,False,Zeros 39
+77,b,,,,,[],[77],0,1.75,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+8,b,,,,,[],[8],0,0.0,False,unknown binary string
+76,B,,,,,[],[76],10,0.0,False,Zeros 76
+24,b,,,,,[],[24],0,2.43,False,unknown binary string
+64,c,process_name,,,metadata,[],[64],100,3.17,True,Universal Tensile / Compression Test
+79,b,,,,,[],[79],0,1.82,False,unknown binary string
+257,B,,,,,[],[257],10,0.0,False,Zeros 257
+19,b,,,,,[],[19],0,1.61,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+25,B,,,,,[],[25],10,0.0,False,Zeros 25
+403,b,,,,,[],[403],0,1.55,False,unknown binary string
+39,B,,,,,[],[39],10,0.0,False,Zeros 39
+77,b,,,,,[],[77],0,1.75,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+8,b,,,,,[],[8],0,0.0,False,unknown binary string
+76,B,,,,,[],[76],10,0.0,False,Zeros 76
+24,b,,,,,[],[24],0,2.43,False,unknown binary string
+64,c,,,,,[],[36],40,3.17,False,Universal Tensile / Compression Test
+79,b,,,,,[],[79],0,1.82,False,unknown binary string
+257,B,,,,,[],[257],10,0.0,False,Zeros 257
+19,b,,,,,[],[19],0,1.61,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+25,B,,,,,[],[25],10,0.0,False,Zeros 25
+403,b,,,,,[],[403],0,1.55,False,unknown binary string
+39,B,,,,,[],[39],10,0.0,False,Zeros 39
+77,b,,,,,[],[77],0,1.75,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+8,b,,,,,[],[8],0,0.0,False,unknown binary string
+76,B,,,,,[],[76],10,0.0,False,Zeros 76
+24,b,,,,,[],[24],0,2.43,False,unknown binary string
+64,c,,,,,[],[36],40,3.17,False,Universal Tensile / Compression Test
+79,b,,,,,[],[79],0,1.82,False,unknown binary string
+257,B,,,,,[],[257],10,0.0,False,Zeros 257
+19,b,,,,,[],[19],0,1.61,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+25,B,,,,,[],[25],10,0.0,False,Zeros 25
+403,b,,,,,[],[403],0,1.55,False,unknown binary string
+39,B,,,,,[],[39],10,0.0,False,Zeros 39
+77,b,,,,,[],[77],0,1.75,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+8,b,,,,,[],[8],0,0.0,False,unknown binary string
+76,B,,,,,[],[76],10,0.0,False,Zeros 76
+24,b,,,,,[],[24],0,2.43,False,unknown binary string
+64,c,,,,,[],[36],40,3.17,False,Universal Tensile / Compression Test
+79,b,,,,,[],[79],0,1.82,False,unknown binary string
+257,B,,,,,[],[257],10,0.0,False,Zeros 257
+19,b,,,,,[],[19],0,1.61,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+25,B,,,,,[],[25],10,0.0,False,Zeros 25
+403,b,,,,,[],[403],0,1.55,False,unknown binary string
+39,B,,,,,[],[39],10,0.0,False,Zeros 39
+77,b,,,,,[],[77],0,1.75,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+8,b,,,,,[],[8],0,0.0,False,unknown binary string
+76,B,,,,,[],[76],10,0.0,False,Zeros 76
+24,b,,,,,[],[24],0,2.43,False,unknown binary string
+64,c,,,,,[],[36],40,3.17,False,Universal Tensile / Compression Test
+79,b,,,,,[],[79],0,1.82,False,unknown binary string
+257,B,,,,,[],[257],10,0.0,False,Zeros 257
+19,b,,,,,[],[19],0,1.61,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+25,B,,,,,[],[25],10,0.0,False,Zeros 25
+403,b,,,,,[],[403],0,1.55,False,unknown binary string
+39,B,,,,,[],[39],10,0.0,False,Zeros 39
+77,b,,,,,[],[77],0,1.75,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+8,b,,,,,[],[8],0,0.0,False,unknown binary string
+76,B,,,,,[],[76],10,0.0,False,Zeros 76
+24,b,,,,,[],[24],0,2.43,False,unknown binary string
+64,c,,,,,[],[36],40,3.17,False,Universal Tensile / Compression Test
+79,b,,,,,[],[79],0,1.82,False,unknown binary string
+260,B,,,,,[],[260],10,0.0,False,Zeros 260
+33,b,,,,,[],[33],0,3.41,False,unknown binary string
+124,B,,,,,[],[124],10,0.0,False,Zeros 124
+32,b,,,,,[],[32],0,1.72,False,unknown binary string
+91,B,,,,,[],[91],10,0.0,False,Zeros 91
+189,b,,,,,[],[189],0,2.57,False,unknown binary string
+88,B,,,,,[],[88],10,0.0,False,Zeros 88
+158,b,,,,,[],[158],0,3.5,False,unknown binary string
+78,B,,,,,[],[78],10,0.0,False,Zeros 78
+172,b,,,,,[],[172],0,2.44,False,unknown binary string
+144,B,,,,,[],[144],10,0.0,False,Zeros 144
+158,b,,,,,[],[158],0,3.5,False,unknown binary string
+78,B,,,,,[],[78],10,0.0,False,Zeros 78
+172,b,,,,,[],[172],0,2.44,False,unknown binary string
+144,B,,,,,[],[144],10,0.0,False,Zeros 144
+158,b,,,,,[],[158],0,3.5,False,unknown binary string
+78,B,,,,,[],[78],10,0.0,False,Zeros 78
+172,b,,,,,[],[172],0,2.44,False,unknown binary string
+144,B,,,,,[],[144],10,0.0,False,Zeros 144
+20,b,,,,,[],[20],0,1.36,False,unknown binary string
+10,c,,,,,[],[10],30,2.95,False,Operator:
+4,b,,,,,[],[4],0,1.58,False,unknown binary string
+10,c,,,,,[],[10],30,2.95,False,Material:
+4,b,,,,,[],[4],0,1.58,False,unknown binary string
+170,c,,,,,[],[11],32,0.65,False,File name:
+20,b,,,,,[],[20],0,0.0,False,unknown binary string
+182,B,,,,,[],[182],10,0.0,False,Zeros 182
+11,b,,,,,[],[11],0,2.92,False,unknown binary string
+189,B,,,,,[],[189],10,0.0,False,Zeros 189
+13,b,,,,,[],[13],0,3.02,False,unknown binary string
+195,B,,,,,[],[195],10,0.0,False,Zeros 195
+10,b,,,,,[],[10],0,1.88,False,unknown binary string
+386,B,,,,,[],[386],10,0.0,False,Zeros 386
+6,b,,,,,[],[6],0,1.52,False,unknown binary string
+130,B,,,,,[],[130],10,0.0,False,Zeros 130
+19,b,,,,,[],[19],0,3.73,False,unknown binary string
+17,B,,,,,[],[17],10,0.0,False,Zeros 17
+5,b,,,,,[],[5],0,0.0,False,unknown binary string
+41,B,,,,,[],[41],10,0.0,False,Zeros 41
+62,b,,,,,[],[62],0,1.51,False,unknown binary string
+36,B,,,,,[],[36],10,0.0,False,Zeros 36
+20,b,,,,,[],[20],0,0.0,False,unknown binary string
+940,c,,,,,[],[13],36,0.06,False,Administrator
+68,b,,,,,[],[68],0,0.0,False,unknown binary string
+268,B,,,,,[],[268],10,0.0,False,Zeros 268
+8,b,,,,,[],[8],0,0.86,False,unknown binary string
+32,c,some_name,,,metadata,[],[32],100,2.74,True,"Tensile, Membrne"
+88,b,,,,,[],[88],0,2.85,False,unknown binary string
+560,B,,,,,[],[560],10,0.0,False,Zeros 560
+4,b,,,,,[],[4],0,0.92,False,unknown binary string
+876,B,,,,,[],[876],10,0.0,False,Zeros 876
+96,b,,,,,[],[96],0,0.0,False,unknown binary string
+768,B,,,,,[],[768],10,0.0,False,Zeros 768
+1040,c,,,,,[],[17],40,0.01,False,"Tensile, Membrane"
+397,b,,,,,[],[397],0,1.04,False,unknown binary string
+35,B,,,,,[],[35],10,0.0,False,Zeros 35
+29,b,,,,,[],[29],0,0.81,False,unknown binary string
+1407,B,,,,,[],[1407],10,0.0,False,Zeros 1407
+642,b,,,,,[],[642],0,1.66,False,unknown binary string
+1906,B,,,,,[],[1906],10,0.0,False,Zeros 1906
+120,b,,,,,[],[120],0,0.0,False,unknown binary string
+132,B,,,,,[],[132],10,0.0,False,Zeros 132
+40,b,,,,,[],[40],0,0.0,False,unknown binary string
+304,B,,,,,[],[304],10,0.0,False,Zeros 304
+20,b,,,,,[],[20],0,0.0,False,unknown binary string
+1888,B,,,,,[],[1888],10,0.0,False,Zeros 1888
+8,b,,,,,[],[8],0,2.52,False,unknown binary string
+24,B,,,,,[],[24],10,0.0,False,Zeros 24
+32,c,,,,,[],[12],34,2.35,False,Batch number
+32,c,,,,,[],[12],34,2.13,False,Order number
+32,c,,,,,[],[15],40,2.63,False,Customer number
+8,b,,,,,[],[8],0,2.81,False,unknown binary string
+24,B,,,,,[],[24],10,0.0,False,Zeros 24
+32,c,,,,,[],[10],30,1.85,False,Department
+32,c,,,,,[],[12],34,2.22,False,Additional 1
+32,c,,,,,[],[12],34,2.22,False,Additional 2
+32,c,,,,,[],[12],34,2.22,False,Additional 3
+32,c,,,,,[],[12],34,2.22,False,Additional 4
+32,c,,,,,[],[12],34,2.22,False,Additional 5
+32,c,,,,,[],[12],34,2.22,False,Additional 6
+32,c,,,,,[],[12],34,2.22,False,Additional 7
+32,c,,,,,[],[12],34,2.22,False,Additional 8
+32,c,,,,,[],[12],34,2.22,False,Additional 9
+32,c,,,,,[],[13],36,2.4,False,Additional 10
+32,c,,,,,[],[13],36,2.34,False,Additional 11
+32,c,,,,,[],[13],36,2.4,False,Additional 12
+32,c,,,,,[],[13],36,2.4,False,Additional 13
+32,c,,,,,[],[13],36,2.4,False,Additional 14
+32,c,,,,,[],[13],36,2.4,False,Additional 15
+32,c,,,,,[],[13],36,2.4,False,Additional 16
+32,c,,,,,[],[13],36,2.4,False,Additional 17
+32,c,,,,,[],[13],36,2.4,False,Additional 18
+960,c,,,,,[],[13],36,0.01,False,Additional 19
+32,b,,,,,[],[32],0,1.21,False,unknown binary string
+36,B,,,,,[],[36],10,0.0,False,Zeros 36
+32,b,,,,,[],[32],0,1.21,False,unknown binary string
+2068,B,,,,,[],[2068],10,0.0,False,Zeros 2068
+64,b,,,,,[],[64],0,1.9,False,unknown binary string
+60,B,,,,,[],[60],10,0.0,False,Zeros 60
+64,b,,,,,[],[64],0,1.9,False,unknown binary string
+60,B,,,,,[],[60],10,0.0,False,Zeros 60
+64,b,,,,,[],[64],0,1.9,False,unknown binary string
+56,B,,,,,[],[56],10,0.0,False,Zeros 56
+68,b,,,,,[],[68],0,1.87,False,unknown binary string
+56,B,,,,,[],[56],10,0.0,False,Zeros 56
+68,b,,,,,[],[68],0,1.87,False,unknown binary string
+56,B,,,,,[],[56],10,0.0,False,Zeros 56
+68,b,,,,,[],[68],0,1.87,False,unknown binary string
+56,B,,,,,[],[56],10,0.0,False,Zeros 56
+87,b,,,,,[],[87],0,2.47,False,unknown binary string
+106,B,,,,,[],[106],10,0.0,False,Zeros 106
+5,b,,,,,[],[5],0,1.5,False,unknown binary string
+97,B,,,,,[],[97],10,0.0,False,Zeros 97
+5,b,,,,,[],[5],0,1.5,False,unknown binary string
+8420,B,,,,,[],[8420],10,0.0,False,Zeros 8420
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+75,B,,,,,[],[75],10,0.0,False,Zeros 75
+15,b,,,,,[],[15],0,2.4,False,unknown binary string
+105,B,,,,,[],[105],10,0.0,False,Zeros 105
+14,b,,,,,[],[14],0,2.19,False,unknown binary string
+106,B,,,,,[],[106],10,0.0,False,Zeros 106
+14,b,,,,,[],[14],0,1.85,False,unknown binary string
+554,B,,,,,[],[554],10,0.0,False,Zeros 554
+140,b,,,,,[],[140],0,1.26,False,unknown binary string
+632,B,,,,,[],[632],10,0.0,False,Zeros 632
+233,b,,,,,[],[233],0,1.25,False,unknown binary string
+155,B,,,,,[],[155],10,0.0,False,Zeros 155
+72,c,,,,,[],[22],40,2.01,False,Membrane_Repeatability
+7,b,,,,,[],[7],0,0.65,False,unknown binary string
+73,B,,,,,[],[73],10,0.0,False,Zeros 73
+7,b,,,,,[],[7],0,0.65,False,unknown binary string
+257,B,,,,,[],[257],10,0.0,False,Zeros 257
+20,b,,,,,[],[20],0,0.49,False,unknown binary string
+273,c,path_name,,,metadata,[],[273],100,1.46,True,
+20,b,,,,,[],[20],0,0.0,False,unknown binary string
+259,B,,,,,[],[259],10,0.0,False,Zeros 259
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+40,B,,,,,[],[40],10,0.0,False,Zeros 40
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+26,B,,,,,[],[26],10,0.0,False,Zeros 26
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+263,B,,,,,[],[263],10,0.0,False,Zeros 263
+33,b,,,,,[],[33],0,2.14,False,unknown binary string
+107,B,,,,,[],[107],10,0.0,False,Zeros 107
+237,b,,,,,[],[237],0,1.59,False,unknown binary string
+163,B,,,,,[],[163],10,0.0,False,Zeros 163
+77,b,,,,,[],[77],0,0.81,False,unknown binary string
+5531,B,,,,,[],[5531],10,0.0,False,Zeros 5531
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+63,B,,,,,[],[63],10,0.0,False,Zeros 63
+32,b,,,,,[],[32],0,0.0,False,unknown binary string
+74,B,,,,,[],[74],10,0.0,False,Zeros 74
+3,b,,,,,[],[3],0,1.0,False,unknown binary string
+259,B,,,,,[],[259],10,0.0,False,Zeros 259
+53,b,,,,,[],[53],0,1.1,False,unknown binary string
+311,B,,,,,[],[311],10,0.0,False,Zeros 311
+53,b,,,,,[],[53],0,1.1,False,unknown binary string
+311,B,,,,,[],[311],10,0.0,False,Zeros 311
+53,b,,,,,[],[53],0,1.1,False,unknown binary string
+1167,B,,,,,[],[1167],10,0.0,False,Zeros 1167
+13,b,,,,,[],[13],0,1.21,False,unknown binary string
+519,B,,,,,[],[519],10,0.0,False,Zeros 519
+158,b,,,,,[],[158],0,3.25,False,unknown binary string
+58,B,,,,,[],[58],10,0.0,False,Zeros 58
+57,b,,,,,[],[57],0,2.6,False,unknown binary string
+23,B,,,,,[],[23],10,0.0,False,Zeros 23
+21,b,,,,,[],[21],0,1.05,False,unknown binary string
+27,B,,,,,[],[27],10,0.0,False,Zeros 27
+1,b,,,,,[],[1],0,0.0,False,unknown binary string
+535,B,,,,,[],[545],10,0.0,False,Zeros 535
+8,b,,,,,[],[8],0,0.0,False,unknown binary string
+195,d,time,s,,primary,[44],[195],100,5.03,True,
+195,f,displacement,mm,,primary,[44],[195],100,5.05,True,
+195,f,force,N,https://en.wikipedia.org/wiki/Force,primary,[44],[195],100,4.16,True,unknown binary string
 '''

@@ -160,34 +160,34 @@ except:
 # rowFormatMeta=[]
 # rowFormatSegments=[]
 # length=29
-length,dType,key,unit,link,dClass,count,prob,entropy,important,value
-20,b,,,,,[],0,2.3943,False,b'unknown binary string'
-20,c,,,,,[],40,3.5766,False,b'11.47.41 CCD Acquire'
-8,b,,,,,[],0,2.1281,False,b'unknown binary string'
-11,c,,,,,[],32,2.6464,False,b'4.19.0.2543'
-234,b,,,,,[],0,3.7218,False,b'unknown binary string'
-22,c,,,,,[],40,3.7849,False,b'Normal Image Displayp'
-229,b,,,,,[],0,3.6524,False,b'unknown binary string'
-28,c,,,,,[],40,3.9862,False,b'Acquire CCD Image Display C'
-152,b,,,,,[],0,3.5449,False,b'unknown binary string'
-22,c,,,,,[],40,3.7849,False,b'Normal Image Displayp'
-54,b,,,,,[],0,3.1184,False,b'unknown binary string'
-14,c,,,,,[],36,3.3927,False,b'Acquire CCD p'
-197,b,,,,,[],0,3.4838,False,b'unknown binary string'
-1,i,k1=4096,,,count,[],100,0.9183,True,b''
-1,i,k2=4096,,,count,[],100,0.9183,True,b'unknown binary string'
--1,H,image,,,primary,"[1011, 1015]",100,4.1197,True,"b'streak of dType=H, length=16777254'"
-78,b,,,,,[],0,3.8621,False,b'unknown binary string'
-10,c,,,,,[],30,2.9477,False,b'Real Space'
-8,b,,,,,[],0,2.1281,False,b'unknown binary string'
-18,c,file_path,,,metadata,[],100,3.5725,True,b'Z:\\\\Users\\\\Nico\\\\2021'
-41,b,,,,,[],0,4.1531,False,b'unknown binary string'
-15,c,,,,,[],38,3.0931,False,b'OA_0000_1.ser2'
-12,b,,,,,[],0,2.8454,False,b'unknown binary string'
-7246,c,metadata,,,metadata,[],100,4.126,False,b'xml string'
-261,b,,,,,[],0,4.4499,False,b'unknown binary string'
-10,c,,,,,[],30,2.9477,False,b'Real Space'
-24,b,,,,,[],0,3.0223,False,b'unknown binary string'
-11,c,,,,,[],30,3.3219,False,b'ElectronsA'
-32,b,,,,,[],0,2.4546,False,b'unknown binary string'
+length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
+20,b,,,,,[],[20],0,2.39,False,unknown binary string
+20,c,,,,,[],[20],40,3.58,False,11.47.41 CCD Acquire
+8,b,,,,,[],[8],0,2.13,False,unknown binary string
+11,c,,,,,[],[11],32,2.65,False,4.19.0.2543
+234,b,,,,,[],[234],0,3.72,False,unknown binary string
+22,c,,,,,[],[21],40,3.78,False,Normal Image Displayp
+229,b,,,,,[],[229],0,3.65,False,unknown binary string
+28,c,,,,,[],[27],40,3.99,False,Acquire CCD Image Display C
+152,b,,,,,[],[152],0,3.54,False,unknown binary string
+22,c,,,,,[],[21],40,3.78,False,Normal Image Displayp
+54,b,,,,,[],[54],0,3.12,False,unknown binary string
+14,c,,,,,[],[13],36,3.39,False,Acquire CCD p
+197,b,,,,,[],[33554715],0,3.48,False,unknown binary string
+1,i,k1=4096,,,count,[],[1],100,0.92,True,
+1,i,k2=4096,,,count,[],[1],100,0.92,True,unknown binary string
+16777216,H,image,,,primary,"[1011, 1015]","[4096, 4096]",100,4.12,True,"streak of dType=H, length=16777254"
+78,b,,,,,[],[78],0,3.86,False,unknown binary string
+10,c,,,,,[],[10],30,2.95,False,Real Space
+8,b,,,,,[],[8],0,2.13,False,unknown binary string
+18,c,file_path,,,metadata,[],[18],100,3.57,True,Z:\\Users\\Nico\\2021
+41,b,,,,,[],[41],0,4.15,False,unknown binary string
+15,c,,,,,[],[14],38,3.09,False,OA_0000_1.ser2
+12,b,,,,,[],[12],0,2.85,False,unknown binary string
+7246,c,metadata,,,metadata,[],[10],100,4.13,False,xml string
+261,b,,,,,[],[261],0,4.45,False,unknown binary string
+10,c,,,,,[],[10],30,2.95,False,Real Space
+24,b,,,,,[],[24],0,3.02,False,unknown binary string
+11,c,,,,,[],[10],30,3.32,False,ElectronsA
+32,b,,,,,[],[32],0,2.45,False,unknown binary string
 '''

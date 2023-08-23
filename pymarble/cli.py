@@ -104,6 +104,7 @@ def main() -> None:
         elif command.startswith('y'):
           for start in [int(i) for i in command.split()[1].split('_')]:
             del fBIN.content[start]
+          fBIN.fill()                                             # type: ignore[misc]
         elif command.startswith('t'):
           fBIN.periodicity =  dict(zip(['count','start','end'],[int(i) for i in command.split()[1:]]))
 

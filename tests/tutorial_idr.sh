@@ -1,4 +1,3 @@
-
 ###########################################################################
 # TEST: tests/examples/alone.idr
 #
@@ -96,7 +95,7 @@ python3 tests/examples/alone.py tests/examples/alone.idr
 
 echo
 echo "Test python import, and then compare the output, incl. diff"
-# mv tests/examples/alone.idr.tags tests/examples/alone.tags
-# # Read python file
-# ./marbleCLI.py tests/examples/alone.idr "ip; ot"
-# diff tests/examples/alone.idr.tags tests/examples/alone.tags
+mv tests/examples/alone.idr.tags tests/examples/alone.tags
+# Read python file
+./marbleCLI.py tests/examples/alone.idr "ip; ot"
+diff tests/examples/alone.idr.tags tests/examples/alone.tags

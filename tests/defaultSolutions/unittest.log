@@ -1,10 +1,10 @@
 
 START testExportedFile.py
-000044 found value 58076
-000044 found value 58076
-000044 found value 58076
-58076|d||||primary|[44]|[58076]|90|-1.0|False|from exported data column 1
-58076|f||||primary|[44]|[58076]|76|-1.0|False|from exported data column 2
-58076|f||||primary|[44]|[58076]|90|-1.0|False|from exported data column 3
+000044  found value 58076
+000044  found value 58076
+000044  found value 58076
+58076|d||||primary|44|58076|90|-1.00|False|from exported data column 1
+58076|f||||primary|44|58076|76|-1.00|False|from exported data column 2
+58076|f||||primary|44|58076|90|-1.00|False|from exported data column 3
 
 *** DONE WITH VERIFY ***

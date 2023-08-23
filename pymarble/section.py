@@ -100,14 +100,14 @@ class Section:
     return
 
 
-  def __repr__(self, shorten:bool=False) -> str:
+  def __repr__(self) -> str:
     '''
     Used for print(Section) or str(Section)
     - use |-system for easy to reading
     - complete data
     - is the text label in the .tags file
     '''
-    strList = [str(i) for i in self.toList(shorten=shorten)]
+    strList = [str(i) for i in self.toList()]
     return '|'.join( strList )
 
 
@@ -119,15 +119,11 @@ class Section:
     return {i:getattr(self,i) for i in SECTION_OUTPUT_ORDER}
 
 
-  def toList(self, shorten:bool=False) -> list[str]:
+  def toList(self) -> list[str]:
     '''
     Return list of all arguments
     - used for printing of table
     - clean output before printing / saving in .tags file
-    - no shortening of strings since .tags need all
-
-    Args:
-      shorten: simplify columns
     '''
     localCopy = self.__dict__.copy()
     localCopy['entropy'] = f"{localCopy['entropy']:.2f}"     #Prevent issues with diff in tags file

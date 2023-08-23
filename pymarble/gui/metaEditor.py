@@ -1,6 +1,6 @@
 """ Editor to change metadata of binary file """
 import logging
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox  # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit  # pylint: disable=no-name-in-module
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
 

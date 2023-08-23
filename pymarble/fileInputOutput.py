@@ -141,7 +141,8 @@ class InputOutput():
     Output file content to .py file
     header has formalized description of file-structure
 
-    the csv file at the end of the file is the specific version of this file: byte differences are difficult to recrate original one
+    the csv file at the end of the file is the specific version of this file:
+      - byte differences are difficult to recrate original one
     '''
     pyFile = os.path.splitext(self.fileName)[0]+'.py'
     with open(pyFile, 'w', encoding='utf-8') as fOut:
@@ -200,6 +201,10 @@ class InputOutput():
       fOut.write('\nexcept:\n  print("**ERROR** Exception in translation")\n')
 
       # FORMALIZED DESCRIPTION OF BINARY-FILE-STRUCTURE
+      #revert count->metadata so it can be saved again
+      if 'count' in self.periodicity:
+        start = int(self.periodicity['count'])
+        self.content[start].dClass='count'
       fOut.write("\n\n\n'''\n")
       fOut.write("# INFO: THIS PART IS LOADED BY MARBLE\n")
       fOut.write('# version= 1.0\n')
@@ -221,10 +226,6 @@ class InputOutput():
       dataframe = dataframe[SECTION_OUTPUT_ORDER]         #sort colums by defined order
       dataframe.to_csv(fOut, index=False)
       fOut.write("'''\n")
-    #revert count->metadata so it can be saved again
-    if 'count' in self.periodicity:
-      start = int(self.periodicity['count'])
-      self.content[start].dClass='count'
     return
 
 
@@ -285,7 +286,7 @@ class InputOutput():
         row['shape'] = [] if row['shape'] =='[]' else [int(i) for i in row['shape'][1:-1].split(',')]
         row['value'] = html.unescape(row['value'])
         #for all sections
-        section = Section(**row)
+        section = Section(**row)            # type: ignore[misc]
         section.value = section.value.encode('utf-8').decode('unicode_escape')
         if section.length<0:
           section.length = int(np.prod(section.shape))

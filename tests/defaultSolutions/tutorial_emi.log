@@ -6,3 +6,5 @@ Number not found in file
 00001015  found 4096.0 with error 0.0
 Number not found in file
 Translation successful
+
+Test python import, and then compare the output, incl. diff

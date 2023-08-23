@@ -35,11 +35,10 @@ echo "Run forth test: tests/examples/alone.idr"
 rm -f tests/examples/*.tags tests/examples/*.py tests/examples/*.hdf5
 ./tests/tutorial_idr.sh > thisOutput.log
 punx validate --report NOTE,WARN,ERROR tests/examples/alone.hdf5| grep 'NOTE\|does not meet NeXus specification, not generally acceptable\|ERROR'
-# TODO_P1 for now
-# echo "check if python & output are equal to supposted output: diff.."
-# diff -bZw tests/examples/alone.py tests/defaultSolutions/tutorial_idr.py
-# diff -bZw thisOutput.log tests/defaultSolutions/tutorial_idr.log
-# echo "======================================================================"
+echo "check if python & output are equal to supposted output: diff.."
+diff -bZw tests/examples/alone.py tests/defaultSolutions/tutorial_idr.py
+diff -bZw thisOutput.log tests/defaultSolutions/tutorial_idr.log
+echo "======================================================================"
 
 echo
 echo "Run fifth test: tests/examples/Membrane_Repeatability_08.mvl"

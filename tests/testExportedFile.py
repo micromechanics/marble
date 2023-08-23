@@ -21,11 +21,11 @@ class TestStringMethods(unittest.TestCase):
       self.assertTrue(fBIN.content[533888],'2nd start wrong')
       self.assertTrue(fBIN.content[766192],'3rd start wrong')
       print(fBIN.content[69280])
-      self.assertTrue(str(fBIN.content[69280])=='58076|d||||primary|[44]|[58076]|90|-1.0|False|from exported data column 1','1st start wrong')
+      self.assertTrue(str(fBIN.content[69280])=='58076|d||||primary|44|58076|90|-1.00|False|from exported data column 1','1st start wrong')
       print(fBIN.content[533888])
-      self.assertTrue(str(fBIN.content[533888])=='58076|f||||primary|[44]|[58076]|76|-1.0|False|from exported data column 2','2nd start wrong')
+      self.assertTrue(str(fBIN.content[533888])=='58076|f||||primary|44|58076|76|-1.00|False|from exported data column 2','2nd start wrong')
       print(fBIN.content[766192])
-      self.assertTrue(str(fBIN.content[766192])=='58076|f||||primary|[44]|[58076]|90|-1.0|False|from exported data column 3','3rd start wrong')
+      self.assertTrue(str(fBIN.content[766192])=='58076|f||||primary|44|58076|90|-1.00|False|from exported data column 3','3rd start wrong')
 
       #FOOTER
       print('\n*** DONE WITH VERIFY ***')
