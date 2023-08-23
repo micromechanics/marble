@@ -14,7 +14,7 @@ Help:
   start as: [file-name.py] [binary-file]
   -v: verbose = adds additional output
 '''
-import struct, sys, os, hashlib
+import struct, sys, os, hashlib, json
 import h5py                                    #CWL requirement
 import numpy as np
 import matplotlib.pyplot as plt
@@ -71,7 +71,7 @@ def addAttrs(relPos, format, hdfBranch, key):
   return
 
 
-def addData(relPos, format, hdfBranch, key, unit, shape=None):
+def addData(relPos, format, hdfBranch, key, metadata, shape=None):
   '''
   helper function: add data to branch
 
@@ -80,7 +80,7 @@ def addData(relPos, format, hdfBranch, key, unit, shape=None):
     format: data to read, int=numb. of chars, otherwise 4i
     hdfBrach: branch to add
     key: name of the key
-    unit: scientific unit
+    metadata: metadata incl. scientific unit
     shape: shape of the array
 
   Returns:
@@ -102,7 +102,9 @@ def addData(relPos, format, hdfBranch, key, unit, shape=None):
       plt.plot(data,'.')
     plt.show()
   dset = hdfBranch.create_dataset(key, data=data)
-  dset.attrs['unit'] = unit
+  metadataDict = json.loads(metadata.replace("'",'"'))
+  for keyI, valueI in metadataDict.items():
+    dset.attrs[keyI] = valueI
   hdfBranch.attrs['signal'] = key
   return True
 
@@ -142,9 +144,9 @@ try:
   addAttrs(8276, 64, hdfBranch, "process_name")
   addAttrs(11016, 32, hdfBranch, "some_name")
   addAttrs(26188, 273, hdfBranch, "path_name")
-  addData(10559, str(k1)+"d", hdfBranch, "time", "s")
-  addData(0, str(k1)+"f", hdfBranch, "displacement", "mm")
-  addData(0, str(k1)+"f", hdfBranch, "force", "N")
+  addData(10559, f"{k1}d", hdfBranch, "time", "{'unit': 's', 'link': ''}")
+  addData(0, f"{k1}f", hdfBranch, "displacement", "{'unit': 'mm', 'link': ''}")
+  addData(0, f"{k1}f", hdfBranch, "force", "{'unit': 'N', 'link': 'https://en.wikipedia.org/wiki/Force'}")
   if os.path.getsize(fileNameIn)-fIn.tell()!=0:
     print("Translation NOT successful")
   else:
@@ -160,6 +162,8 @@ except:
 # version= 1.0
 # meta={"vendor": "", "label": "", "software": "", "ext": "mvl", "endian": "small"}
 # periodicity={}
+# rowFormatMeta=[]
+# rowFormatSegments=[]
 # length=509
 length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 44,b,,,,,[],0,3.3841,False,b'unknown binary string'

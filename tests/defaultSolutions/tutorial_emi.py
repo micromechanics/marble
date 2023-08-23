@@ -14,7 +14,7 @@ Help:
   start as: [file-name.py] [binary-file]
   -v: verbose = adds additional output
 '''
-import struct, sys, os, hashlib
+import struct, sys, os, hashlib, json
 import h5py                                    #CWL requirement
 import numpy as np
 import matplotlib.pyplot as plt
@@ -71,7 +71,7 @@ def addAttrs(relPos, format, hdfBranch, key):
   return
 
 
-def addData(relPos, format, hdfBranch, key, unit, shape=None):
+def addData(relPos, format, hdfBranch, key, metadata, shape=None):
   '''
   helper function: add data to branch
 
@@ -80,7 +80,7 @@ def addData(relPos, format, hdfBranch, key, unit, shape=None):
     format: data to read, int=numb. of chars, otherwise 4i
     hdfBrach: branch to add
     key: name of the key
-    unit: scientific unit
+    metadata: metadata incl. scientific unit
     shape: shape of the array
 
   Returns:
@@ -102,7 +102,9 @@ def addData(relPos, format, hdfBranch, key, unit, shape=None):
       plt.plot(data,'.')
     plt.show()
   dset = hdfBranch.create_dataset(key, data=data)
-  dset.attrs['unit'] = unit
+  metadataDict = json.loads(metadata.replace("'",'"'))
+  for keyI, valueI in metadataDict.items():
+    dset.attrs[keyI] = valueI
   hdfBranch.attrs['signal'] = key
   return True
 
@@ -138,7 +140,7 @@ try:
   hdfBranch.attrs["NX_class"] = b"NXdata"
   k1 = readData(1011, "1i")[0]
   k2 = readData(0, "1i")[0]
-  addData(0, str(k1*k2)+"H", hdfBranch, "image", "", shape=[k1,k2])
+  addData(0, f"{k1*k2}H", hdfBranch, "image", "{'unit': '', 'link': ''}", shape=[k1,k2])
   addAttrs(96, 18, hdfBranch, "file_path")
   if os.path.getsize(fileNameIn)-fIn.tell()!=7652:
     print("Translation NOT successful")
@@ -155,6 +157,8 @@ except:
 # version= 1.0
 # meta={"vendor": "", "label": "", "software": "", "ext": "emi", "endian": "small"}
 # periodicity={}
+# rowFormatMeta=[]
+# rowFormatSegments=[]
 # length=29
 length,dType,key,unit,link,dClass,count,prob,entropy,important,value
 20,b,,,,,[],0,2.3943,False,b'unknown binary string'

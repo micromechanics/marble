@@ -154,7 +154,7 @@ class InputOutput():
       inForLoop = False
       if 'count' in self.periodicity:
         start = int(self.periodicity['count'])
-        line = self.content[start].toPY(start, 'numberOfTests')
+        line = self.content[start].toPY(start, 0, variable='numberOfTests')
         fOut.write('  fIn.seek(0)\n')
         fOut.write('  '+line)
         self.content[start].dClass='metadata'  #count->metadata
@@ -180,7 +180,7 @@ class InputOutput():
         branchName = None
         if ( sect.dClass in ['metadata','primary'] and inForLoop ) or not bool(self.periodicity):
           branchName = 'hdfBranch'
-        if line := self.content[start].toPY(start-lastOutput, self.content, branchName):
+        if line := self.content[start].toPY(start, lastOutput, binaryFile=self, hdf=branchName):
           forLoopPrefix = '  ' if inForLoop else ''
           fOut.write(f'  {forLoopPrefix}{line}')
           lastOutput = start+self.content[start].byteSize()
@@ -381,7 +381,7 @@ Help:
   start as: [file-name.py] [binary-file]
   -v: verbose = adds additional output
 '''
-import struct, sys, os, hashlib
+import struct, sys, os, hashlib, json
 import h5py                                    #CWL requirement
 import numpy as np
 import matplotlib.pyplot as plt

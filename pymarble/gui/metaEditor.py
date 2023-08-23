@@ -26,9 +26,16 @@ class MetaEditor(QDialog):
     _, self.formL = widgetAndLayout('Form', mainL)
     for key, value in self.metaFields.items():
       if key == 'endian':
-        self.endianComboBox = QComboBox()
-        self.endianComboBox.addItems(['big','small'])
-        self.formL.addRow(QLabel('Endian encoding'), self.endianComboBox)
+        pass
+        # Note: small and big endian are implemented in the config file, this dialog
+        # - they are not included in any of the struct.unpack functions
+        # - included in BinaryFile endian
+        # - not sure it is required for any data files
+        # - if user does not find any solution: suggest to switch endian-ness
+        #
+        # self.endianComboBox = QComboBox()
+        # self.endianComboBox.addItems(['big','small'])
+        # self.formL.addRow(QLabel('Endian encoding'), self.endianComboBox)
       else:
         setattr(self, f'key_{key}', QLineEdit(value))
         self.formL.addRow(QLabel(key.capitalize()), getattr(self, f'key_{key}'))

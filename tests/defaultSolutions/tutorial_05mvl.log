@@ -1,15 +1,15 @@
-000044 found value 58076
-000044 found value 58076
-000044 found value 58076
-00044 found value 195
-00044 found value 195
+000044  found value 58076
+000044  found value 58076
+000044  found value 58076
+00044  found value 195
+00044  found value 195
 00044  found 195.0 with error 0.0
 ... found nothing
 ... found nothing
 ... found nothing
 69272 (0.0, 0.01999999999998181, 0.03999999999996362, 0.05999999999994543, 0.07999999999992724)
-00044 found value 195
-00044 found value 195
+00044  found value 195
+00044  found value 195
 Average entropy: 0.7574
 
 Test Python script

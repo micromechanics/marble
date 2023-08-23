@@ -1,6 +1,6 @@
 """ Communication class that sends signals between widgets, incl. binaryFile"""
 from typing import Any, Optional
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget        # pylint: disable=no-name-in-module
 from PySide6.QtCore import QObject, Signal   # pylint: disable=no-name-in-module
 from ..file import BinaryFile
 

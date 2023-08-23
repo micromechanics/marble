@@ -1,7 +1,7 @@
 """Section of data"""
 from __future__ import annotations
 import logging, struct
-from typing import Union, Optional
+from typing import Union, Optional, Any
 import numpy as np
 
 # length: length of section, responsible for size, byteSize of section
@@ -138,7 +138,8 @@ class Section:
     return [getattr(self, i) for i in SECTION_OUTPUT_ORDER]
 
 
-  def toPY(self,relPos:int, content:Optional[dict[int,Section]]=None, hdf:Optional[str]=None) -> Optional[str]:
+  def toPY(self, offset:int, lastOffset:int, variable:str='', binaryFile:Any=None, hdf:Optional[str]=None) \
+    -> Optional[str]:
     '''
     Return one-line string in python format for body of .py file
     - not used for save/load of structure information
@@ -152,33 +153,37 @@ class Section:
       hdf = 'fOut'
     if self.dType in ['b','B']:
       return None
+    relPos = offset - lastOffset
     if self.dType=='c' or self.dClass=='metadata':
       length = str(self.length) if self.dType=='c' else f'"{self.size()}"'  #default: char or
       key = self.key.replace(':','_')
       return f'addAttrs({relPos}, {length}, {hdf}, "{key}' + '")\n'
     if self.dType=='i':
-      variable = self.key.split('=')[0]
-      if content is not None and isinstance(content, str):
-        variable = content
+      variable = variable or self.key.split('=')[0]
       return f'{variable} = readData({relPos}, "{self.size()}' + '")[0]\n'
+    if binaryFile is None:
+      return ''
+    content = binaryFile.content
     #if data with dTypes: d,f,H
-    # sourcery skip: merge-nested-ifs
     if len(self.shape) in {0,1} and len(self.count)==1  and np.prod(self.shape)==self.length:
       #default case: shape (un)identified and one count
-      if content is not None:
-        variable = content[self.count[0]].key.split('=')[0]
-        return (
-            f'addData({relPos}, str({variable})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}'
-            + '")\n')
-    if len(self.shape) == len(self.count) and np.prod(self.shape)==self.length and content is not None:
+      variable = content[self.count[0]].key.split('=')[0]
+      metadata = {'unit':self.unit, 'link':self.link}
+      return f'addData({relPos}, f"{{{variable}}}{self.dType}", {hdf}, "{self.key}", "{metadata}")\n'
+    if len(self.shape) == len(self.count) and np.prod(self.shape)==self.length:
       #case: image with x,y count and shape
-      variables = [content[i].key.split('=')[0] for i in self.count]
+      variables = [str(self.shape[idx]) if i==-1 else content[i].key.split('=')[0]
+                   for idx,i in enumerate(self.count)]
       prodVariables = '*'.join(variables)
-      return (
-          f'addData({relPos}, str({prodVariables})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}", shape=['
-          + ','.join(variables)) + '])\n'
-    if len(self.shape)>0 and len(self.shape)==len(self.count) and \
-           self.length>np.prod(self.shape) and content is not None:
+      metadata = {'unit':self.unit, 'link':self.link}
+      if offset in binaryFile.rowFormatSegments:
+        metadata  = {'description':'data in columns; metadata in corresponding lists'}
+        metadata |= {'labels':[i['key']  for i in binaryFile.rowFormatMeta]}  # type: ignore[dict-item]
+        metadata |= {'units': [i['unit'] for i in binaryFile.rowFormatMeta]}  # type: ignore[dict-item]
+        metadata |= {'links': [i['link'] for i in binaryFile.rowFormatMeta]}  # type: ignore[dict-item]
+      return f'addData({relPos}, f"{{{prodVariables}}}{self.dType}", {hdf}, "{self.key}", "{metadata}", '\
+             f'shape=[{",".join(variables)}])\n'
+    if len(self.shape)>0 and len(self.shape)==len(self.count) and self.length>np.prod(self.shape):
       #garbage case: lots of garbage behind real data specified by shape
       variables = [content[i].key.split('=')[0] for i in self.count]
       return (
@@ -246,7 +251,7 @@ def addAttrs(relPos, format, hdfBranch, key):
   return
 
 
-def addData(relPos, format, hdfBranch, key, unit, shape=None):
+def addData(relPos, format, hdfBranch, key, metadata, shape=None):
   '''
   helper function: add data to branch
 
@@ -255,7 +260,7 @@ def addData(relPos, format, hdfBranch, key, unit, shape=None):
     format: data to read, int=numb. of chars, otherwise 4i
     hdfBrach: branch to add
     key: name of the key
-    unit: scientific unit
+    metadata: metadata incl. scientific unit
     shape: shape of the array
 
   Returns:
@@ -277,7 +282,9 @@ def addData(relPos, format, hdfBranch, key, unit, shape=None):
       plt.plot(data,'.')
     plt.show()
   dset = hdfBranch.create_dataset(key, data=data)
-  dset.attrs['unit'] = unit
+  metadataDict = json.loads(metadata.replace("'",'"'))
+  for keyI, valueI in metadataDict.items():
+    dset.attrs[keyI] = valueI
   hdfBranch.attrs['signal'] = key
   return True
 
