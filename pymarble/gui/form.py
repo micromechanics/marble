@@ -238,7 +238,7 @@ class Form(QDialog):
       dataAll = dataAll + bytearray(byteSizeAll-len(dataAll))
     # depending on plot/print type
     if self.plotCB.currentText().endswith('byte value') or self.plotCB.currentText().endswith('character') or\
-       (dType in ['b','B'] and self.plotCB.currentText().endswith('numerical value')):
+       (dType in {'b', 'B'} and self.plotCB.currentText().endswith('numerical value')):
       valuesX = np.arange(-lead*byteSize, (length+lead)*byteSize)
       self.valuesY = list(dataAll)
       limitX  = length*byteSize
@@ -309,18 +309,15 @@ class Form(QDialog):
       idxStart = np.argmin(np.abs(valuesX))
       idxEnd   = np.argmin(np.abs(valuesX-limitX))
       if labelY == 'numerical value':
-        if np.all(self.valuesY[idxStart:idxEnd])<1000 and dType in ['f','d']:
-          text  =      '\t'.join([f'{i:7.3f}'    for i in self.valuesY[:idxStart]])
-          text += '\t'+'\t'.join([f'**{i:.3f}**' for i in self.valuesY[idxStart:idxEnd]])
-          text += '\t'+'\t'.join([f'{i:7.3f}'    for i in self.valuesY[idxEnd:]])
-        elif np.all(self.valuesY[idxStart:idxEnd])<10000 and dType in ['i']:
-          text  =      '\t'.join([f'{i:6}'     for i in self.valuesY[:idxStart]])
-          text += '\t'+'\t'.join([f'**{i:6}**' for i in self.valuesY[idxStart:idxEnd]])
-          text += '\t'+'\t'.join([f'{i:6}'     for i in self.valuesY[idxEnd:]])
+        if np.all(self.valuesY[idxStart:idxEnd])<1000 and dType in {'f','d'}:
+          style1, style2 = '7.3f', '.3f'
+        elif np.all(self.valuesY[idxStart:idxEnd])<10000 and dType in {'i'}:
+          style1, style2 = '6', '6'
         else:
-          text  =     '\t'.join([f'{i:9.3e}'    for i in self.valuesY[:idxStart]])
-          text += '\t'+'\t'.join([f'**{i:.3e}**' for i in self.valuesY[idxStart:idxEnd]])
-          text += '\t'+'\t'.join([f'{i:9.3e}'    for i in self.valuesY[idxEnd:]])
+          style1, style2 = '9.3e', '.3e'
+        text  =      '\t'.join([  f'{i:{style1}}'   for i in self.valuesY[:idxStart]])
+        text += '\t'+'\t'.join([f'**{i:{style2}}**' for i in self.valuesY[idxStart:idxEnd]])
+        text += '\t'+'\t'.join([  f'{i:{style1}}'   for i in self.valuesY[idxEnd:]])
         self.textEditW.setMarkdown(text)
       elif self.plotCB.currentText().endswith('byte value'):
         textArray = self.comm.binaryFile.byteToString(dataAll, 1).split(' ')
@@ -389,7 +386,7 @@ class Form(QDialog):
       shape  = [int(i) for i in self.shapeW.text()[1:-1].split(',') if len(i)>0]
       binaryFile = self.comm.binaryFile
       #find count in file
-      if dType in ['f','d','H']:
+      if dType in {'f','d','H'}:
         lengthSearch = min(length, int(np.prod(shape))) #remember garbage at end of data-set
         #create link / enter property count; adopt shape correspondingly
         count =[self.comm.binaryFile.findAnchor(lengthSearch, start)[0]]     # type: ignore[misc]
@@ -401,7 +398,7 @@ class Form(QDialog):
           shape.append(int(iLength))
       else:
         count  = [int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0]
-        if dType in ['b','c']:  #check if small b=random bytes or B=zeros
+        if dType in {'b', 'c'}:  #check if small b=random bytes or B=zeros
           self.comm.binaryFile.file.seek(start)
           data = self.comm.binaryFile.file.read(length)
           if dType == 'b':

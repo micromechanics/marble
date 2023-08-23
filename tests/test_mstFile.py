@@ -16,9 +16,9 @@ def test_main():
   ## KEEP THIS SIMILAR (but much shorter) TO Tests/backendTutorial.py
   fBIN = BinaryFile('tests/examples/1.mst')
   fBIN.automatic()
-  fBIN.label(8,   '17|c|Type of file|||metadata|[]|[18]|100|3.452819531114783|True|Scratch test file')
-  fBIN.label(470, '1|i|k1=1500|||count|[]|[1]|100|1.584962500721156|True|')
-  fBIN.label(474, '16500|f|primary data in rows|||primary|[470, -1]|[1500, 11]|100|4.704180709093521|True|primary data in rows')
+  fBIN.label(8,   '17|c|Type of file|||metadata||18|100|3.452819531114783|True|Scratch test file')
+  fBIN.label(470, '1|i|k1=1500|||count||1|100|1.584962500721156|True|')
+  fBIN.label(474, '16500|f|primary data in rows|||primary|470, -1|1500, 11|100|4.704180709093521|True|primary data in rows')
   fBIN.fill()
   fBIN.rowFormatSegments = {474}
   fBIN.rowFormatMeta = [{"key": "friction distance x", "unit": "m", "link": ""},

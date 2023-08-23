@@ -104,12 +104,11 @@ class Periodicity(QDialog):
       endOffset   = int(self.lastCB.currentText().split(' - ')[0][3:])
       sectionEnd = self.comm.binaryFile.content[endOffset]
       end = endOffset+sectionEnd.byteSize()
+    elif self.startLE.text()=='' or self.lastLE.text()=='':
+      start = end = 0
     else:
-      if self.startLE.text()=='' or self.lastLE.text()=='':
-        start = end = 0
-      else:
-        start = int(self.startLE.text())
-        end   = int(self.lastLE.text())
+      start = int(self.startLE.text())
+      end   = int(self.lastLE.text())
     #start plotting
     self.graph.axes.cla()                        # Clear the canvas
     if self.plotCB.currentText()=='Plot entropy':

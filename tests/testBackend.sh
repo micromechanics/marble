@@ -49,3 +49,10 @@ echo "check if python & output are equal to supposted output: diff.."
 diff -bZw tests/examples/Membrane_Repeatability_08.py tests/defaultSolutions/tutorial_08mvl.py
 diff -bZw thisOutput.log tests/defaultSolutions/tutorial_08mvl.log
 echo "======================================================================"
+
+echo
+echo "Run the ALL Python test"
+rm -f tests/examples/*.tags tests/examples/*.py tests/examples/*.hdf5  # Remove all previously generated files
+pytest tests > thisOutput.log
+echo "======================================================================"
+

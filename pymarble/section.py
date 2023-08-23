@@ -171,18 +171,18 @@ class Section:
       prodVariables = '*'.join(variables)
       metadata = {'unit':self.unit, 'link':self.link}
       if offset in binaryFile.rowFormatSegments:
-        metadata  = {'description':'data in columns; metadata in corresponding lists'}
-        metadata |= {'labels':[i['key']  for i in binaryFile.rowFormatMeta]}  # type: ignore[dict-item]
-        metadata |= {'units': [i['unit'] for i in binaryFile.rowFormatMeta]}  # type: ignore[dict-item]
-        metadata |= {'links': [i['link'] for i in binaryFile.rowFormatMeta]}  # type: ignore[dict-item]
+        metadata = {'description': 'data in columns; metadata in corresponding lists',
+                    'labels': [i['key'] for i in binaryFile.rowFormatMeta],   # type: ignore[dict-item]
+                    'units':  [i['unit'] for i in binaryFile.rowFormatMeta],  # type: ignore[dict-item]
+                    'links':  [i['link'] for i in binaryFile.rowFormatMeta]}  # type: ignore[dict-item]
       return f'addData({relPos}, f"{{{prodVariables}}}{self.dType}", {hdf}, "{self.key}", "{metadata}", '\
-             f'shape=[{",".join(variables)}])\n'
+               f'shape=[{",".join(variables)}])\n'
     if len(self.shape)>0 and len(self.shape)==len(self.count) and self.length>np.prod(self.shape):
       #garbage case: lots of garbage behind real data specified by shape
       variables = [content[i].key.split('=')[0] for i in self.count]
       metadata = {'unit':self.unit, 'link':self.link}
       return f'addData({relPos}, f"{{{self.length}}}{self.dType}", {hdf}, "{self.key}", "{metadata}", '\
-             f'shape=[{",".join(variables)}])\n'
+               f'shape=[{",".join(variables)}])\n'
     logging.error("section.py: UNDEFINED shape, count, length: %s, %s, %s", self.shape,self.count,self.length)
     return 'print("**ERROR occurred during deciphering")\n'
 

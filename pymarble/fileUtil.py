@@ -148,7 +148,7 @@ class Util():
       logging.error("FILL: One entry required. I exit.")
       return
     rerun = True
-    while rerun:  #loop until all changes made
+    while rerun:#loop until all changes made
       #some tests at start: use for debugging
       # print('Start')
       # for start in self.content:
@@ -164,7 +164,7 @@ class Util():
         if section.length==0 and section.dType=='b':  #if byte of zero length
           toDelete.append(start)
         elif section.length<self.optAutomatic['minArray'] and section.dType in ['f','d'] and \
-             section.dClass!='metadata':
+               section.dClass!='metadata':
           #if data less that supposed
           toDelete.append(start)
         elif idx+1<len(starts) and section.dType=='c' and self.content[starts[idx+1]].dType=='B':
@@ -240,15 +240,13 @@ class Util():
 
       #merge sequential binary sections
       pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
-      pairsRepair = [[i,j] for i,j in pairsAll if self.content[i].dType=='b' and self.content[j].dType=='b']
-      while pairsRepair:
+      while pairsRepair := [[i, j] for i, j in pairsAll
+                            if self.content[i].dType == 'b' and self.content[j].dType == 'b']:
         first, second = pairsRepair[0]  #just take the first and then rebuild to prevent overlapping
         self.content[first].length += self.content[second].length
         self.content[first].shape  = [self.content[first].length]
         del self.content[second]
         pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
-        pairsRepair = [[i,j] for i,j in pairsAll if self.content[i].dType=='b' and self.content[j].dType=='b']
-
       # #some tests at end: use for debugging
       # print('End')
       # for start in self.content:
@@ -339,13 +337,11 @@ class Util():
     aString = aBytes.hex().upper()
     if spaceEvery>0:
       spaceEvery *= 2
-      aString = ' '.join(aString[i:i+spaceEvery] for i in range(0, len(aString), spaceEvery))
-    else:
-      aList = [int(aString[i:i+2], base=16) for i in range(0,len(aString),2) ]#list of integer/char
-      listConsecutive = np.split(aList, np.where(np.diff(aList) != 0)[0]+1)   #find consecutive entries list[]
-      aString = ''.join([''.join([hex(j)[2:].zfill(2) for j in i]) if len(i)<3 or i[0]>0 \
-        else f' {len(i)}*00 ' for i in listConsecutive])
-    return aString
+      return ' '.join(aString[i:i+spaceEvery] for i in range(0, len(aString), spaceEvery))
+    aList = [int(aString[i:i+2], base=16) for i in range(0,len(aString),2) ]#list of integer/char
+    listConsecutive = np.split(aList, np.where(np.diff(aList) != 0)[0]+1)   #find consecutive entries list[]
+    return ''.join([''.join([hex(j)[2:].zfill(2) for j in i]) if len(i)<3 or i[0]>0 \
+      else f' {len(i)}*00 ' for i in listConsecutive])
 
 
   @staticmethod
