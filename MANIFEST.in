@@ -3,3 +3,5 @@ graft docs
 prune docs/build
 global-exclude *.py[cod]
 
+include pymarble/Resources/Icons/*
+
