@@ -19,7 +19,7 @@ fi
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'fi 4096'
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1011 1|i|k1=4096|||count; x fill; ot'
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1015 1|i|k2=4096|||count; x fill; ot'
-./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1019 16777216|H|image|||primary|[1011,1015]; ot'
+./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; r 1019 16777216|H|image|||primary|1011,1015; ot'
 
 
 # Plot/Draw it in 2D
@@ -37,11 +37,11 @@ fi
 # Test
 python3 tests/examples/1-11-OA_0000.py tests/examples/1-11-OA_0000.emi
 
-# echo
-# echo "Test python import, and then compare the output, incl. diff"
-# mv tests/examples/1-11-OA_0000.emi.tags tests/examples/1-11-OA_0000.tags
+echo
+echo "Test python import, and then compare the output, incl. diff"
+mv tests/examples/1-11-OA_0000.emi.tags tests/examples/1-11-OA_0000.tags
 ## Read python file
-# ./marbleCLI.py tests/examples/1-11-OA_0000.emi "ip; ot"
-# diff -q tests/examples/1-11-OA_0000.emi.tags tests/examples/1-11-OA_0000.tags
+./marbleCLI.py tests/examples/1-11-OA_0000.emi "ip; ot"
+diff -q tests/examples/1-11-OA_0000.emi.tags tests/examples/1-11-OA_0000.tags
 
 

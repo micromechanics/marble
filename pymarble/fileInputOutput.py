@@ -1,5 +1,5 @@
 """input and output to files; plot to screen"""
-import os, io, struct, json, logging
+import os, io, struct, json, logging, html
 from typing import Optional
 import xml.etree.ElementTree as ET
 import numpy as np
@@ -140,6 +140,8 @@ class InputOutput():
     '''
     Output file content to .py file
     header has formalized description of file-structure
+
+    the csv file at the end of the file is the specific version of this file: byte differences are difficult to recrate original one
     '''
     pyFile = os.path.splitext(self.fileName)[0]+'.py'
     with open(pyFile, 'w', encoding='utf-8') as fOut:
@@ -210,14 +212,13 @@ class InputOutput():
       for start in self.content:
         lineData = dict( self.content[start].toCSV() )  #make a copy
         #first case: if len is represented by shape and its primary data: invalidate length
-        if (lineData['shape']!=[] and np.prod(lineData['shape']) == lineData['length'] and \
-          lineData['dClass']=='primary'):
-          lineData['length']=-1
-        lineData['value'] = lineData['value'].encode('unicode_escape')
-        lineData['entropy'] = round(lineData['entropy'],4)
+        # if (lineData['shape']!=[] and np.prod(lineData['shape']) == lineData['length'] and \
+        #   lineData['dClass']=='primary'):
+        #   lineData['length']=-1
+        lineData['value'] = lineData['value'].replace('\\','\\\\')
+        lineData['entropy'] = round(lineData['entropy'],2)
         dataframe = pd.concat([dataframe, pd.Series(lineData).to_frame().T], ignore_index=True)
       dataframe = dataframe[SECTION_OUTPUT_ORDER]         #sort colums by defined order
-      del dataframe['shape']
       dataframe.to_csv(fOut, index=False)
       fOut.write("'''\n")
     #revert count->metadata so it can be saved again
@@ -241,6 +242,12 @@ class InputOutput():
         if line.strip() == '# INFO: THIS PART IS LOADED BY MARBLE':
           break
       line = fIn.readline().strip()
+      if line.startswith('# version='):
+        logging.info('read file version %s',line.split('=')[1])
+      else:
+        logging.error('python does not match loadPython version')
+        return
+      line = fIn.readline().strip()
       if line.startswith('# meta='):
         self.meta = json.loads(line[7:])
       else:
@@ -254,13 +261,13 @@ class InputOutput():
         return
       line = fIn.readline().strip()
       if line.startswith('# rowFormatMeta='):
-        self.rowFormatMeta = json.loads(line[14:])
+        self.rowFormatMeta = json.loads(line[16:])
       else:
         logging.error('python does not match loadPython rowFormatMeta')
         return
       line = fIn.readline().strip()
       if line.startswith('# rowFormatSegments='):
-        self.rowFormatSegments = set(json.loads(line[14:]))
+        self.rowFormatSegments = set(json.loads(line[20:]))
       else:
         logging.error('python does not match loadPython rowFormatSegments')
         return
@@ -272,22 +279,13 @@ class InputOutput():
       readDataFrame = pd.read_csv(fIn, nrows=numLines).fillna('')
       readData = readDataFrame.to_dict(orient='records')
       start = 0
-      #general version=>specific to this file
+      #Input lines
       for row in readData:
-        row['shape'] = []
-        if row['count'] =='[]':
-          row['count']=[]
-        else:
-          anchorPoints = [int(i) for i in row['count'][1:-1].split(',')]
-          row['count'] = []
-          for jStart in anchorPoints:
-            self.file.seek(jStart)
-            data = self.file.read(self.content[jStart].byteSize())
-            data = struct.unpack(self.content[jStart].size(), data)[0]
-            row['shape'].append(data)
-            row['count'].append(jStart)
+        row['count'] = [] if row['count'] =='[]' else [int(i) for i in row['count'][1:-1].split(',')]
+        row['shape'] = [] if row['shape'] =='[]' else [int(i) for i in row['shape'][1:-1].split(',')]
+        row['value'] = html.unescape(row['value'])
         #for all sections
-        section = Section(data={str(k):v for k,v in row.items()})
+        section = Section(**row)
         section.value = section.value.encode('utf-8').decode('unicode_escape')
         if section.length<0:
           section.length = int(np.prod(section.shape))

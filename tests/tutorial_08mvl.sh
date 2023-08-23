@@ -99,16 +99,10 @@ python3 tests/examples/Membrane_Repeatability_08.py tests/examples/Membrane_Repe
 
 echo
 echo "Test python import, and then compare the output, incl. diff"
-echo "**WARNING SKIP APPLICATION TO OTHER FOR NOW"
-#  mv tests/examples/Membrane_Repeatability_08.mvl.tags tests/examples/Membrane_Repeatability_05.tags
+mv tests/examples/Membrane_Repeatability_08.mvl.tags tests/examples/Membrane_Repeatability_05.tags
 # Read python file
-#  ./marbleCLI.py tests/examples/Membrane_Repeatability_08.mvl "ip; ot"
-#  diff tests/examples/Membrane_Repeatability_08.mvl.tags tests/examples/Membrane_Repeatability_05.tags
-
-echo
-echo "Python import and compare to real other file 08.mvl"
-echo "**WARNING SKIP APPLICATION TO OTHER FOR NOW"
-#./marbleCLI.py tests/examples/Membrane_Repeatability_08.mvl "ip tests/examples/Membrane_Repeatability_05.py"
+./marbleCLI.py tests/examples/Membrane_Repeatability_08.mvl "ip; ot"
+diff tests/examples/Membrane_Repeatability_08.mvl.tags tests/examples/Membrane_Repeatability_05.tags
 
 # Some sanity checks just for this testBackend script and programming
 ./marbleCLI.py tests/examples/Membrane_Repeatability_08.mvl "it; x verify"

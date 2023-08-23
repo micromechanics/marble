@@ -73,7 +73,7 @@ class Section:
       for idx, name in enumerate(SECTION_OUTPUT_ORDER):
         if idx<len(dataList) and len(dataList[idx])>0:
           if isinstance( getattr(self,name), list):
-            content = dataList[idx][1:-1]
+            content = dataList[idx]
             if len(content)>0:
               setattr(self, name, [int(i) for i in content.split(',')] )
           elif isinstance( getattr(self,name), bool) and isinstance(dataList[idx],str):
@@ -130,12 +130,10 @@ class Section:
       shorten: simplify columns
     '''
     localCopy = self.__dict__.copy()
-    localCopy['entropy'] = f"{localCopy['entropy']:6.4f}"     #Prevent issues with diff in tags file
-    if shorten and localCopy['dType'] in ['b','B']:
-      localCopy['value'] = 'binary string'
+    localCopy['entropy'] = f"{localCopy['entropy']:.2f}"     #Prevent issues with diff in tags file
     localCopy['count'] = str(localCopy['count'])[1:-1]
     localCopy['shape'] = str(localCopy['shape'])[1:-1]
-    return [getattr(self, i) for i in SECTION_OUTPUT_ORDER]
+    return [localCopy[i] for i in SECTION_OUTPUT_ORDER]
 
 
   def toPY(self, offset:int, lastOffset:int, variable:str='', binaryFile:Any=None, hdf:Optional[str]=None) \
@@ -186,9 +184,9 @@ class Section:
     if len(self.shape)>0 and len(self.shape)==len(self.count) and self.length>np.prod(self.shape):
       #garbage case: lots of garbage behind real data specified by shape
       variables = [content[i].key.split('=')[0] for i in self.count]
-      return (
-          f'addData({relPos}, str({self.length})+"{self.dType}", {hdf}, "{self.key}", "{self.unit}", shape=['
-          + ','.join(variables)) + '])\n'
+      metadata = {'unit':self.unit, 'link':self.link}
+      return f'addData({relPos}, f"{{{self.length}}}{self.dType}", {hdf}, "{self.key}", "{metadata}", '\
+             f'shape=[{",".join(variables)}])\n'
     logging.error("section.py: UNDEFINED shape, count, length: %s, %s, %s", self.shape,self.count,self.length)
     return 'print("**ERROR occurred during deciphering")\n'
 
