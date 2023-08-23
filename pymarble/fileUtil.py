@@ -345,49 +345,51 @@ class Util():
       else f' {len(i)}*00 ' for i in listConsecutive])
 
 
-  @staticmethod
-  def diffStrings(old:str, new:str) -> list[str]:
-    '''
-    determine difference between two strings and color those
+  # @staticmethod
+  # def diffStrings(old:str, new:str) -> list[str]:
+  #   '''
+  #   determine difference between two strings and color those
 
-    based on
-    https://stackoverflow.com/questions/32500167/how-to-show-diff-of-two-string-sequences-in-colors
+  #   based on
+  #   https://stackoverflow.com/questions/32500167/how-to-show-diff-of-two-string-sequences-in-colors
 
-    Future questions:
-    - try diff for byteString directly
-    - does one need to output equal? If not, the start point does not make sense=>make sense
-    - how can we improve (add '\n'); good for large differences
-    - do automatically subdivide into sections: equal and differences
-    - it would be best to have 00 00 00 reduced to 00
+  #   Future questions:
+  #   - try diff for byteString directly
+  #   - does one need to output equal? If not, the start point does not make sense=>make sense
+  #   - how can we improve (add '\n'); good for large differences
+  #   - do automatically subdivide into sections: equal and differences
+  #   - it would be best to have 00 00 00 reduced to 00
 
-    Args:
-      old (string): first string
-      new (string): second string
+  #   Args:
+  #     old (string): first string
+  #     new (string): second string
 
-    Returns:
-      colored output
-    '''
-    red = lambda text: f"\033[38;2;255;0;0m{text}\033[0m"
-    green = lambda text: f"\033[38;2;0;255;0m{text}\033[0m"
+  #   Returns:
+  #     colored output
+  #   '''
+  #   def red(text):
+  #     return f"\033[38;2;255;0;0m{text}\033[0m"
+  #   def green(text):
+  #     return f"\033[38;2;0;255;0m{text}\033[0m"
 
-    result = ""
-    codes = difflib.SequenceMatcher(a=old, b=new).get_opcodes()
-    differenceFlag = False
-    for code in codes:
-      #length = max(code[2]-code[1], code[4]-code[3])
-      if code[0] == "equal":
-        result += old[code[1]:code[2]]
-      elif code[0] == "delete" and len(bytes(filter(None,bytearray(old[code[1]:code[2]],'utf-8'))))>0:
-        result += red(old[code[1]:code[2]])
-        differenceFlag = True
-      elif code[0] == "insert" and len(bytes(filter(None,bytearray(new[code[3]:code[4]],'utf-8'))))>0:
-        result += green(new[code[3]:code[4]])
-        differenceFlag = True
-      elif code[0] == "replace" and (len(bytes(filter(None,bytearray(old[code[1]:code[2]],'utf-8'))))>0 \
-                                  or len(bytes(filter(None,bytearray(new[code[3]:code[4]],'utf-8'))))>0):
-        result += (red(old[code[1]:code[2]]) + green(new[code[3]:code[4]]))
-        differenceFlag = True
-    return [result, str(differenceFlag)]
+  #   result = ""
+  #   codes = difflib.SequenceMatcher(a=old, b=new).get_opcodes()
+  #   differenceFlag = False
+  #   for code in codes:
+  #     #length = max(code[2]-code[1], code[4]-code[3])
+  #     if code[0] == "equal":
+  #       result += old[code[1]:code[2]]
+  #     elif code[0] == "delete" and len(bytes(filter(None,bytearray(old[code[1]:code[2]],'utf-8'))))>0:
+  #       result += red(old[code[1]:code[2]])
+  #       differenceFlag = True
+  #     elif code[0] == "insert" and len(bytes(filter(None,bytearray(new[code[3]:code[4]],'utf-8'))))>0:
+  #       result += green(new[code[3]:code[4]])
+  #       differenceFlag = True
+  #     elif code[0] == "replace" and (len(bytes(filter(None,bytearray(old[code[1]:code[2]],'utf-8'))))>0 \
+  #                                 or len(bytes(filter(None,bytearray(new[code[3]:code[4]],'utf-8'))))>0):
+  #       result += (red(old[code[1]:code[2]]) + green(new[code[3]:code[4]]))
+  #       differenceFlag = True
+  #   return [result, str(differenceFlag)]
 
 
   def pretty(self:FileProtocol, number:int) -> str:

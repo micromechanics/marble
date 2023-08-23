@@ -82,7 +82,8 @@ disable=raw-checker-failed,
         no-else-return,
         no-self-use,
         condition-evals-to-constant,
-        broad-except
+        broad-except,
+        relative-beyond-top-level
 
 
 #Reasons:
