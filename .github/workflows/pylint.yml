@@ -17,5 +17,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files 'pymarble/*.py')
-        pylint $(git ls-files 'pymarble/gui/*.py')
+        pylint $(git ls-files 'pymarble/*')
