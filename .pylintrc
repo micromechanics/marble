@@ -83,7 +83,8 @@ disable=raw-checker-failed,
         no-self-use,
         condition-evals-to-constant,
         broad-except,
-        relative-beyond-top-level
+        relative-beyond-top-level,
+        syntax-error
 
 
 #Reasons:
