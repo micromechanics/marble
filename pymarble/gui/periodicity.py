@@ -57,6 +57,9 @@ class Periodicity(QDialog):
     mainBarL.addWidget(QLabel('Count:'))
     self.countCB = QComboBox()
     self.countCB.addItems(listCounts)
+    if 'count' in self.comm.binaryFile.periodicity:
+      searchValue = self.comm.binaryFile.periodicity['count']
+      self.countCB.setCurrentText([i for i in listCounts if i.startswith(f'at {searchValue}')][0])
     self.countCB.currentTextChanged.connect(self.refresh)
     mainBarL.addWidget(self.countCB, stretch=1)                        # type: ignore[call-arg]
     self.countLE = QLineEdit('')
@@ -67,6 +70,9 @@ class Periodicity(QDialog):
     mainBarL.addWidget(QLabel('Start:'))
     self.startCB = QComboBox()
     self.startCB.addItems(listOther)
+    if 'start' in self.comm.binaryFile.periodicity:
+      searchValue = self.comm.binaryFile.periodicity['start']
+      self.startCB.setCurrentText([i for i in listOther if i.startswith(f'at {searchValue}')][0])
     self.startCB.currentTextChanged.connect(self.refresh)
     mainBarL.addWidget(self.startCB, stretch=1)                        # type: ignore[call-arg]
     self.startLE = QLineEdit('')
@@ -77,6 +83,9 @@ class Periodicity(QDialog):
     mainBarL.addWidget(QLabel('Last:'))
     self.lastCB = QComboBox()
     self.lastCB.addItems(listOther)
+    if 'end' in self.comm.binaryFile.periodicity:
+      searchValue = self.comm.binaryFile.periodicity['end']
+      self.lastCB.setCurrentText([i for i in listOther if i.startswith(f'at {searchValue}')][0])
     self.lastCB.currentTextChanged.connect(self.refresh)
     mainBarL.addWidget(self.lastCB, stretch=1)                        # type: ignore[call-arg]
     self.lastLE = QLineEdit('')
@@ -85,6 +94,11 @@ class Periodicity(QDialog):
     mainBarL.addWidget(self.lastLE, stretch=1)                        # type: ignore[call-arg]
 
     #final button box
+    # plot shift line by +1 so they match for fiscehr-scope
+    #TODO Last section in periodic has to be non-binary: make char, int ...!!! Document this
+    #TODO after periodic domain, there is not allowed to be other information important
+    # better: output everything important, irrespective of type
+    # - print(f"Translation NOT successful") say number of bytes for human to look
     self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
     self.buttonBox.clicked.connect(self.save)
     mainL.addWidget(self.buttonBox)

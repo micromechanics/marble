@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
     Action('Edit &metadata',          self, ['metaEditor'],    toolsMenu, shortcut='Ctrl+M')
     Action('Define row data in file', self, ['rowTool'],       toolsMenu)
     Action('Periodicity tool',        self, ['periodicity'],   toolsMenu)
-    Action('Search tool',             self, ['searchTool'],    toolsMenu, shortcut='F1')
+    Action('Search tool',             self, ['searchTool'],    toolsMenu, shortcut='Ctrl+F')
     toolsMenu.addSeparator()
     Action('Configuration',           self, ['configuration'], toolsMenu)
 
@@ -147,6 +147,7 @@ class MainWindow(QMainWindow):
     elif command[0]=='searchTool':
       dialog = SearchTool(self.comm)
       dialog.exec()
+      self.comm.changeTable.emit()
     elif command[0]=='saveTags':
       self.comm.binaryFile.saveTags()           # type: ignore[misc]
     elif command[0]=='loadTags':

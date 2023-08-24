@@ -43,11 +43,12 @@ class Form(QDialog):
     mainL.setSpacing(space)
 
     #graph
-    self.graphW, graphL = widgetAndLayout('V', mainL)
+    self.graphW, graphL = widgetAndLayout('V', None)
     self.graph = MplCanvas(self, width=5, height=4, dpi=100)
     self.graphToolbar = NavigationToolbar(self.graph, self)
     graphL.addWidget(self.graphToolbar)
     graphL.addWidget(self.graph)
+    mainL.addWidget(self.graphW, stretch=1)
     self.textEditW = QTextEdit()
     self.textEditW.hide()
     self.textEditW.setReadOnly(True)
@@ -392,10 +393,13 @@ class Form(QDialog):
         count =[self.comm.binaryFile.findAnchor(lengthSearch, start)[0]]     # type: ignore[misc]
         shape = []
         for iCount in count:
-          binaryFile.file.seek(iCount)
-          iLength = binaryFile.file.read(binaryFile.content[iCount].byteSize())
-          iLength = struct.unpack( binaryFile.content[iCount].size(), iLength)[0]
-          shape.append(int(iLength))
+          if iCount<0:
+            shape.append(-1)
+          else:
+            binaryFile.file.seek(iCount)
+            iLength = binaryFile.file.read(binaryFile.content[iCount].byteSize())
+            iLength = struct.unpack( binaryFile.content[iCount].size(), iLength)[0]
+            shape.append(int(iLength))
       else:
         count  = [int(i) for i in self.countW.text()[1:-1].split(',') if len(i)>0]
         if dType in {'b', 'c'}:  #check if small b=random bytes or B=zeros

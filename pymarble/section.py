@@ -185,12 +185,15 @@ class Section:
                f'shape=[{",".join(variables)}])\n'
     if len(self.shape)>0 and len(self.shape)==len(self.count) and self.length>np.prod(self.shape):
       #garbage case: lots of garbage behind real data specified by shape
-      variables = [content[i].key.split('=')[0] for i in self.count]
+      variables = ['x' if i<0 else content[i].key.split('=')[0] for i in self.count]
       metadata = {'unit':self.unit, 'link':self.link}
       return f'addData({relPos}, f"{{{self.length}}}{self.dType}", {hdf}, "{self.key}", "{metadata}", '\
                f'shape=[{",".join(variables)}])\n'
-    logging.error("section.py: UNDEFINED shape, count, length: %s, %s, %s", self.shape,self.count,self.length)
-    return 'print("**ERROR occurred during deciphering")\n'
+    #output anyhow: user has to adopt it
+    logging.error(".py file has bad code: shape %s, count %s, length %s", self.shape,self.count,self.length)
+    metadata = {'unit':self.unit, 'link':self.link}
+    return f'addData({relPos}, f"{{{self.length}}}{self.dType}", {hdf}, "{self.key}", "{metadata}", '\
+             f'shape=[...])  #Adopt this line\n'
 
 
   def byteSize(self) -> int:
