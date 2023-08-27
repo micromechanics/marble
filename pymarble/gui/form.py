@@ -298,7 +298,7 @@ class Form(QDialog):
       self.textEditW.hide()
       self.graphToolbar.show()
       self.graph.show()
-    elif self.plotCB.currentText().startswith('print'):
+    elif self.plotCB.currentText().startswith('print'): #many bugs and formating issues -> to html
       # - if integer and integer is small print as 0001
       if len(dataAll)>self.critPrint:
         scaleDown = max(int(length/self.critPrint), 1)
@@ -390,6 +390,7 @@ class Form(QDialog):
       if dType in {'f','d','H'}:
         lengthSearch = min(length, int(np.prod(shape))) #remember garbage at end of data-set
         #create link / enter property count; adopt shape correspondingly
+        #TODO_P1 findAnchor: try to look immediately infront of array for i or H number
         count =[self.comm.binaryFile.findAnchor(lengthSearch, start)[0]]     # type: ignore[misc]
         shape = []
         for iCount in count:

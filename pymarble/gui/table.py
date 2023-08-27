@@ -9,7 +9,7 @@ from .communicate import Communicate
 from .style import widgetAndLayout, Action, hexToColor
 from .defaults import dClass2Color
 from .form import Form
-from .formSplit import FormSplit
+from .split import Split
 
 class Table(QWidget):
   """ widget that shows the table of the items """
@@ -138,7 +138,7 @@ class Table(QWidget):
     elif command[0] == 'autoElse': #look for xml data, zero data and ascii data
       self.comm.binaryFile.automatic('x_z_a')    # type: ignore[misc]
     elif command[0] == 'split':
-      dialog = FormSplit(self.comm, start)
+      dialog = Split(self.comm, start)
       dialog.exec()
       self.change()  #repaint
     elif command[0] == 'remove':
