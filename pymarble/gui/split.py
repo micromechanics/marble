@@ -23,10 +23,9 @@ class Split(QDialog):
 
     # GUI elements
     self.setWindowTitle('Split into sections')
-    self.setMinimumWidth(400)
+    self.setMinimumWidth(450)
     mainL = QVBoxLayout(self)
-    mainL.addWidget(QLabel('Split into two parts'))
-    mainL.addWidget(QLabel('You can enter into both boxes size. For example: 2, 3i or 6d'))
+    mainL.addWidget(QLabel('You can enter into both boxes the size. For example: 2, 3i or 6d'))
     self.interactionOn = False
 
     #dimensions
@@ -53,7 +52,7 @@ class Split(QDialog):
       return
     text = self.firstW.text() if segment==1 else self.secondW.text()
     allNumbers = re.findall(r'\d+',text)
-    allLetters = re.findall(r'[bcdfiH]',text)
+    allLetters = re.findall(r'[bcdfih]',text.lower())
     number = allNumbers[0] if allNumbers else ''
     letter = allLetters[0] if allLetters else 'b'
     otherLength = self.length-struct.calcsize(number+letter)

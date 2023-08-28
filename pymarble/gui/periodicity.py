@@ -7,6 +7,7 @@ from matplotlib.figure import Figure
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QComboBox, QWidget, QLineEdit  # pylint: disable=no-name-in-module
 from .style import IconButton, widgetAndLayout, showMessage
 from .communicate import Communicate
+from .defaults import HELP_PERIODICITY
 
 class Periodicity(QDialog):
   """ Editor to identify periodicity: multiple tests in one file """
@@ -94,12 +95,7 @@ class Periodicity(QDialog):
     mainBarL.addWidget(self.lastLE, stretch=1)                        # type: ignore[call-arg]
 
     #final button box
-    # plot shift line by +1 so they match for fiscehr-scope
-    #TODO Last section in periodic has to be non-binary: make char, int ...!!! Document this
-    #TODO after periodic domain, there is not allowed to be other information important
-    # better: output everything important, irrespective of type
-    # - print(f"Translation NOT successful") say number of bytes for human to look
-    self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+    self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel | QDialogButtonBox.Help)
     self.buttonBox.clicked.connect(self.save)
     mainL.addWidget(self.buttonBox)
     self.skipEvery = self.comm.binaryFile.optEntropy['skipEvery']
@@ -219,6 +215,8 @@ class Periodicity(QDialog):
       end   = self.lastCB.currentText().split(' - ')[0][3:]
       self.comm.binaryFile.periodicity =  {'count':int(count), 'start':int(start), 'end':int(end)}
       self.accept()
+    elif btn.text().endswith('Help'):
+      showMessage(self, 'Help', HELP_PERIODICITY, 'Information')
     else:
       showMessage(self, 'Information','Can only save when you select sections', 'Information')
     return

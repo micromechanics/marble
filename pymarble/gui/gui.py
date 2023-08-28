@@ -21,7 +21,6 @@ from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
 
-# Subclass QMainWindow to customize your application's main window
 class MainWindow(QMainWindow):
   """ Graphical user interface includes all widgets """
   def __init__(self, configuration:dict[str,Any]) -> None:
@@ -35,7 +34,7 @@ class MainWindow(QMainWindow):
     # #Menubar
     menu = self.menuBar()
     fileMenu = menu.addMenu("&File")
-    Action('&Open binary file',  self, ['open'],       fileMenu, shortcut='Ctrl+L')
+    Action('&Open binary file',  self, ['open'],       fileMenu, shortcut='Ctrl+O')
     Action('&Use exported .csv', self, ['useExported'],fileMenu, shortcut='Ctrl+U')
     fileMenu.addSeparator()
     Action('Open corr. .tags',   self, ['loadTags'],   fileMenu,  shortcut='F2')
@@ -56,8 +55,8 @@ class MainWindow(QMainWindow):
 
     toolsMenu = menu.addMenu("&Tools")
     Action('Edit &metadata',          self, ['metaEditor'],    toolsMenu, shortcut='Ctrl+M')
-    Action('Define row data in file', self, ['rowTool'],       toolsMenu)
-    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu)
+    Action('Define row data in file', self, ['rowTool'],       toolsMenu, shortcut='Ctrl+R')
+    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu, shortcut='Ctrl+P')
     Action('Search tool',             self, ['searchTool'],    toolsMenu, shortcut='Ctrl+F')
     toolsMenu.addSeparator()
     Action('Configuration',           self, ['configuration'], toolsMenu)
@@ -106,6 +105,9 @@ class MainWindow(QMainWindow):
         self.comm.binaryFile = BinaryFile(fileName, config=self.configuration)
         self.comm.changeTable.emit()
         self.setWindowTitle(f'MARBLE: {fileName.split(os.sep)[-1]}')
+        self.toggleState = {'F5':'all', 'F6':'all', 'F7':'all'}
+        self.comm.toggle.emit('all','all','all')
+        self.changeStatusbar()
     elif command[0]=='website':
       webbrowser.open('https://pypi.org/project/pymarble/')
     elif command[0]=='about':

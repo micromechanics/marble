@@ -35,6 +35,9 @@ translateDtype    = {'b':'byte = 1byte = 8bit', 'c':'character = 1byte',
                      'H':'unsigned short = 2byte = 16bit', 'i':'int = 4bytes',
                      'f':'float = 4bytes','d':'double = 8bytes',}
 translateDtypeInv = {v: k for k, v in translateDtype.items()}
+translateDtypeShort = {'b':'byte', 'B':'zeros', 'c':'character', 'H':'unsigned short int', 'h':'short int',
+                       'i':'int',  'f':'float', 'd':'double'}
+
 
 
 ABOUT_TEXT = """
@@ -82,3 +85,16 @@ How to use marble:
 </ul>
 Never plot the entropy.
 """
+
+HELP_PERIODICITY = """
+<h3>Important information for periodicity tool</h3>
+Please ensure that in the table has the following properties before saving to python file:
+<p>
+All sections in the first period have to have "important" checked and the last section of this period has to
+have a non-binary dType (set it to character if in doubt).
+</p>
+<p>
+All other sections in the following periods have to have "important" unchecked, irrespective of dType.
+</p>
+"""
+

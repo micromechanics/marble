@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disabl
 from PySide6.QtGui import QFont, QResizeEvent                   # pylint: disable=no-name-in-module
 from .communicate import Communicate
 from .style import widgetAndLayout, Action, hexToColor
-from .defaults import dClass2Color
+from .defaults import dClass2Color, translateDtypeShort
 from .form import Form
 from .split import Split
 
@@ -82,8 +82,7 @@ class Table(QWidget):
       row += 1
       for col, key in enumerate(self.tableHeaders):
         if key == 'dType':
-          translate = {'b':'byte', 'i':'int', 'f':'float', 'd':'double', 'B':'zeros', 'c':'character'}
-          item = QTableWidgetItem(translate[rowData[key]])
+          item = QTableWidgetItem(translateDtypeShort[rowData[key]])
         elif key == 'entropy':
           item = QTableWidgetItem(f'{rowData[key]:.3f}')
         elif key == 'important':

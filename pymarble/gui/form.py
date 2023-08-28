@@ -29,7 +29,8 @@ class Form(QDialog):
       return
     self.colorbarPresent = False
     #definitions: no self.length etc. since content of textfields only truth
-    section  = self.comm.binaryFile.content [start]
+    section  = self.comm.binaryFile.content[start]
+    self.lengthInitial = int(section.length)
     self.lead = 20
     self.critPlot = 50000
     self.critPrint= 200
@@ -38,7 +39,7 @@ class Form(QDialog):
 
     # GUI elements
     self.setWindowTitle('Change section')
-    self.setMinimumWidth(600)
+    self.setMinimumWidth(1050)  #set size to match 4 blocks of 8bytes
     mainL = QVBoxLayout(self)
     mainL.setSpacing(space)
 
@@ -53,7 +54,7 @@ class Form(QDialog):
     self.textEditW.hide()
     self.textEditW.setReadOnly(True)
     self.textEditW.setFont(QFont('Monospace', pointSize=12))
-    mainL.addWidget(self.textEditW)
+    mainL.addWidget(self.textEditW, stretch=1)
 
     #buttons below graph
     _, graphButtonL = widgetAndLayout('H', mainL)
@@ -115,7 +116,7 @@ class Form(QDialog):
     self.dTypeCB.setToolTip('data type')
     self.dTypeCB.addItems(list(translateDtype.values()))
     self.dTypeCB.setCurrentText(translateDtype[section.dType.lower()])
-    self.dTypeCB.currentTextChanged.connect(self.refresh)
+    self.dTypeCB.currentTextChanged.connect(lambda: self.execute(['changeDtype']))
     dimensionL.addWidget(self.dTypeCB)
     dimensionL.addSpacing(space)
     dimensionL.addWidget(QLabel('Probability:'))
@@ -218,7 +219,6 @@ class Form(QDialog):
       lead = self.lead
     start       = self.startW.value()
     length      = self.lengthW.value()
-    #TODO update shape too from length
     dType       = translateDtypeInv[self.dTypeCB.currentText()]
     byteSize    = struct.calcsize(dType)
     startAll    = start-lead*byteSize
@@ -316,16 +316,17 @@ class Form(QDialog):
           style1, style2 = '6', '6'
         else:
           style1, style2 = '9.3e', '.3e'
-        text  =      '\t'.join([  f'{i:{style1}}'   for i in self.valuesY[:idxStart]])
-        text += '\t'+'\t'.join([f'**{i:{style2}}**' for i in self.valuesY[idxStart:idxEnd]])
-        text += '\t'+'\t'.join([  f'{i:{style1}}'   for i in self.valuesY[idxEnd:]])
-        self.textEditW.setMarkdown(text)
+        text  =     ' '.join([f'<font color="#888888">{i:{style1}}</font>' for i in self.valuesY[:idxStart]])
+        text += ' '+' '.join([f'<b>{i:{style2}}</b>'                 for i in self.valuesY[idxStart:idxEnd]])
+        text += ' '+' '.join([f'<font color="#888888">{i:{style1}}</font>' for i in self.valuesY[idxEnd:]])
+        self.textEditW.setHtml(text)
       elif self.plotCB.currentText().endswith('byte value'):
         textArray = self.comm.binaryFile.byteToString(dataAll, 1).split(' ')
-        textArray = textArray[:self.lead]+[f'**{i}**' for i in textArray[self.lead:-self.lead]]+ \
-                    textArray[-self.lead:]
-        text  = '    '.join([' '.join(textArray[i:i+8]) for i in range(0, len(textArray), 8)])
-        self.textEditW.setMarkdown(text)
+        textArray = [f'<font color="#888888">{i}</font>' for i in textArray[:self.lead]]+ \
+                    [f'<b>{i}</b>'                       for i in textArray[self.lead:-self.lead]]+ \
+                    [f'<font color="#888888">{i}</font>' for i in textArray[-self.lead:]]
+        text  = ' _ '.join([' '.join(textArray[i:i+8]) for i in range(0, len(textArray), 8)])
+        self.textEditW.setHtml(text)
       else: #character
         text = bytearray(dataAll).decode('utf-8', errors='replace').replace('\x00','~')
         text = f'<font color="#888888">{text[:idxStart]}</font><b>{text[idxStart:idxEnd]}</b>'+\
@@ -367,6 +368,8 @@ class Form(QDialog):
       length -= 1
     elif command[0] == 'endUp':
       length += 1
+    elif command[0] == 'changeDtype':
+      length = int(self.lengthInitial/byteSize)
     else:
       logging.error('Command unknown %s', command)
     self.startW.setValue(start)
@@ -376,7 +379,6 @@ class Form(QDialog):
 
 
   def save(self, btn:IconButton) -> None:
-    # sourcery skip: extract-method
     """ save selectedList to configuration and exit """
     if btn.text().endswith('Cancel'):
       self.reject()
@@ -390,7 +392,6 @@ class Form(QDialog):
       if dType in {'f','d','H'}:
         lengthSearch = min(length, int(np.prod(shape))) #remember garbage at end of data-set
         #create link / enter property count; adopt shape correspondingly
-        #TODO_P1 findAnchor: try to look immediately infront of array for i or H number
         count =[self.comm.binaryFile.findAnchor(lengthSearch, start)[0]]     # type: ignore[misc]
         shape = []
         for iCount in count:

@@ -285,9 +285,8 @@ class Util():
     """
     anchor = None
     createdNew = False
+    # look through existing: determine max. prevK
     prevKvariables = 0
-    if maxOffset<0:
-      maxOffset = self.fileLength
     for startJ in self.content:
       section = self.content[startJ]
       if section.key.endswith(str(lengthSearch)) and section.dType=='i':
@@ -295,14 +294,32 @@ class Util():
         break
       if re.search(r'^k\d+=', section.key) and section.dType=='i':
         prevKvariables += 1
+    # look immediately infront
+    if maxOffset > 3:
+      for dType in ['H','i','h']:
+        byteSize = struct.calcsize(dType)
+        self.file.seek(maxOffset-byteSize)
+        numFound = struct.unpack(dType, self.file.read(byteSize))[0]
+        if numFound==lengthSearch:
+          anchor = maxOffset-byteSize
+          if anchor in self.content and self.content[anchor].dType==dType and \
+             self.content[anchor].key.endswith(str(lengthSearch)):
+            return anchor, False
+          self.content[anchor] = Section(length=1, key=f'k{prevKvariables+1}={lengthSearch}',
+                                         dType=dType, prob=100, dClass='count', important=True)
+          return anchor, True
+    # search for new
+    maxOffset = maxOffset if maxOffset>=0 else self.fileLength
     if anchor is not None and anchor<=maxOffset-4:
       anchor = None
     if anchor is None:    #only if not already found: create new
-      anchor = self.findBytes(lengthSearch,'i',0)
-      if 0 <= anchor <= maxOffset-4:
-        self.content[anchor] = Section(length=1, key=f'k{prevKvariables+1}={lengthSearch}',
-                                       dType='i', prob=100, dClass='count', important=True)
-        createdNew = True
+      for dType in ['i','H','h']:
+        anchor = self.findBytes(lengthSearch, dType,0)
+        if 0 <= anchor <= maxOffset-4:
+          self.content[anchor] = Section(length=1, key=f'k{prevKvariables+1}={lengthSearch}',
+                                         dType=dType, prob=100, dClass='count', important=True)
+          createdNew = True
+          break
     return anchor, createdNew
 
 
