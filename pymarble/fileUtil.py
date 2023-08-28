@@ -62,11 +62,9 @@ class Util():
     if dType in {'s','c'} and isinstance(value, str):
       searchString = bytes(value, 'utf-8').hex()
     elif dType in {'i', 'H'}:
-      value = int(value)
-      searchString = struct.pack(dType,value).hex()
+      searchString = struct.pack(dType, int(value)).hex()
     elif dType in {'f', 'd'}:
-      value = float(value)
-      searchString = struct.pack(dType,value).hex()
+      searchString = struct.pack(dType, float(value)).hex()
       searchString = searchString[2:]  #chop of first byte (two chars) to allow for close values not precise
     else:
       logging.error("NOT TESTED dTypes")
@@ -314,6 +312,8 @@ class Util():
       anchor = None
     if anchor is None:    #only if not already found: create new
       for dType in ['i','H','h']:
+        if (dType=='H' and lengthSearch>0x7fff*2+1) or (dType=='h' and lengthSearch>0x7fff):
+          continue
         anchor = self.findBytes(lengthSearch, dType,0)
         if 0 <= anchor <= maxOffset-4:
           self.content[anchor] = Section(length=1, key=f'k{prevKvariables+1}={lengthSearch}',
