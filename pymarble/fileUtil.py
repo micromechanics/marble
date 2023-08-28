@@ -320,6 +320,8 @@ class Util():
                                          dType=dType, prob=100, dClass='count', important=True)
           createdNew = True
           break
+    if anchor is None:
+      return -1, False
     return anchor, createdNew
 
 

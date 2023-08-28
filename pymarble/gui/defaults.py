@@ -97,4 +97,3 @@ have a non-binary dType (set it to character if in doubt).
 All other sections in the following periods have to have "important" unchecked, irrespective of dType.
 </p>
 """
-

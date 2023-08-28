@@ -47,7 +47,12 @@ class Split(QDialog):
     mainL.addWidget(self.buttonBox)
 
 
-  def execute(self, segment):
+  def execute(self, segment:int) -> None:
+    """ Execute events after human changed text fields
+
+    Args:
+      segment (int): which segment was changed
+    """
     if (segment==1 and self.secondW.hasFocus()) or (segment==2 and self.firstW.hasFocus()):
       return
     text = self.firstW.text() if segment==1 else self.secondW.text()
