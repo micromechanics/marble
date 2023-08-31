@@ -19,7 +19,7 @@ class Split(QDialog):
     if self.comm.binaryFile is None:
       return
     self.start = start
-    self.length = self.comm.binaryFile.content[self.start].length
+    self.length = self.comm.binaryFile.content[self.start].byteSize()
 
     # GUI elements
     self.setWindowTitle('Split into sections')

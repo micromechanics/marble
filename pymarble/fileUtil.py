@@ -254,19 +254,23 @@ class Util():
     return
 
 
-  def split(self:FileProtocol, start:int, length1:int) -> None:
+  def split(self:FileProtocol, start:int, byteSize1:int) -> None:
     '''
     Split section into 2: length of first segment given
 
     Args:
       start (int): start of section
-      length1 (int): length of first segment
+      byteSize1 (int): length of first segment
     '''
-    oldLength    = self.content[start].length
+    dtypeByteSize    = struct.calcsize(self.content[start].dType)
+    oldByteLength    = self.content[start].byteSize()
+    length1          = int(byteSize1/dtypeByteSize)
     self.content[start].length = length1
+    byteSize1        = self.content[start].byteSize()
+
     section2 = copy.deepcopy(self.content[start])
-    section2.length = oldLength-length1
-    self.content[start+length1]  = section2
+    section2.length = int((oldByteLength-byteSize1)/dtypeByteSize)
+    self.content[start+byteSize1]  = section2
     return
 
 
