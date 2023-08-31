@@ -11,6 +11,7 @@ from PySide6.QtGui import QFont  # pylint: disable=no-name-in-module
 from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
+from .terminologyLookup import TerminologyLookup
 from .defaults import WARNING_LARGE_DATA, translateDtype, translateDtypeInv, translatePlot
 
 class Form(QDialog):
@@ -164,6 +165,7 @@ class Form(QDialog):
     self.linkW = QLineEdit(section.link,self)
     self.linkW.setStyleSheet('background-color:#d8e0f4')
     dClassL.addWidget(self.linkW)
+    IconButton('fa5s.search', self, ['terminologyLookup'], dClassL, 'Lookup from terminology servers')
 
     if 'advanced' in self.comm.configuration:
       # advanced items
@@ -370,6 +372,10 @@ class Form(QDialog):
       length += 1
     elif command[0] == 'changeDtype':
       length = int(self.lengthInitial/byteSize)
+    elif command[0] == 'terminologyLookup':
+      dialog = TerminologyLookup(self.keyW.text())
+      dialog.exec()
+      self.linkW.setText(' '.join(dialog.returnValues))
     else:
       logging.error('Command unknown %s', command)
     self.startW.setValue(start)
