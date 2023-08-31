@@ -45,7 +45,7 @@ class TerminologyLookup(QDialog):
     self.mainL = QVBoxLayout()
     self.setLayout(self.mainL)
     self.setWindowTitle("Choose any definitions")
-    self.setMinimumSize(QSize(1000,400))
+    self.setMinimumSize(QSize(1100,400))
 
     #ScrollArea
     self.scrollWidget = QWidget()
@@ -92,8 +92,10 @@ class TerminologyLookup(QDialog):
       return
     for page in json.loads(response.text)["pages"]:
       if page['description'] is not None and page['description'] != "Topics referred to by the same term":
-        self.listCB.append((QCheckBox(page["title"]+": "+page["description"]),
-                            "https://en.wikipedia.org/w/index.php?curid="+str(page["id"])))
+        description = page["description"][:200]
+        description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
+        self.listCB.append((QCheckBox(page["title"]+": "+description),
+                             "https://en.wikipedia.org/w/index.php?curid="+str(page["id"])))
         current = self.listCB[-1]
         self.nested_widgets.append(self.cb_and_image_widget(current[0], self.wikipedia_pixmap))
     return
@@ -113,8 +115,9 @@ class TerminologyLookup(QDialog):
       a = result['display']
       if 'description' in a:
         label = a['label']
-        description = a["description"]
-        self.listCB.append((QCheckBox(label['value']+": "+description['value']), result["concepturi"]))
+        description = a["description"]['value'][:200]
+        description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
+        self.listCB.append((QCheckBox(label['value']+": "+description), result["concepturi"]))
         current = self.listCB[-1]
         self.nested_widgets.append(self.cb_and_image_widget(current[0], self.wikidata_pixmap))
     return
@@ -132,7 +135,9 @@ class TerminologyLookup(QDialog):
       return
     for result in response.json()["response"]['docs']:
       if 'description' in result and result['description'] is not None:
-        checkboxText = result["label"]+": "+"".join(result["description"])+" ("+result["ontology_name"]+")"
+        description = "".join(result["description"])[:200]
+        description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
+        checkboxText = result["label"]+": "+description+" ("+result["ontology_name"]+")"
         self.listCB.append((QCheckBox(checkboxText), result["iri"]))
         current = self.listCB[-1]
         self.nested_widgets.append(self.cb_and_image_widget(current[0], self.ols_pixmap))
@@ -156,7 +161,10 @@ class TerminologyLookup(QDialog):
     for result in response.json()["response"]['docs']:
       if 'description' in result and result['description'] is not None and \
         not result["ontology_name"] in duplicate_ontos:
-        checkboxText = result["label"]+": "+"".join(result["description"])+" ("+result["ontology_name"]+")"
+        description = "".join(result["description"])[:200]
+        description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
+        checkboxText = result["label"]+": "+description+" ("+result["ontology_name"]+")"
+
         self.listCB.append((QCheckBox(checkboxText), result["iri"]))
         current = self.listCB[-1]
         self.nested_widgets.append(self.cb_and_image_widget(current[0], self.tib_pixmap))
@@ -196,5 +204,6 @@ class TerminologyLookup(QDialog):
     nested_label.setPixmap(pixmap)
     nested_widget.setLayout(nested_layout)
     nested_layout.addWidget(checkbox)
+    nested_layout.addStretch(1)
     nested_layout.addWidget(nested_label)
     return nested_widget
