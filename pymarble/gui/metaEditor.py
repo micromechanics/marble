@@ -25,7 +25,8 @@ class MetaEditor(QDialog):
     mainL = QVBoxLayout(self)
     _, self.formL = widgetAndLayout('Form', mainL)
     for key, value in self.metaFields.items():
-      # if key == 'endian':
+      if key == 'endian':
+        continue
       # Note: small and big endian are implemented in the config file, this dialog
       # - they are not included in any of the struct.unpack functions
       # - included in BinaryFile endian
@@ -35,8 +36,8 @@ class MetaEditor(QDialog):
       # self.endianComboBox = QComboBox()
       # self.endianComboBox.addItems(['big','small'])
       # self.formL.addRow(QLabel('Endian encoding'), self.endianComboBox)
-      # else:
-      setattr(self, f'key_{key}', QLineEdit(value))
+      else:
+        setattr(self, f'key_{key}', QLineEdit(value))
       self.formL.addRow(QLabel(key.capitalize()), getattr(self, f'key_{key}'))
     #final button box
     buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
@@ -51,7 +52,8 @@ class MetaEditor(QDialog):
     elif btn.text().endswith('Save') and self.comm.binaryFile is not None:
       for key in self.metaFields.keys():
         if key == 'endian':
-          self.metaFields[key]=self.endianComboBox.currentText()
+          continue
+          # self.metaFields[key]=self.endianComboBox.currentText()
         else:
           self.metaFields[key]=getattr(self, f'key_{key}').text().strip()
       self.comm.binaryFile.meta = self.metaFields
