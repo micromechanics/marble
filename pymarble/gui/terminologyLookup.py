@@ -1,28 +1,31 @@
 """ written by Raphael: look up terminology servers """
-import json
-import requests
-from PySide6.QtWidgets import QLabel, QHBoxLayout, QDialogButtonBox, QDialog, QWidget, QVBoxLayout, \
-                              QScrollArea, QCheckBox                        # pylint: disable=no-name-in-module
-from PySide6.QtCore import QSize, Qt, QByteArray                            # pylint: disable=no-name-in-module
-from PySide6.QtGui import QPixmap                                           # pylint: disable=no-name-in-module
+import json, asyncio
+from typing import Any
+import requests, aiohttp
+from PySide6.QtWidgets import QLabel, QHBoxLayout, QDialogButtonBox, QDialog, QWidget, QVBoxLayout,\
+                              QScrollArea, QCheckBox, QLayout       # pylint: disable=no-name-in-module
+from PySide6.QtCore import QSize, Qt, QByteArray                    # pylint: disable=no-name-in-module
+from PySide6.QtGui import QPixmap                                   # pylint: disable=no-name-in-module
+
 
 class TerminologyLookup(QDialog):
   """ written by Raphael: look up terminology servers """
-  def __init__(self, searchterm:str):
+  def __init__(self, searchterms:list[str]):
     """
-    Opens a Dialog which displays definitions for the given searchterm
-        and returns chosen definitions as a list
+    Opens a Dialog which displays definitions for the given searchterms
+        and returns chosen definitions as a nested list
 
     Args:
-        searchterm (str): The term you search for
+        searchterms (str): A list of terms to search
     """
     super().__init__()
 
     #variables
-    self.listCB:list[tuple[QCheckBox,str]] = []
-    self.nested_widgets:list[QWidget]      = []
-    self.search_term                       = searchterm
-    self.returnValues:list[str]            = []
+    self.listCB:list[tuple[QCheckBox,Any,str]]= []
+    self.nestedWidgets:list[QWidget]      = []
+    self.searchTerms                      = searchterms
+    self.returnValues:list[list[str]]     = []
+    self.preferredSources:dict[str,str]   = {}
 
     #icons
     # pylint: disable=line-too-long
@@ -31,21 +34,20 @@ class TerminologyLookup(QDialog):
     baOLS = QByteArray.fromBase64(b'iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAYAAADISGwcAAABhWlDQ1BJQ0MgUHJvZmlsZQAAeJx9kT1Iw0AcxV/TSotUHewgIpihOlnwC3HUKhShQqgVWnUwufRDaNKQtLg4Cq4FBz8Wqw4uzro6uAqC4AeIq4uToouU+L+k0CLGg+N+vLv3uHsHCPUS06zAKKDpFTOViIuZ7IoYfEUIg+hGAGMys4xZSUrCc3zdw8fXuxjP8j735+hScxYDfCLxDDPMCvE68dRmxeC8TxxhRVklPiceMemCxI9cV1x+41xwWOCZETOdmiOOEIuFNlbamBVNjXiSOKpqOuULGZdVzluctVKVNe/JXxjO6ctLXKc5gAQWsAgJIhRUsYESKojRqpNiIUX7cQ9/v+OXyKWQawOMHPMoQ4Ps+MH/4He3Vn5i3E0Kx4GOF9v+GAKCu0CjZtvfx7bdOAH8z8CV3vKX68D0J+m1lhY9Anq2gYvrlqbsAZc7QN+TIZuyI/lpCvk88H5G35QFem+BzlW3t+Y+Th+ANHWVvAEODoHhAmWvebw71N7bv2ea/f0AerByqoG+UVwAAAPgSURBVHicdZFbiJV1FMV/e3/371xmjpoXvHSDNFB80HQiLUTo4kuKGGURZBAUZZmYkZnog6iF3UgqrIiQhJKhh0wsirCH0ehFKBhJo0R0jLHjeGbO7fv+u4ej2MzQetuw9tpr7SWMwpabIVsBTAE3E6wBegW8PggPw/bGde6r8yC7B6QN5kHzE3izzji8Mg1sLWSzgQhoQ9AP9g0M9stVllDedh8te6AzSRtogQsRHSLLbyDw6gT+e1S3/glAvHUpsAahhUkXDdkA22ujbpe33Ermb8BZGwDFx1neMSwCHPABmLH7brL8fgqaYyZ4GgHdgI8RYNYEa4G8ROWtHfzxwgCV+KqOAxMjL8HfY8IXyk9gDKFuAkiBnCE8KgiXcVzifP1nnwUfdDEyvBKiEbAYIaSdHcbJScSFiC7HD3rAVYEmuIdh27tUCoYzB+YAhzLawJydE5EwxcyBhDh3gFMbj3DjnqkkwUZy9yW8nPl4LKNcGMFQxLpo2Gv89vS5/0idZtG+3xFdh9lZRKdzZzwJPIdDMRRMSSaMST8xIxAHrgEygHIXUz7+lWPrzgKbrtF8upP5iHgYCdhPHH/8HGNx4pnvufezB8HKwCAiszEdgcw6HYjRHLNzS6VGtWkIZ3A2B9EYs82sOHgByY/y9aMnOgYKSQnIUcqYnB13/BqK0WXQWYAC8xGrQhgDAc5CJnfZKP4XD+WsOrQXyZ9FdYDMdaHqIRLhvLWsOdQD+ftKMa5TiEZIoiKFoPK/BgpxRCG4RCHMKIanSJIzpHGDNB6mGLdohjJup3f1eaYXdxD45ygnSjH2icM6xbhK6N9EFK9Q0vA0aeQoxH+RJkvY9oM/TuipowtJo27SqEYSNSiWTpJ6RhoKSSikEVRKY0uA5/rKXKgZn688SGw78f0jFCMhCRoUkyppuEhYf2wWuOcxFyOagTTR6FO6Rk5DSRlqLCZvPwZSB6thcoUJtptBW4ynqzFrgXSD/y2eG8bU4cx4Z+l3rP9xM0aGuv28vawKwPpjTyLMxFyOUey87cW+R1B6wJoYAaIpQhvM4VwMMowwBDIVyfby+pJ+NvUtxdkaoInhIRYCdURzzE1B/V7MLcdyh2gdYRATD7NpiChmgurxzrtLxUPU6ymq84AMZxcROiY8aWDigU1C+JBdPf0AqG+IOFQcZhlCHbNhUIdYE+w28MvARcw5jOl4+g/OBJEMc0LtylcKwPa5Lfbc8RES9GJBAwkmIWECoSJhCfUG8HQnuxb8cr1gHyQw8A1Cw/wcCXPUc0ho7Fr4BhLshxAkvh2NZkIwFw1mIMF52pO3sG9Z7V/jGIzvvobaLwAAAABJRU5ErkJggg==')
     baTIB = QByteArray.fromBase64(b'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')
     # pylint: enable=line-too-long
-    self.wikipedia_pixmap = QPixmap() # https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Wikipedia_Logo_Mini.svg/240px-Wikipedia_Logo_Mini.svg.png
-    self.wikipedia_pixmap.loadFromData(baWikipedia)
-    self.wikidata_pixmap = QPixmap() #https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Wikidata-logo.png/234px-Wikidata-logo.png
-    self.wikidata_pixmap.loadFromData(baWikidata)
-    self.ols_pixmap = QPixmap() # https://www.ebi.ac.uk/ols/img/OLS_logo_2017.png
-    self.ols_pixmap.loadFromData(baOLS)
-    self.tib_pixmap = QPixmap() # https://service.tib.eu/ts4tib/img/TIB_Logo_en.png
-    self.tib_pixmap.loadFromData(baTIB)
-
+    self.wikipediaPixmap = QPixmap() # https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Wikipedia_Logo_Mini.svg/240px-Wikipedia_Logo_Mini.svg.png
+    self.wikipediaPixmap.loadFromData(baWikipedia)
+    self.wikidataPixmap = QPixmap() #https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Wikidata-logo.png/234px-Wikidata-logo.png
+    self.wikidataPixmap.loadFromData(baWikidata)
+    self.olsPixmap = QPixmap() # https://www.ebi.ac.uk/ols/img/OLS_logo_2017.png
+    self.olsPixmap.loadFromData(baOLS)
+    self.tibPixmap = QPixmap() # https://service.tib.eu/ts4tib/img/TIB_Logo_en.png
+    self.tibPixmap.loadFromData(baTIB)
 
     #Widget setup
     self.mainL = QVBoxLayout()
     self.setLayout(self.mainL)
-    self.setWindowTitle("Choose any definitions")
-    self.setMinimumSize(QSize(1100,400))
+    self.setWindowTitle("Choose definitions")
+    self.setMinimumSize(QSize(1200,400))
 
     #ScrollArea
     self.scrollWidget = QWidget()
@@ -63,115 +65,201 @@ class TerminologyLookup(QDialog):
     self.buttonBox.rejected.connect(self.reject)
     self.mainL.addWidget(self.buttonBox)
 
-    if self.search_term != "":
-      self.wikipedia_search()
-      self.wikidata_search()
-      self.ols_search()
-      self.tib_search()
+    #self.show()
 
-    for widget in self.nested_widgets:
+    #start the Search for definitions
+    self.searchTerms.reverse() #so I can use pop() more easily
+    self.startSearch()
+
+
+  def startSearch(self) -> None:
+    """ Start the search """
+    searchTerm = self.searchTerms.pop()
+    self.setWindowTitle(f"Choose definitions for: {searchTerm}")
+    asyncio.run(self.asyncSearch(searchTerm))
+    for widget in self.nestedWidgets:
       self.scrollLayout.addWidget(widget)
 
 
   def finalize(self) -> None:
     """ what to do, when user clicks save """
-    self.returnValues = [cb[1] for cb in self.listCB if cb[0].isChecked()]
-    self.accept()
+    self.returnValues.append([cb[1] for cb in self.listCB if cb[0].isChecked()])
+    self.preferredSources =  {cb[2]:"" for cb in self.listCB if cb[0].isChecked()}
+    if self.searchTerms:
+      self.clearLayout(self.scrollLayout)
+      self.nestedWidgets.clear()
+      self.listCB.clear()
+      self.startSearch()
+    else:
+      self.accept()
+      return
+
+
+  async def asyncSearch(self, searchTerm:str) -> None:
+    """Starts the async search for given searchTerm
+    and then searches and sorts the content
+
+    Args:
+        searchTerm (str): word to be searched
+    """
+    responses = await asyncio.gather(self.wikipediaRequest(searchTerm), self.wikidataRequest(searchTerm), \
+                                     self.olsRequest(searchTerm), self.tibRequest(searchTerm))
+    for source in ("wp", "wd", "ols", "tib"):
+      if source not in self.preferredSources:
+        self.preferredSources[source] = ""
+    for source in self.preferredSources:
+      if   source == "wp": self.wikipediaSearch(responses[0])
+      elif source == "wd": self.wikidataSearch(responses[1])
+      elif source == "ols": self.olsSearch(responses[2])
+      elif source == "tib": self.tibSearch(responses[3])
     return
 
+  # GET CONTENT FROM SERVERS
+  async def olsRequest(self, searchTerm:str) -> str:
+    """
+    Request content from OLS
 
-  def wikipedia_search(self) -> None:
+    Args:
+      searchTerm (str): text to search for
+
+    Returns:
+       str: json reply
     """
-    Search Wikipedia
+    baseUrlOLS = "http://www.ebi.ac.uk/ols/api/search"
+    async with aiohttp.ClientSession() as session:
+      async with session.get(baseUrlOLS, params= {"q": searchTerm}) as response:
+        return await response.text()
+
+  async def wikidataRequest(self, searchTerm:str) -> str:
     """
-    number_of_results = 5
-    base_url = "https://en.wikipedia.org/w/rest.php/v1/search/page"
-    response = requests.get(base_url, params={'q': self.search_term, 'limit': number_of_results})  # type: ignore[arg-type]
-    if response.status_code != 200:
-      print(f"Wikidata: Request failed with status Code: {response.status_code}")
-      return
-    for page in json.loads(response.text)["pages"]:
+    Request content from Wikidata
+
+    Args:
+      searchTerm (str): text to search for
+
+    Returns:
+       str: json reply
+    """
+    baseUrlWd = "https://www.wikidata.org/w/api.php"
+    async with aiohttp.ClientSession() as session:
+      async with session.get(baseUrlWd, params={"search": searchTerm, \
+                  "action":"wbsearchentities", "format":"json","language":"en","type":"item","continue":"0",}) as response:
+        return await response.text()
+
+  async def wikipediaRequest(self, searchTerm:str) -> str:
+    """
+    Request content from Wikipedia
+
+    Args:
+      searchTerm (str): text to search for
+
+    Returns:
+       str: json reply
+    """
+    numberOfResultsWp = 5
+    baseUrlWp = "https://en.wikipedia.org/w/rest.php/v1/search/page"
+    async with aiohttp.ClientSession() as session:
+      async with session.get(baseUrlWp, params={'q': searchTerm, 'limit': numberOfResultsWp}) as response:
+        return await response.text()
+
+  async def tibRequest(self, searchTerm:str) -> str:
+    """
+    Request content from TIB - Terminology Server
+
+    Args:
+      searchTerm (str): text to search for
+
+    Returns:
+       str: json reply
+    """
+    baseUrlTIB = "https://service.tib.eu/ts4tib/api/search"
+    async with aiohttp.ClientSession() as session:
+      async with session.get(baseUrlTIB, params={"q": searchTerm}) as response:
+        return await response.text()
+
+
+  #SEARCH CONTENT
+  def wikipediaSearch(self, response:str) -> None:
+    """
+    Search content we get from Wikipedia
+    """
+    for page in json.loads(response)["pages"]:
       if page['description'] is not None and page['description'] != "Topics referred to by the same term":
         description = page["description"][:200]
         description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
-        self.listCB.append((QCheckBox(page["title"]+": "+description),
-                             "https://en.wikipedia.org/w/index.php?curid="+str(page["id"])))
+        self.listCB.append((QCheckBox(page["title"]+": "+description),\
+                            "https://en.wikipedia.org/w/index.php?curid="+str(page["id"]),"wp"))
         current = self.listCB[-1]
-        self.nested_widgets.append(self.cb_and_image_widget(current[0], self.wikipedia_pixmap))
+        self.nestedWidgets.append(self.cbImage_widget(current[0], self.wikipediaPixmap))
     return
 
-
-  def wikidata_search(self) -> None:
+  def wikidataSearch(self, response:str) -> None:
     """
-    Search Wikidata
+    Search content we get from Wikidata
     """
-    base_url = "https://www.wikidata.org/w/api.php"
-    response = requests.get(base_url, params={"search": self.search_term, \
-                   "action":"wbsearchentities", "format":"json","language":"en","type":"item","continue":"0",})
-    if response.status_code != 200:
-      print(f"Wikidata: Request failed with status Code: {response.status_code}")
-      return
-    for result in json.loads(response.text)["search"]:
+    for result in json.loads(response)["search"]:
       a = result['display']
       if 'description' in a:
         label = a['label']
         description = a["description"]['value'][:200]
         description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
-        self.listCB.append((QCheckBox(label['value']+": "+description), result["concepturi"]))
+        self.listCB.append((QCheckBox(label['value']+": "+description), result["concepturi"],"wd"))
         current = self.listCB[-1]
-        self.nested_widgets.append(self.cb_and_image_widget(current[0], self.wikidata_pixmap))
+        self.nestedWidgets.append(self.cbImage_widget(current[0], self.wikidataPixmap))
     return
 
-
-  def ols_search(self) -> None:
+  def olsSearch(self, response:str) -> None:
     """
-    Search Terminology server of OLS
+    Search content we get from terminology server of OLS
     - some Ontologies do not provide a description in the json
     """
-    base_url = "http://www.ebi.ac.uk/ols/api/search"
-    response = requests.get(base_url, params= {"q": self.search_term})
-    if response.status_code != 200:
-      print(f"Ontology Lookup Service: Request failed with status Code: {response.status_code}")
-      return
-    for result in response.json()["response"]['docs']:
+    for result in json.loads(response)["response"]['docs']:
       if 'description' in result and result['description'] is not None:
         description = "".join(result["description"])[:200]
         description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
         checkboxText = result["label"]+": "+description+" ("+result["ontology_name"]+")"
-        self.listCB.append((QCheckBox(checkboxText), result["iri"]))
+        self.listCB.append((QCheckBox(checkboxText), result["iri"], "ols"))
         current = self.listCB[-1]
-        self.nested_widgets.append(self.cb_and_image_widget(current[0], self.ols_pixmap))
+        self.nestedWidgets.append(self.cbImage_widget(current[0], self.olsPixmap))
     return
 
-
-  def tib_search(self) -> None:
+  def tibSearch(self, response:str) -> None:
     """
-    Search Terminology server of TIB
+    Search content we get from terminology server of TIB
     - some Ontologies do not provide a description in the json, this is handled by the devs of tib
     """
-    base_url = "https://service.tib.eu/ts4tib/api/search"
-    response = requests.get(base_url, params={"q": self.search_term})
-    if response.status_code != 200: #useless for some errors because requests.get raises exceptions
-      print(f"TIB Terminology Service: Request failed with status Code: {response.status_code}")
-      return
     #ontologies that are both found in ols and tib:
-    duplicate_ontos = ["afo", "bco", "bto", "chiro", "chmo", "duo", "edam", "efo", "fix", "hp", "iao", "mod", \
+    duplicateOntos = ["afo", "bco", "bto", "chiro", "chmo", "duo", "edam", "efo", "fix", "hp", "iao", "mod", \
                        "mop", "ms", "nmrcv", "ncit", "obi", "om", "pato", "po", "proco", "prov", "rex", "ro", \
                        "rxno", "sbo", "sepio", "sio", "swo", "t4fs", "uo"]
-    for result in response.json()["response"]['docs']:
+    for result in json.loads(response)["response"]['docs']:
       if 'description' in result and result['description'] is not None and \
-        not result["ontology_name"] in duplicate_ontos:
+        not result["ontology_name"] in duplicateOntos:
         description = "".join(result["description"])[:200]
         description = description if len(description)<100 else description[:100]+'\n'+description[-100:]
         checkboxText = result["label"]+": "+description+" ("+result["ontology_name"]+")"
-
-        self.listCB.append((QCheckBox(checkboxText), result["iri"]))
+        self.listCB.append((QCheckBox(checkboxText), result["iri"], "tib"))
         current = self.listCB[-1]
-        self.nested_widgets.append(self.cb_and_image_widget(current[0], self.tib_pixmap))
+        self.nestedWidgets.append(self.cbImage_widget(current[0], self.tibPixmap))
+    return
+
+  ########################
+  #### Misc functions ####
+  def clearLayout(self, layout:QLayout) -> None:
+    """Clears given layout
+
+    Args:
+        layout (QLayout): Layout to be cleared
+    """
+    while layout.count():
+      child = layout.takeAt(0)
+      childWidget = child.widget()
+      if childWidget:
+        childWidget.setParent(None)                                            # type: ignore[call-overload]
     return
 
 
-  def pixmap_from_url(self, url:str) -> QPixmap:
+  def pixmapFromUrl(self, url:str) -> QPixmap:
     """ get pixmap from remote content
 
     Args:
@@ -187,8 +275,8 @@ class TerminologyLookup(QDialog):
     return pixmap
 
 
-  def cb_and_image_widget(self, checkbox:QCheckBox, pixmap:QPixmap) -> QWidget:
-    """ add checkbod and logo into one widget and return it
+  def cbImage_widget(self, checkbox:QCheckBox, pixmap:QPixmap) -> QWidget:
+    """ add checkbox and logo into one widget and return it
 
     Args:
       checkbox (QCheckBox): checkbox to add
@@ -197,13 +285,13 @@ class TerminologyLookup(QDialog):
     Returns:
       QWidget: widget containing elements
     """
-    nested_widget = QWidget()
-    nested_widget.setStyleSheet("font-size: 17px")
-    nested_layout = QHBoxLayout()
-    nested_label = QLabel()
-    nested_label.setPixmap(pixmap)
-    nested_widget.setLayout(nested_layout)
-    nested_layout.addWidget(checkbox)
-    nested_layout.addStretch(1)
-    nested_layout.addWidget(nested_label)
-    return nested_widget
+    nestedWidget = QWidget()
+    nestedWidget.setStyleSheet("font-size: 17px")
+    nestedLayout = QHBoxLayout()
+    nestedLabel = QLabel()
+    nestedLabel.setPixmap(pixmap)
+    nestedWidget.setLayout(nestedLayout)
+    nestedLayout.addWidget(checkbox)
+    nestedLayout.addStretch(1)
+    nestedLayout.addWidget(nestedLabel)
+    return nestedWidget

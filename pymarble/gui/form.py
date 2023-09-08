@@ -373,9 +373,9 @@ class Form(QDialog):
     elif command[0] == 'changeDtype':
       length = int(self.lengthInitial/byteSize)
     elif command[0] == 'terminologyLookup':
-      dialog = TerminologyLookup(self.keyW.text())
+      dialog = TerminologyLookup([self.keyW.text()])
       dialog.exec()
-      self.linkW.setText(' '.join(dialog.returnValues))
+      self.linkW.setText(' '.join(dialog.returnValues[0]))
     else:
       logging.error('Command unknown %s', command)
     self.startW.setValue(start)

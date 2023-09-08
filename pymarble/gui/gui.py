@@ -17,6 +17,7 @@ from .configurationEditor import ConfigurationEditor
 from .rowTool import RowTool
 from .periodicity import Periodicity
 from .searchTool import SearchTool
+from .terminologyLookup import TerminologyLookup
 from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
@@ -54,10 +55,11 @@ class MainWindow(QMainWindow):
     Action('Table columns',     self, ['tableHeader'],viewMenu)
 
     toolsMenu = menu.addMenu("&Tools")
-    Action('Edit &metadata',          self, ['metaEditor'],    toolsMenu, shortcut='Ctrl+M')
-    Action('Define row data in file', self, ['rowTool'],       toolsMenu, shortcut='Ctrl+R')
-    Action('Periodicity tool',        self, ['periodicity'],   toolsMenu, shortcut='Ctrl+P')
-    Action('Search tool',             self, ['searchTool'],    toolsMenu, shortcut='Ctrl+F')
+    Action('Edit &metadata',            self, ['metaEditor'],        toolsMenu, shortcut='Ctrl+M')
+    Action('Define row data in file',   self, ['rowTool'],           toolsMenu, shortcut='Ctrl+R')
+    Action('Periodicity tool',          self, ['periodicity'],       toolsMenu, shortcut='Ctrl+P')
+    Action('Search tool',               self, ['searchTool'],        toolsMenu, shortcut='Ctrl+F')
+    Action('Terminology lookup for all',self, ['terminologyLookup'], toolsMenu, shortcut='Ctrl+T')
     toolsMenu.addSeparator()
     Action('Configuration',           self, ['configuration'], toolsMenu)
 
@@ -146,6 +148,16 @@ class MainWindow(QMainWindow):
     elif command[0]=='periodicity':
       dialog = Periodicity(self.comm)
       dialog.exec()
+    elif command[0]=='terminologyLookup':
+      content = self.comm.binaryFile.content
+      searchTerms = {i:content[i].key for i in content
+                     if content[i].key!='' and content[i].dClass in {'metadata','primary'}}
+      searchTerms = {k:v.replace('_',' ').replace('label','').replace('channel','').strip()
+                     for k,v in searchTerms.items()}
+      dialog = TerminologyLookup(list(searchTerms.values()))
+      dialog.exec()
+      for idx, reply in enumerate(dialog.returnValues):
+        content[list(searchTerms.keys())[idx]].link = ' '.join(reply)
     elif command[0]=='searchTool':
       dialog = SearchTool(self.comm)
       dialog.exec()
