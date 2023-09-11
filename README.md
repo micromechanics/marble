@@ -39,7 +39,10 @@ mypy pymarble/
 make -C docs html
 
 tests/testBackend.sh
+```
 
+### Create code coverage
+``` bash
 coverage erase; coverage run --source pymarble -m pytest tests; coverage html
 firefox htmlcov/index.html
 rm -r htmlcov
