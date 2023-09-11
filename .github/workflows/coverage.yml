@@ -18,7 +18,6 @@ jobs:
         pip install -r requirements-devel.txt
     - name: Run coverage
       run: |
-        coverage erase
         coverage run --source pymarble -m pytest tests
     - name: Publish code coverage badge
       run: |
