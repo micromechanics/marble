@@ -58,6 +58,9 @@ class Util():
       value: value to be found
       dType: ['d','f','i', 's','c'] data-type: double or int or string
       offset: offset to start from
+
+    Returns:
+      int: location of found item
     '''
     if dType in {'s','c'} and isinstance(value, str):
       searchString = bytes(value, 'utf-8').hex()
@@ -67,7 +70,8 @@ class Util():
       searchString = struct.pack(dType, float(value)).hex()
       searchString = searchString[2:]  #chop of first byte (two chars) to allow for close values not precise
     else:
-      logging.error("NOT TESTED dTypes")
+      logging.error("NOT TESTED dTypes %s", dType)
+      return -1
     self.file.seek(offset)
     data = self.file.read()
     found = data.hex().find(searchString)

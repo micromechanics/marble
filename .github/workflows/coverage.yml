@@ -1,4 +1,4 @@
-name: MyPy
+name: coverage
 
 on: [push, pull_request]
 
@@ -23,7 +23,7 @@ jobs:
     - name: Publish code coverage badge
       run: |
         set -x
-        total=`go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+        total=`python3 -c "import sys, json; print(json.load(sys.stdin)['totals']['percent_covered_display'])" < coverage.json`
 
         if (( $(echo "$total <= 50" | bc -l) )) ; then
           COLOR=red
