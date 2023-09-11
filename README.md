@@ -33,6 +33,10 @@ firefox htmlcov/index.html
 rm -r htmlcov
 ```
 
+## For documentation: creating images / videos
+- gui.py set fixed size
+- change monitor settings to 1280,720
+
 ## Test with python only
 ``` python
 from pymarble.file import BinaryFile

@@ -28,6 +28,9 @@ class MainWindow(QMainWindow):
     #global setting
     super().__init__()
     self.setWindowTitle('MARBLE')
+    # for documentation: fixed size = same picture size
+    # self.setFixedSize(1275, 695)
+    # for the distributions
     self.setWindowState(Qt.WindowMaximized) # type: ignore
     resourcesDir = Path(__file__).parent/'Resources'
     self.setWindowIcon(QIcon(QPixmap(resourcesDir/'Icons'/'favicon64.png')))
@@ -35,39 +38,38 @@ class MainWindow(QMainWindow):
     # #Menubar
     menu = self.menuBar()
     fileMenu = menu.addMenu("&File")
-    Action('&Open binary file',  self, ['open'],       fileMenu, shortcut='Ctrl+O')
-    Action('&Use exported .csv', self, ['useExported'],fileMenu, shortcut='Ctrl+U')
+    Action('&Open binary file',        self, ['open'],          fileMenu, shortcut='Ctrl+O')
+    Action('&Use exported .csv',       self, ['useExported'],   fileMenu, shortcut='Ctrl+U')
     fileMenu.addSeparator()
-    Action('Open corr. .tags',   self, ['loadTags'],   fileMenu,  shortcut='F2')
-    Action('Save corr. .tags',   self, ['saveTags'],   fileMenu,  shortcut='F4')
-    fileMenu.addSeparator()
-    Action('Open python-file',         self, ['loadPython'], fileMenu)
-    Action('&Save python-file',        self, ['savePython'], fileMenu)
+    Action('Open python-file',         self, ['loadPython'],    fileMenu)
+    Action('&Save python-file',        self, ['savePython'],    fileMenu, shortcut='Ctrl+S')
     Action('&Convert to hdf5',         self, ['extractPython'], fileMenu)
-    Action('&Convert file(s) to hdf5', self, ['extractMany'], fileMenu)
+    Action('&Convert file(s) to hdf5', self, ['extractMany'],   fileMenu)
     fileMenu.addSeparator()
-    Action('&Exit',             self, ['exit'],       fileMenu)
+    Action('&Exit',                    self, ['exit'],          fileMenu)
 
     viewMenu = menu.addMenu("&View")
-    Action('&Hide binary',      self, ['F5'],         viewMenu, shortcut='F5')
-    Action('&Hide data class',  self, ['F6'],         viewMenu, shortcut='F6')
-    Action('&Hide important',   self, ['F7'],         viewMenu, shortcut='F7')
-    Action('Table columns',     self, ['tableHeader'],viewMenu)
+    Action('&Hide binary',             self, ['F5'],            viewMenu, shortcut='F5')
+    Action('&Hide data class',         self, ['F6'],            viewMenu, shortcut='F6')
+    Action('&Hide important',          self, ['F7'],            viewMenu, shortcut='F7')
+    Action('Table columns',            self, ['tableHeader'],   viewMenu)
 
     toolsMenu = menu.addMenu("&Tools")
-    Action('Edit &metadata',            self, ['metaEditor'],        toolsMenu, shortcut='Ctrl+M')
-    Action('Define row data in file',   self, ['rowTool'],           toolsMenu, shortcut='Ctrl+R')
-    Action('Periodicity tool',          self, ['periodicity'],       toolsMenu, shortcut='Ctrl+P')
-    Action('Search tool',               self, ['searchTool'],        toolsMenu, shortcut='Ctrl+F')
-    Action('Terminology lookup for all',self, ['terminologyLookup'], toolsMenu, shortcut='Ctrl+T')
+    Action('Edit &metadata',            self, ['metaEditor'],   toolsMenu, shortcut='Ctrl+M')
+    Action('Define row data in file',   self, ['rowTool'],      toolsMenu, shortcut='Ctrl+R')
+    Action('Periodicity tool',          self, ['periodicity'],  toolsMenu, shortcut='Ctrl+P')
+    Action('Find data',                 self, ['searchTool'],   toolsMenu, shortcut='Ctrl+F')
+    Action('Terminology lookup for all',self, ['terminology'],  toolsMenu, shortcut='Ctrl+T')
     toolsMenu.addSeparator()
-    Action('Configuration',           self, ['configuration'], toolsMenu)
-
+    Action('Configuration',             self, ['configuration'],toolsMenu)
 
     helpMenu = menu.addMenu("&Help")
-    Action('&Website',          self, ['website'],        helpMenu)
-    Action('&About',            self, ['about'],        helpMenu)
+    Action('&Website',                  self, ['website'],      helpMenu)
+    Action('&About',                    self, ['about'],        helpMenu)
+
     #shortcuts for advanced usage (user should not need)
+    QShortcut('F2', self, lambda : self.execute(['loadTags']))
+    QShortcut('F4', self, lambda : self.execute(['saveTags']))
     QShortcut('F9', self, lambda : self.execute(['restart']))
     QShortcut('F10',self, lambda : self.execute(['repaint']))
 
@@ -148,7 +150,7 @@ class MainWindow(QMainWindow):
     elif command[0]=='periodicity':
       dialog = Periodicity(self.comm)
       dialog.exec()
-    elif command[0]=='terminologyLookup':
+    elif command[0]=='terminology':
       content = self.comm.binaryFile.content
       searchTerms = {i:content[i].key for i in content
                      if content[i].key!='' and content[i].dClass in {'metadata','primary'}}
