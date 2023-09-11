@@ -5,7 +5,7 @@
 # Software for deciphering proprietary binary data-files | Developer notes
 
 
-> :warning: **Users: all documentation can be found at [Pypi-pages](https://pypi.org/project/pymarble/)**
+> :warning: **Users: all documentation can be found at [github-pages](https://micromechanics.github.io/marble/)**
 >
 > **This page / area is for developers and contains some helpful information for them**
 

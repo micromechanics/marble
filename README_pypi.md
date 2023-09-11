@@ -5,7 +5,7 @@
 # Documentation on software for deciphering proprietary binary data-files
 Scientific instruments produce proprietary binary data that contains a multitude of primary and metadata. This project aims to create a software that supports the domain scientist in deciphering this data and metadata and supply python scripts that decipher the instrument measurements.
 
-MARBLE is open und free software and can be found at a [Repository](https://github.com/micromechanics/marble)
+MARBLE is open und free software and can be found at a [Repository](https://github.com/micromechanics/marble) and [Documentation](https://micromechanics.github.io/marble/).
 
 ## Contributors
 - Steffen Brinckmann (IEK-2, FZJ) [Principal investigator]
