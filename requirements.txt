@@ -1,8 +1,8 @@
+sortedcontainers
+prettytable
 matplotlib
 pandas
-pyside6
-qt-material
-QtAwesome
-sortedcontainers
 h5py
-prettytable
+aiohttp
+pyside6==6.2.4
+QtAwesome
