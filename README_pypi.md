@@ -1,7 +1,11 @@
+[![Pylint](https://github.com/micromechanics/marble/actions/workflows/pylint.yml/badge.svg)](https://github.com/micromechanics/marble/actions/workflows/pylint.yml)
+[![MyPy](https://github.com/micromechanics/marble/actions/workflows/mypy.yml/badge.svg)](https://github.com/micromechanics/marble/actions/workflows/mypy.yml)
+[![pypi](https://github.com/micromechanics/marble/actions/workflows/pypi.yml/badge.svg)](https://github.com/micromechanics/marble/actions/workflows/pypi.yml)
+
 # Documentation on software for deciphering proprietary binary data-files
 Scientific instruments produce proprietary binary data that contains a multitude of primary and metadata. This project aims to create a software that supports the domain scientist in deciphering this data and metadata and supply python scripts that decipher the instrument measurements.
 
-MARBLE is open und free software and can be found at a [Repository]()
+MARBLE is open und free software and can be found at a [Repository](https://github.com/micromechanics/marble)
 
 ## Contributors
 - Steffen Brinckmann (IEK-2, FZJ) [Principal investigator]
