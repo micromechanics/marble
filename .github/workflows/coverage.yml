@@ -24,20 +24,3 @@ jobs:
       uses: codecov/codecov-action@v3
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    - name: Publish code coverage badge
-      run: |
-        set -x
-        total=`python3 -c "import sys, json; print(json.load(sys.stdin)['totals']['percent_covered_display'])" < coverage.json`
-        if (( $(echo "$total <= 40" | bc -l) )) ; then
-          COLOR=red
-        elif (( $(echo "$total > 70" | bc -l) )); then
-          COLOR=green
-        else
-          COLOR=orange
-        fi
-        curl "https://img.shields.io/badge/coverage-$total%25-$COLOR" > badge.svg
-    - name: Archive code coverage results
-      uses: actions/upload-artifact@v3
-      with:
-        name: code coverage badge
-        path: badge.svg
