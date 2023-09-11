@@ -47,24 +47,24 @@ def printHelp() -> None:
 
 
 #Entry point to the non-gui app
-def main() -> None:
+def main(argv:list[str]) -> None:
   """
   main function
   """
   warnings.filterwarnings("ignore")
-  # logFile = os.path.splitext(sys.argv[1])[0]+'_rff.log'
+  # logFile = os.path.splitext(argv[1])[0]+'_rff.log'
   # sys.stdout = Logger(logFile)
-  if len(sys.argv)<2:
+  if len(argv)<2:
     printHelp()
 
   else:
-    fBIN = BinaryFile(sys.argv[1], verbose=1)
-    numCommands = 99999 if len(sys.argv)==2 else len(sys.argv[2].split(';'))
+    fBIN = BinaryFile(argv[1], verbose=1)
+    numCommands = 99999 if len(argv)==2 else len(argv[2].split(';'))
     for idx in range(numCommands):
-      if len(sys.argv)==2:
+      if len(argv)==2:
         command = input("\n\n>> Command: ")
       else:
-        command = sys.argv[2].split(';')[idx].strip()
+        command = argv[2].split(';')[idx].strip()
 
       try:
         # smart\automatic functions
@@ -136,4 +136,4 @@ def main() -> None:
   return
 
 if __name__ == '__main__':
-  main()
+  main(sys.argv)
