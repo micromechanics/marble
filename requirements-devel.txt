@@ -1,6 +1,7 @@
 # requirements for a development environment
 pytest
 pytest-cov
+pytest-qt
 coverage
 sphinx
 sphinx_rtd_theme
