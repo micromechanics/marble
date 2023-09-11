@@ -286,7 +286,7 @@ class InputOutput():
         row['shape'] = [] if row['shape'] =='[]' else [int(i) for i in row['shape'][1:-1].split(',')]
         row['value'] = html.unescape(row['value'])
         #for all sections
-        section = Section(**row)            # type: ignore[misc]
+        section = Section(**row)            # type: ignore
         section.value = section.value.encode('utf-8').decode('unicode_escape')
         if section.length<0:
           section.length = int(np.prod(section.shape))
