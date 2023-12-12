@@ -182,7 +182,7 @@ class Table(QWidget):
 
   def cellClicked(self, item:QTableWidgetItem) -> None:
     """
-    What happens when user clicks cell in table of tags, projects, samples, ...
+    What happens when user clicks cell in table
     -> show details
 
     Args:
@@ -202,7 +202,7 @@ class Table(QWidget):
     elif colName == 'prob':
       orderArray = np.array([49, 100, 75, 50])
       mask = orderArray>=content[start].prob
-      minValue = orderArray[mask].min()
+      minValue = orderArray[mask].min() if len(orderArray[mask])>0 else 49
       idxArray = np.argmin(np.abs(orderArray-minValue))
       content[start].prob = orderArray[idxArray+1]
     self.change()  #repaint

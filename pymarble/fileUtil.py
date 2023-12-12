@@ -64,13 +64,13 @@ class Util():
     '''
     if dType in {'s','c'} and isinstance(value, str):
       searchString = bytes(value, 'utf-8').hex()
-    elif dType in {'i', 'H'}:
+    elif dType in {'i', 'H', 'h'}:
       searchString = struct.pack(dType, int(value)).hex()
     elif dType in {'f', 'd'}:
       searchString = struct.pack(dType, float(value)).hex()
       searchString = searchString[2:]  #chop of first byte (two chars) to allow for close values not precise
     else:
-      logging.error("NOT TESTED dTypes %s", dType)
+      logging.error("fileUtil:findBytes dTypes %s", dType)
       return -1
     self.file.seek(offset)
     data = self.file.read()

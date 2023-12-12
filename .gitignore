@@ -9,3 +9,4 @@ pymarble/test.py
 tests/examples/*.hdf5
 tests/examples/*.tags
 tests/examples/*.py
+tests/examples/Beispiel*

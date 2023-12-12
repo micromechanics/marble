@@ -109,7 +109,7 @@ class Periodicity(QDialog):
     """ repaint form incl. graph """
     if self.comm.binaryFile is None:
       return
-    if self.widgetCB.currentText()=='Select one section':
+    if self.widgetCB.currentText()=='Select one section' and self.startCB.currentText():
       start = int(self.startCB.currentText().split(' - ')[0][3:])
       endOffset   = int(self.lastCB.currentText().split(' - ')[0][3:])
       sectionEnd = self.comm.binaryFile.content[endOffset]

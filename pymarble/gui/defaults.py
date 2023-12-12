@@ -10,7 +10,6 @@ defaultConfiguration = {
 # the opt...: properties are the same as in file.py
 #
 # additional options
-# advanced: anything: e.g. true
 # print_mode hex
 
 # "#e5e5e5"  light grey
@@ -32,7 +31,7 @@ translatePlot     = {'f':'plot numerical value','d':'plot numerical value','b':'
                           'B':'plot byte value','c':'plot byte value', 'i':'print numerical value',
                           'H':'2D graph of numerical value'}
 translateDtype    = {'b':'byte = 1byte = 8bit', 'c':'character = 1byte',
-                     'H':'unsigned short = 2byte = 16bit', 'i':'int = 4bytes',
+                     'h':'unsigned short = 2byte = 16bit', 'i':'int = 4bytes',
                      'f':'float = 4bytes','d':'double = 8bytes',}
 translateDtypeInv = {v: k for k, v in translateDtype.items()}
 translateDtypeShort = {'b':'byte', 'B':'zeros', 'c':'character', 'H':'unsigned short int', 'h':'short int',

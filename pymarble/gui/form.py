@@ -167,20 +167,19 @@ class Form(QDialog):
     dClassL.addWidget(self.linkW)
     IconButton('fa5s.search', self, ['terminologyLookup'], dClassL, 'Lookup from terminology servers')
 
-    if 'advanced' in self.comm.configuration:
-      # advanced items
-      _, advancedL = widgetAndLayout('H', mainL)
-      advancedL.addWidget(QLabel('Count:'))
-      self.countW = QLineEdit(str(section.count),self)
-      advancedL.addWidget(self.countW)
-      advancedL.addSpacing(space)
-      advancedL.addWidget(QLabel('Shape:'))
-      self.shapeW = QLineEdit(str(section.shape),self)
-      advancedL.addWidget(self.shapeW)
-      advancedL.addSpacing(space)
-      advancedL.addWidget(QLabel('Entropy:'))
-      self.entropyW = QLineEdit(str(section.entropy),self)
-      advancedL.addWidget(self.entropyW)
+    # advanced items
+    _, advancedL = widgetAndLayout('H', mainL)
+    advancedL.addWidget(QLabel('Count:'))
+    self.countW = QLineEdit(str(section.count),self)
+    advancedL.addWidget(self.countW)
+    advancedL.addSpacing(space)
+    advancedL.addWidget(QLabel('Shape:'))
+    self.shapeW = QLineEdit(str(section.shape),self)
+    advancedL.addWidget(self.shapeW)
+    advancedL.addSpacing(space)
+    advancedL.addWidget(QLabel('Entropy:'))
+    self.entropyW = QLineEdit(str(section.entropy),self)
+    advancedL.addWidget(self.entropyW)
 
     if section.dClass == 'count':
       self.startW.setDisabled(True)
@@ -253,8 +252,11 @@ class Form(QDialog):
       self.valuesY = list(struct.unpack(dTypeAll, dataAll))
       limitX  = length
       labelY  = 'numerical value'
-      limitY  = [np.min(self.valuesY[self.lead:-self.lead])*0.8,  #here self.lead to prevent it from being 0
-                 np.max(self.valuesY[self.lead:-self.lead])*1.2]
+      try:
+        limitY  = [np.min(self.valuesY[self.lead:-self.lead])*0.8,  #here self.lead to prevent it from being 0
+                   np.max(self.valuesY[self.lead:-self.lead])*1.2]
+      except Exception:
+        limitY  = [0, 1]
       lineStyle= 'o-'
     elif self.plotCB.currentText().endswith('plot entropy'):
       dataBin = list(dataAll) #convert to byte-int
@@ -292,7 +294,8 @@ class Form(QDialog):
     elif self.plotCB.currentText().startswith('2D graph'):
       width, height = int(self.widthW.text()), int(self.heightW.text())
       self.graph.axes.cla()                        # Clear the canvas.
-      img = self.graph.axes.imshow(np.reshape(self.valuesY, (height, width)), cmap='Greys_r')
+      if height*width==len(self.valuesY):
+        img = self.graph.axes.imshow(np.reshape(self.valuesY, (height, width)), cmap='Greys_r')
       if not self.colorbarPresent:
         self.graph.axes.get_figure().colorbar(img)
         self.colorbarPresent = True
@@ -373,9 +376,11 @@ class Form(QDialog):
     elif command[0] == 'changeDtype':
       length = int(self.lengthInitial/byteSize)
     elif command[0] == 'terminologyLookup':
-      dialog = TerminologyLookup([self.keyW.text()])
-      dialog.exec()
-      self.linkW.setText(' '.join(dialog.returnValues[0]))
+      if self.keyW.text():
+        dialog = TerminologyLookup([self.keyW.text()])
+        dialog.exec()
+        if dialog.returnValues:
+          self.linkW.setText(' '.join(dialog.returnValues[0]))
     else:
       logging.error('Command unknown %s', command)
     self.startW.setValue(start)

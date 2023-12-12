@@ -358,7 +358,7 @@ class Automatic():
     if start in self.content:
       self.file.seek(start)
       dataBin = self.file.read( self.content[start].byteSize() )  #read data
-      data = struct.unpack(f'{self.content[start].byteSize()}B', dataBin) #convert to byte-int
+      data = struct.unpack(f'{len(dataBin)}B', dataBin) #convert to byte-int
       blockSize = min(blockSize, self.content[start].byteSize()-1)
       skipEvery = max(self.optEntropy['skipEvery'], int(self.content[start].byteSize()/1024))#max. of 1024tests
     else:
@@ -417,6 +417,7 @@ class Automatic():
                                                  dType='i', prob=100, dClass='count', important=True)
             self.content[locations[1]] = Section(length=1, key=f'k{prevKvariables+2}={dimension}',
                                                  dType='i', prob=100, dClass='count', important=True)
-            del self.content[start]
+            if start in self.content:
+              del self.content[start]
             break
     return

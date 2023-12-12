@@ -99,5 +99,6 @@ Addititional information
    :maxdepth: 1
 
    advanced
+   install
 
 .. |---| unicode:: U+02014 .. em dash

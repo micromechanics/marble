@@ -24,7 +24,7 @@ os.environ['QT_API'] = 'pyside6'
 
 class MainWindow(QMainWindow):
   """ Graphical user interface includes all widgets """
-  def __init__(self, configuration:dict[str,Any]) -> None:
+  def __init__(self, configuration:dict[str,Any], fileName:str='') -> None:
     #global setting
     super().__init__()
     self.setWindowTitle('MARBLE')
@@ -88,6 +88,8 @@ class MainWindow(QMainWindow):
     self.comm = Communicate(None, self.configuration, self.progressbar)
     self.table = Table(self.comm)
     self.setCentralWidget(self.table)      # Set the central widget of the Window
+    if fileName:
+      self.comm.binaryFile = BinaryFile(fileName, config=self.configuration)
     self.suggestFileOpen = True
 
 
@@ -201,7 +203,7 @@ class MainWindow(QMainWindow):
 
   def resizeEvent(self, event: QResizeEvent) -> None:
     """
-    executed upon resize
+    executed upon resize, aka initial maximize
 
     Args:
       event (QResizeEvent): event
