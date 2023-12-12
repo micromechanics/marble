@@ -296,8 +296,8 @@ class Form(QDialog):
       self.graph.axes.cla()                        # Clear the canvas.
       if height*width==len(self.valuesY):
         img = self.graph.axes.imshow(np.reshape(self.valuesY, (height, width)), cmap='Greys_r')
-      if not self.colorbarPresent and self.graph.axes.get_figure() is not None:
-        self.graph.axes.get_figure().colorbar(img)
+      if not self.colorbarPresent:
+        self.graph.axes.get_figure().colorbar(img) # type: ignore [union-attr]
         self.colorbarPresent = True
       self.graph.draw() # Trigger the canvas to update and redraw.
       self.textEditW.hide()
