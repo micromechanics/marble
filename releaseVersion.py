@@ -69,4 +69,3 @@ if __name__=='__main__':
   if level is not None:
     message = sys.argv[1]
     newVersion(level, message)
-  print("\n==============================\nAlso publish extractors\n======================")
