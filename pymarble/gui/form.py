@@ -245,7 +245,7 @@ class Form(QDialog):
       self.valuesY = list(dataAll)
       limitX  = length*byteSize
       labelY  = 'byte value'
-      limitY  = [0.0, 255.0]
+      limitY  = (0.0, 255.0)
       lineStyle= '.'
     elif self.plotCB.currentText().endswith('numerical value'):
       valuesX = np.arange(-lead, length+lead)
@@ -253,10 +253,10 @@ class Form(QDialog):
       limitX  = length
       labelY  = 'numerical value'
       try:
-        limitY  = [np.min(self.valuesY[self.lead:-self.lead])*0.8,  #here self.lead to prevent it from being 0
-                   np.max(self.valuesY[self.lead:-self.lead])*1.2]
+        limitY  = (np.min(self.valuesY[self.lead:-self.lead])*0.8,  #here self.lead to prevent it from being 0
+                   np.max(self.valuesY[self.lead:-self.lead])*1.2)
       except Exception:
-        limitY  = [0, 1]
+        limitY  = (0, 1)
       lineStyle= 'o-'
     elif self.plotCB.currentText().endswith('plot entropy'):
       dataBin = list(dataAll) #convert to byte-int
@@ -269,7 +269,7 @@ class Form(QDialog):
         self.valuesY.append(valueI)
       labelY  = 'entropy'
       limitX  = (length-blockSize)*byteSize
-      limitY  = [0.0, 7.8]
+      limitY  = (0.0, 7.8)
       lineStyle= '-'
     elif not self.plotCB.currentText().endswith('warning'):
       logging.error('unknown value in form')
@@ -296,7 +296,7 @@ class Form(QDialog):
       self.graph.axes.cla()                        # Clear the canvas.
       if height*width==len(self.valuesY):
         img = self.graph.axes.imshow(np.reshape(self.valuesY, (height, width)), cmap='Greys_r')
-      if not self.colorbarPresent:
+      if not self.colorbarPresent and self.graph.axes.get_figure() is not None:
         self.graph.axes.get_figure().colorbar(img)
         self.colorbarPresent = True
       self.graph.draw() # Trigger the canvas to update and redraw.

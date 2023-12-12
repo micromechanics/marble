@@ -344,7 +344,7 @@ class InputOutput():
       yMax = 1.1*yMax-0.1*yMin
       # ax1.axhline(0, color='k', linestyle='dashed')
       # ax1.axvline(1, color='k', linestyle='dashed')
-      ax1.set_ylim([yMin,yMax])
+      ax1.set_ylim((yMin,yMax))
       ax1.set_xlabel('increment')
       ax1.set_ylabel('value')
     elif plotMode==2:
