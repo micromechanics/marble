@@ -25,6 +25,7 @@ import numpy as np
 #   - 40-60 sequences: tho longer the higher: cutoff at 100-long
 #   - 100   if manually set key,unit,link
 # entropy -> see automaticIdentify:entropy
+# TODO document dTypes: ...
 SECTION_OUTPUT_ORDER = ['length','dType','key','unit','link','dClass','count','shape','prob','entropy',\
                         'important','value']
 

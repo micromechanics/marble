@@ -1,5 +1,6 @@
 __pycache__
 .coverage
+.venv
 docs/build/
 
 TODO.md

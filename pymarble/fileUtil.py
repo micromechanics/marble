@@ -242,6 +242,7 @@ class Util():
 
       #merge sequential binary sections
       pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
+      #TODO: joinPattern ['b'] or ['B']
       while pairsRepair := [[i, j] for i, j in pairsAll
                             if self.content[i].dType == 'b' and self.content[j].dType == 'b']:
         first, second = pairsRepair[0]  #just take the first and then rebuild to prevent overlapping

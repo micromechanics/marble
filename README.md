@@ -3,12 +3,12 @@
 [![pypi](https://github.com/micromechanics/marble/actions/workflows/pypi.yml/badge.svg)](https://github.com/micromechanics/marble/actions/workflows/pypi.yml)
 [![coverage](https://codecov.io/gh/micromechanics/marble/graph/badge.svg?token=3Z5TL6SG1H)](https://codecov.io/gh/micromechanics/marble)
 
-# Software for deciphering proprietary binary data-files | Developer notes
+# Software for deciphering proprietary binary data files | Developer notes
 
 
-> :warning: **Users: all documentation can be found at [github-pages](https://micromechanics.github.io/marble/)**
+> :warning: **Users: all documentation is available on [GitHub Pages](https://micromechanics.github.io/marble/).**
 >
-> **This page / area is for developers and contains some helpful information for them**
+> **This page is for developers and contains helpful project notes.**
 
 ---
 
@@ -19,42 +19,76 @@
 
 ## Documentation
 ### Backend
-- Can be found within the 'pymarble/' directory.
-- Entry point is the main function in cli.py file within 'pymarble/'
+- Located in the `pymarble/` directory.
+- Entry point is `main()` in `pymarble/cli.py`.
 
 ### Frontend
-- Can be found within the 'pymarble/GUI' directory.
-- Entry point is the main function in gui.py file
+- Located in the `pymarble/gui/` directory.
+- Entry point is `main()` in `pymarble/gui/gui.py`.
 
 ### Tests / User-cases
-- All testing related files can be found under the 'tests/' folder
-- testBackend.sh tests all tutorials
-- tutorials are for human reading as well as automatic testing
-  - backendTutorial python implementation of a typical run
-- Three example files are supplied
+- All testing files are under `tests/`.
+- Primary test runner is `pytest`.
+- `testBackend.sh` is a legacy tutorial/E2E script.
+- Tutorials are intended for both human reading and automated testing.
+- Multiple example files are available under `tests/examples/`.
+
+## Quick developer checks
+Run these before opening a PR:
+``` bash
+pylint $(git ls-files 'pymarble/*')
+mypy pymarble
+pytest tests
+make -C docs html
+```
+
+### Run a single test (recommended during development)
+Single file:
+``` bash
+pytest tests/test_section.py
+```
+
+Single test function:
+``` bash
+pytest tests/test_section.py::testSection
+```
+
+Name filter:
+``` bash
+pytest tests -k testSection
+```
 
 ## Steps for publishing code
 ``` bash
-pylint pymarble/*
-mypy pymarble/
+pylint $(git ls-files 'pymarble/*')
+mypy pymarble
 make -C docs html
 
-tests/testBackend.sh
+pytest tests
 ```
+
+Optional legacy e2e/tutorial regression:
+``` bash
+bash tests/testBackend.sh
+```
+Note: `testBackend.sh` uses the external tool `punx` and writes generated files to `tests/examples/`.
 
 ### Create code coverage
 ``` bash
-coverage erase; coverage run --source pymarble -m pytest tests; coverage html
+coverage erase
+python -m coverage run --source pymarble -m pytest tests
+coverage report -m
+coverage html
 firefox htmlcov/index.html
 rm -r htmlcov
 ```
 
 ## For documentation: creating images / videos
-- gui.py set fixed size
-- change monitor settings to 1280,720
+- Set a fixed window size in `gui.py`.
+- Change monitor resolution to `1280x720`.
 
 
-## Test code with python only
+## Test code with Python only
 ``` python
 from pymarble.file import BinaryFile
 bf = BinaryFile('tests/examples/1-11-OA_0000.emi')
@@ -66,7 +100,7 @@ bf.printList(True)
 ```
 
 ## Python data-types and their byteSize
-This table is helpful for developers to quickly find byte-lengths
+This table helps developers quickly find byte lengths.
 
 |Format|C Type             |Python type            |Standard size |
 |------|-------------------|-----------------------|--------------|
@@ -79,8 +113,8 @@ This table is helpful for developers to quickly find byte-lengths
 |H     |unsigned short     |integer                |2             |
 |i     |int                |integer                |4             |
 |I     |unsigned int       |integer                |4             |
-|l     |long               |integer                |4 -not helpful|
-|L     |unsigned long      |integer                |4 -not helpful|
+|l     |long               |integer                |4 (not helpful)|
+|L     |unsigned long      |integer                |4 (not helpful)|
 |q     |long long          |integer                |8             |
 |Q     |unsigned long long |integer                |8             |
 |n     |ssize_t            |integer                |              |

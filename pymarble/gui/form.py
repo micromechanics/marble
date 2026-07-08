@@ -60,8 +60,8 @@ class Form(QDialog):
     #buttons below graph
     _, graphButtonL = widgetAndLayout('H', mainL)
     graphButtonL.addSpacing(40)
-    IconButton('fa.arrow-left',  self, ['startDown'], graphButtonL, 'reduce start point')
-    IconButton('fa.arrow-right', self, ['startUp'],   graphButtonL, 'increase start point')
+    IconButton('fa5s.arrow-left',  self, ['startDown'], graphButtonL, 'reduce start point')
+    IconButton('fa5s.arrow-right', self, ['startUp'],   graphButtonL, 'increase start point')
     graphButtonL.addSpacing(200)
     self.plotCB = QComboBox()
     plotTypes = ['plot numerical value', 'plot byte value', 'plot entropy','2D graph of numerical value',
@@ -76,8 +76,8 @@ class Form(QDialog):
     # plotComboBox.changeEvent()
     graphButtonL.addWidget(self.plotCB)
     graphButtonL.addSpacing(200)
-    IconButton('fa.arrow-left',  self, ['endDown'],   graphButtonL, 'reduce end point')
-    IconButton('fa.arrow-right', self, ['endUp'],     graphButtonL, 'increase end point')
+    IconButton('fa5s.arrow-left',  self, ['endDown'],   graphButtonL, 'reduce end point')
+    IconButton('fa5s.arrow-right', self, ['endUp'],     graphButtonL, 'increase end point')
     graphButtonL.addSpacing(40)
 
     #dimensions

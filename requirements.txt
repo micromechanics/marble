@@ -4,5 +4,5 @@ matplotlib
 pandas
 h5py
 aiohttp
-pyside6==6.2.4
+pyside6
 QtAwesome

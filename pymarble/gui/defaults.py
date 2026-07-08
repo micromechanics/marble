@@ -56,6 +56,14 @@ Contributors
 </ul>
 <br>
 The project was supported by HMC and FZJ in 2022 and 2021.
+<br><br>
+Additional shortcuts:<br>
+<ul>
+<li><kbd>F2</kbd> load tags</li>
+<li><kbd>F4</kbd> save tags</li>
+<li><kbd>F9</kbd> restart</li>
+<li><kbd>F10</kbd> repaint</li>
+</ul>
 """
 
 INFO_EXPORTED_FILE = """
