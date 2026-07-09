@@ -23,17 +23,13 @@ jobs=1
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
 #added by Steffen
-load-plugins=pylint.extensions.docparams
+load-plugins=pylint.extensions.docparams,pylint.extensions.no_self_use
 
 # Pickle collected data for later comparisons.
 persistent=yes
 
 # Specify a configuration file.
 #rcfile=
-
-# When enabled, pylint would attempt to guess common misconfiguration and emit
-# user-friendly hints instead of false-positive error messages
-suggestion-mode=yes
 
 # Allow loading of arbitrary C extensions. Extensions are imported into the
 # active Python interpreter and may run arbitrary code.
@@ -427,6 +423,7 @@ valid-metaclass-classmethod-first-arg=mcs
 
 # Maximum number of arguments for function / method
 max-args=15  #Steffen's change
+max-positional-arguments=15
 
 # Maximum number of attributes for a class (see R0902).
 max-attributes=35
@@ -496,4 +493,4 @@ known-third-party=enchant
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "Exception"
-overgeneral-exceptions=Exception
+overgeneral-exceptions=builtins.Exception

@@ -9,47 +9,49 @@ Guidance for autonomous coding agents in this repository.
   - GUI: `marbleGUI` -> `pymarble.gui.gui:main`
 - Tests live in `tests/`
 - Documentation lives in `docs/`
+- Use the repository `.venv/` for all local runs, tests, linting, and mypy. Prefer `.venv/bin/python -m ...` and `.venv/bin/pylint` over system tools.
 
 ## Build, Lint, and Test Commands
 ### Lint
 Primary (CI-like):
 ```bash
-pylint $(git ls-files 'pymarble/*')
+.venv/bin/pylint $(git ls-files 'pymarble/*')
 ```
 Quick local:
 ```bash
-pylint pymarble
+.venv/bin/pylint pymarble
 ```
 ### Type Checking
 ```bash
-mypy pymarble
+.venv/bin/python -m mypy pymarble
 ```
 ### Tests
+- `tests/` contains both Python tests and bash-based tests; if the user explicitly asks to check all tests, include both categories.
 Full suite:
 ```bash
-pytest tests
+.venv/bin/python -m pytest tests
 ```
 Coverage run (matches CI):
 ```bash
-python -m coverage run --source pymarble -m pytest tests
+.venv/bin/python -m coverage run --source pymarble -m pytest tests
 ```
 Coverage reports:
 ```bash
-coverage report -m
-coverage html
+.venv/bin/python -m coverage report -m
+.venv/bin/python -m coverage html
 ```
 ### Running a Single Test (important)
 Single file:
 ```bash
-pytest tests/test_section.py
+.venv/bin/python -m pytest tests/test_section.py
 ```
 Single test function:
 ```bash
-pytest tests/test_section.py::testSection
+.venv/bin/python -m pytest tests/test_section.py::testSection
 ```
 Name filter:
 ```bash
-pytest tests -k testSection
+.venv/bin/python -m pytest tests -k testSection
 ```
 ### Legacy End-to-End Script
 ```bash
@@ -58,11 +60,11 @@ bash tests/testBackend.sh
 - Writes generated artifacts under `tests/examples/`; uses external tool `punx`.
 ### Docs Build
 ```bash
-make -C docs html
+.venv/bin/make -C docs html
 ```
 ### Packaging Build
 ```bash
-pip wheel -w dist/ --no-deps .
+.venv/bin/python -m pip wheel -w dist/ --no-deps .
 ```
 ## Code Style Conventions
 Follow existing local style in touched files first, then static checks. Do minimal code changes!

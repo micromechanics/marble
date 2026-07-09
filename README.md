@@ -17,6 +17,15 @@
 - Volker Hofmann (IAS-9 and HMC, FZJ)
 - Fiona D'Mello (IAS-9 and HMC, FZJ)
 
+## Open Issues
+Default location for open issues: this section.
+
+1. High `pymarble/section.py:64-97` - `Section.setData()` raises `UnboundLocalError` for dict input.
+2. High `pymarble/fileUtil.py:24-38` - `findValue()` fails for zero-valued searches because it divides by the target value.
+3. High `setup.cfg:15`, `pymarble/cli.py:50`, `pymarble/file.py:15-16` - the declared Python 3.7 floor conflicts with runtime `list[str]` / `dict[str, ...]` annotations.
+4. Medium `pymarble/fileUtil.py:26-48` - `findValue()` returns `[]` in its default verbose mode, so callers do not get the matches back.
+5. Medium `pymarble/fileInputOutput.py:60-96`, `pymarble/section.py:108-116` - tag serialization is not escaped and breaks on `|` and XML metacharacters.
+
 ## Documentation
 ### Backend
 - Located in the `pymarble/` directory.

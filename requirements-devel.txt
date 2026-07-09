@@ -3,5 +3,6 @@ pytest
 pytest-cov
 pytest-qt
 coverage
+mypy
 sphinx
 sphinx_rtd_theme
