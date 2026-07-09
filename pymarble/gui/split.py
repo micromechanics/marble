@@ -75,7 +75,12 @@ class Split(QDialog):
 
 
   def save(self, btn:IconButton) -> None:
-    """ save selectedList to configuration and exit """
+    """
+    save selectedList to configuration and exit
+
+    Args:
+      btn: button that triggered the save action
+    """
     if btn.text().endswith('Cancel'):
       self.reject()
     elif btn.text().endswith('OK') and self.comm.binaryFile is not None:

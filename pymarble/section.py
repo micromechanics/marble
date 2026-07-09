@@ -36,6 +36,22 @@ class Section:
   def __init__(self, length:int=0, dType:str='', key:str='', unit:str='', value:str='', link:str='',
                dClass:str='', count:list[int]=[], shape:list[int]=[], prob:int=0, entropy:float=-1.0,
                important:bool=False, data:Union[str,dict[str,str]]=''):
+    """
+    Args:
+      length: number of items in the section
+      dType: struct data type code
+      key: section key or label
+      unit: physical unit
+      value: textual value or description
+      link: terminology or documentation link
+      dClass: data class such as metadata, primary, count, or empty
+      count: offsets of count anchors
+      shape: data shape
+      prob: identification probability
+      entropy: entropy estimate
+      important: whether the section is marked important
+      data: serialized section data to parse
+    """
     # structural properties
     self.dType     = dType
     self.dClass    = dClass
@@ -111,6 +127,8 @@ class Section:
     - use |-system for easy to reading
     - complete data
     - is the text label in the .tags file
+    Returns:
+      serialized section text
     '''
     strList = [str(i) for i in self.toList()]
     return '|'.join( strList )
@@ -120,6 +138,8 @@ class Section:
     '''
     Return dictionary for csv format for header of .py file
     - used for save/load of structure information
+    Returns:
+      section values keyed by output column name
     '''
     return {i:getattr(self,i) for i in SECTION_OUTPUT_ORDER}
 
@@ -129,6 +149,8 @@ class Section:
     Return list of all arguments
     - used for printing of table
     - clean output before printing / saving in .tags file
+    Returns:
+      section values in output order
     '''
     localCopy = self.__dict__.copy()
     localCopy['entropy'] = f"{localCopy['entropy']:.2f}"     #Prevent issues with diff in tags file
@@ -137,7 +159,7 @@ class Section:
     return [localCopy[i] for i in SECTION_OUTPUT_ORDER]
 
 
-  def toPY(self, offset:int, lastOffset:int, variable:str='', binaryFile:Any=None, hdf:str | None=None) \
+  def toPY(self, offset:int, lastOffset:int, variable:str='', binaryFile:Any=None, hdf:str='fOut') \
     -> str | None:
     '''
     Return one-line string in python format for body of .py file
@@ -149,9 +171,9 @@ class Section:
       variable: variable used to this section
       binaryFile: to get list of content from calling entity
       hdf: hdf5Branch to save into
+    Returns:
+      Python code line or None if no output should be generated for this section
     '''
-    if hdf is None:
-      hdf = 'fOut'
     if self.dType in ['b','B']:
       return None
     relPos = offset - lastOffset
@@ -200,6 +222,8 @@ class Section:
   def byteSize(self) -> int:
     '''
     return the byte size of this item
+    Returns:
+      byte size or -1 for an empty section
     '''
     if self.dType=='':
       return -1
@@ -209,6 +233,8 @@ class Section:
   def size(self) -> str:
     '''
     return the size string: e.g. 600d
+    Returns:
+      struct size string
     '''
     return str(self.length)+self.dType
 
@@ -219,6 +245,8 @@ class Section:
     Python header including all python function since
     - they depend on which properties in the section exist (e.g. links)
     - these functions are called by the output of toPY()
+    Returns:
+      Python source header for generated converter files
     '''
     return """
 

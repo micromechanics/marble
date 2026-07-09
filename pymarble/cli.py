@@ -50,6 +50,9 @@ def printHelp() -> None:
 def main(argv:list[str]) -> None:
   """
   main function
+
+  Args:
+    argv: command-line argument list
   """
   warnings.filterwarnings("ignore")
   # logFile = os.path.splitext(argv[1])[0]+'_rff.log'
@@ -118,7 +121,7 @@ def main(argv:list[str]) -> None:
         elif command=='op':
           fBIN.savePython()                                       # type: ignore[misc]
         elif command.startswith('ip'):
-          pyFile = None if len(command.split())<3 else command.split()[-1]
+          pyFile = '' if len(command.split())<3 else command.split()[-1]
           fBIN.loadPython(pyFile)                                 # type: ignore[misc]
         elif command=='x fill':
           fBIN.fill()                                             # type: ignore[misc]

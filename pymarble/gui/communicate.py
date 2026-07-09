@@ -7,6 +7,12 @@ from ..file import BinaryFile
 class Communicate(QObject):
   """ Communication class that sends signals between widgets, incl. binaryFile"""
   def __init__(self, binaryFile:BinaryFile | None, configuration:dict[str,Any], progress:QProgressBar):
+    """
+    Args:
+      binaryFile: current binary file, or None before a file is opened
+      configuration: GUI and processing configuration
+      progress: progress bar for long-running operations
+    """
     super().__init__()
     self.binaryFile = binaryFile
     self.configuration = configuration

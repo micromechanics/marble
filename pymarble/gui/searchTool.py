@@ -44,7 +44,11 @@ class SearchTool(QDialog):
 
 
   def execute(self, _:list[str]) -> None:
-    """ Execute command
+    """
+    Execute command
+
+    Args:
+      _: command emitted by the search button, unused
     """
     if self.comm.binaryFile is None:
       return
@@ -71,7 +75,12 @@ class SearchTool(QDialog):
 
 
   def save(self, btn:TextButton) -> None:
-    """ save selectedList to configuration and exit """
+    """
+    save selectedList to configuration and exit
+
+    Args:
+      btn: button that triggered the save action
+    """
     if btn.text().endswith('Cancel'):
       self.reject()
     elif btn.text().startswith('Mark') and self.comm.binaryFile is not None:

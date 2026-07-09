@@ -182,6 +182,9 @@ class TerminologyLookup(QDialog):
   def wikipediaSearch(self, response:str) -> None:
     """
     Search content we get from Wikipedia
+
+    Args:
+      response: JSON response text from Wikipedia
     """
     for page in json.loads(response)["pages"]:
       if page['description'] is not None and page['description'] != "Topics referred to by the same term":
@@ -196,6 +199,9 @@ class TerminologyLookup(QDialog):
   def wikidataSearch(self, response:str) -> None:
     """
     Search content we get from Wikidata
+
+    Args:
+      response: JSON response text from Wikidata
     """
     for result in json.loads(response)["search"]:
       a = result['display']
@@ -212,6 +218,9 @@ class TerminologyLookup(QDialog):
     """
     Search content we get from terminology server of OLS
     - some Ontologies do not provide a description in the json
+
+    Args:
+      response: JSON response text from OLS
     """
     for result in json.loads(response)["response"]['docs']:
       if 'description' in result and result['description'] is not None:
@@ -227,6 +236,9 @@ class TerminologyLookup(QDialog):
     """
     Search content we get from terminology server of TIB
     - some Ontologies do not provide a description in the json, this is handled by the devs of tib
+
+    Args:
+      response: JSON response text from TIB
     """
     #ontologies that are both found in ols and tib:
     duplicateOntos = ["afo", "bco", "bto", "chiro", "chmo", "duo", "edam", "efo", "fix", "hp", "iao", "mod", \

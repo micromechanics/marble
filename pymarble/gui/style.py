@@ -21,7 +21,12 @@ shortCuts = {'measurement':'m', 'sample':'s', 'procedure':'p', 'instrument':'i',
 class ExecutableWidget(Protocol):
   """ Widget interface used by buttons and actions. """
   def execute(self, command:list[str]) -> None:
-    """ Execute a command emitted by a button or action. """
+    """
+    Execute a command emitted by a button or action.
+
+    Args:
+      command: command parts emitted by the UI action
+    """
 
 class TextButton(QPushButton):
   """ Button that has only text"""
@@ -38,6 +43,7 @@ class TextButton(QPushButton):
       checkable (bool): can the button change its background color
       style (str): css style
       hide (bool): hidden or shown initially
+      iconName: optional qtawesome icon name
     """
     super().__init__()
     self.setText(label)
@@ -92,7 +98,7 @@ class IconButton(QPushButton):
 class Action(QAction):
   """ QAction and assign function to menu"""
   def __init__(self, label:str, widget:Any, command:list[str],
-               menu:QMenu, shortcut:str | None=None, icon:str=''):
+               menu:QMenu, shortcut:str='', icon:str=''):
     """
     Args:
       label (str): label printed on submenu
@@ -108,7 +114,7 @@ class Action(QAction):
     self.triggered.connect(lambda : widget.execute(command))
     if icon:
       self.setIcon(qta.icon(icon, scale_factor=1))
-    if shortcut is not None:
+    if shortcut:
       self.setShortcut(QKeySequence(shortcut))
     menu.addAction(self)
 
@@ -119,7 +125,7 @@ class Image():
     """
     Args:
       data (str): image data in byte64-encoding or svg-encoding
-      layout (QLayout): to be added to this layout
+      layout (QLayout): layout to receive the image widget, or None
       width (int): width of image, dominant if both are given
       height (int): height of image
       anyDimension (int): maximum size in any direction
@@ -254,6 +260,8 @@ def widgetAndLayout(direction:str='V', parentLayout:QLayout | None=None, spacing
     top (str): padding on top
     right (str): padding on right
     bottom (str): padding on bottom
+  Returns:
+    widget and its layout
   """
   widget = QWidget()
   layout:Any
@@ -278,6 +286,8 @@ def hexToColor(code:str) -> QColor:
 
   Args:
     code (str): hex string
+  Returns:
+    QColor represented by the hex string
   """
   codeHex = code.replace("#", "")
   rgb = tuple(int(codeHex[i:i+2], 16) for i in (0, 2, 4))

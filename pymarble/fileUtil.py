@@ -357,6 +357,8 @@ class Util():
     Args:
         aBytes: byte-string
         spaceEvery: white-space for easy reading
+    Returns:
+        formatted byte string
     '''
     aString = aBytes.hex().upper()
     if spaceEvery>0:
@@ -421,6 +423,8 @@ class Util():
 
     Args:
         number: integer to convert to hex
+    Returns:
+        formatted decimal or hexadecimal offset
     '''
     if isinstance(number, str):
       number = int(number.replace(':',''), 0)

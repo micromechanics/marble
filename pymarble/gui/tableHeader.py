@@ -43,7 +43,12 @@ class TableHeader(QDialog):
 
 
   def execute(self, command:list[str]) -> None:
-    """ Event if user clicks button in the center """
+    """
+    Event if user clicks button in the center
+
+    Args:
+      command: action command emitted by the clicked button
+    """
     selectedLeft   = [i.text() for i in self.choicesW.selectedItems()]
     selectedRight  = [i.text() for i in self.selectW.selectedItems()]
     oldIndex, newIndex = -1, -1
@@ -72,7 +77,12 @@ class TableHeader(QDialog):
 
 
   def save(self, btn:IconButton) -> None:
-    """ save selectedList to configuration and exit """
+    """
+    save selectedList to configuration and exit
+
+    Args:
+      btn: button that triggered the save action
+    """
     if btn.text().endswith('Cancel'):
       self.reject()
     elif btn.text().endswith('Save'):

@@ -25,6 +25,11 @@ os.environ['QT_API'] = 'pyside6'
 class MainWindow(QMainWindow):
   """ Graphical user interface includes all widgets """
   def __init__(self, configuration:dict[str,Any], fileName:str='') -> None:
+    """
+    Args:
+      configuration: GUI and processing configuration
+      fileName: optional file to open on startup
+    """
     #global setting
     super().__init__()
     self.setWindowTitle('MARBLE')

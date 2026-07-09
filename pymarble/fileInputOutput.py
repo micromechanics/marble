@@ -236,6 +236,9 @@ class InputOutput():
   def loadPython(self:FileProtocol, pyFile:str='') -> None:
     '''
     load python file and parse its header information
+
+    Args:
+      pyFile: Python converter file to read; default uses the current file basename
     '''
     compare = True
     if not pyFile:
@@ -320,6 +323,8 @@ class InputOutput():
         start: starting location
         plotMode: plot as 1d time-series (1) or as 2d image (2)
         show (bool): show on screen; false-return axis
+    Returns:
+        Matplotlib axis when plotting succeeds, otherwise None
     '''
     if start not in self.content:
       print("**ERROR: cannot print at start",start,'. I exit')
@@ -339,6 +344,13 @@ class InputOutput():
       ax1 = plt.subplot(111)
       ax1.plot(valuesX, valuesY, '-o')
       def toHex(num:str, _:int) -> str:
+        """
+        Args:
+          num: tick value as string
+          _: tick position, unused
+        Returns:
+          hexadecimal tick label
+        """
         return f'0x{int(num)}'
       if self.printMode=='hex':
         ax1.get_xaxis().set_major_formatter(ticker.FuncFormatter(toHex))
@@ -369,6 +381,8 @@ class InputOutput():
     Header written at top of python file
     - includes only the python code and not the predefined functions
     - uses metadata to infuse python header and hdf5 metadata
+    Returns:
+      Python source header for generated converter files
     '''
     return """
 '''

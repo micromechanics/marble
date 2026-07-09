@@ -14,6 +14,10 @@ from .split import Split
 class Table(QWidget):
   """ widget that shows the table of the items """
   def __init__(self, comm:Communicate):
+    """
+    Args:
+      comm: communication channel shared between GUI widgets
+    """
     super().__init__()
     self.comm = comm
     comm.changeTable.connect(self.change)
@@ -108,7 +112,14 @@ class Table(QWidget):
 
   @Slot(str, str, str)
   def toggle(self, f5text:str, f6text:str, f7text:str) -> None:
-    """ toggle showing sections of data """
+    """
+    toggle showing sections of data
+
+    Args:
+      f5text: binary-section filter state
+      f6text: data-class filter state
+      f7text: important-section filter state
+    """
     self.toggleState = {'F5':f5text, 'F6':f6text, 'F7':f7text}
     self.change()
     return
