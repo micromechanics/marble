@@ -343,11 +343,10 @@ class InputOutput():
     if plotMode==1:
       ax1 = plt.subplot(111)
       ax1.plot(valuesX, valuesY, '-o')
-      def toHex(num:str, _:int) -> str:
+      def toHex(num:str, _pos:int) -> str:
         """
         Args:
           num: tick value as string
-          _: tick position, unused
         Returns:
           hexadecimal tick label
         """

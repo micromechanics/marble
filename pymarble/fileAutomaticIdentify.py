@@ -23,7 +23,7 @@ class Automatic():
     The default order is good for small time-series data-files
 
     Args:
-      methodOrder of methods: method order to be used.
+      methodOrder: method order to be used.
       start: section start to process, or -1 for the whole file
       getMethods: return the available automatic methods instead of only processing
       progress: optional progress bar updated while methods run
