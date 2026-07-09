@@ -1,7 +1,7 @@
 """Section of data"""
 from __future__ import annotations
 import logging, struct
-from typing import Union, Optional, Any
+from typing import Union, Any
 import numpy as np
 
 # length: length of section, responsible for size, byteSize of section
@@ -137,8 +137,8 @@ class Section:
     return [localCopy[i] for i in SECTION_OUTPUT_ORDER]
 
 
-  def toPY(self, offset:int, lastOffset:int, variable:str='', binaryFile:Any=None, hdf:Optional[str]=None) \
-    -> Optional[str]:
+  def toPY(self, offset:int, lastOffset:int, variable:str='', binaryFile:Any=None, hdf:str | None=None) \
+    -> str | None:
     '''
     Return one-line string in python format for body of .py file
     - not used for save/load of structure information

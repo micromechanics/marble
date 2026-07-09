@@ -37,8 +37,8 @@ class SearchTool(QDialog):
     mainL.addRow(QLabel('Result'),         self.searchResult)
 
     #final button box
-    buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel)
-    buttonBox.addButton("Mark in list", QDialogButtonBox.AcceptRole)
+    buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Cancel)
+    buttonBox.addButton("Mark in list", QDialogButtonBox.ButtonRole.AcceptRole)
     buttonBox.clicked.connect(self.save)
     mainL.addWidget(buttonBox)
 

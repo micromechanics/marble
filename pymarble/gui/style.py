@@ -1,6 +1,6 @@
 """ all styling of buttons and other general widgets, some defined colors... """
 import logging
-from typing import Callable, Optional
+from typing import Any, Callable, Protocol
 from PySide6.QtWidgets import QPushButton, QLabel, QSizePolicy, QMessageBox, QLayout, QWidget, QMenu, \
                               QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout # pylint: disable=no-name-in-module
 from PySide6.QtGui import QImage, QPixmap, QAction, QKeySequence, QMouseEvent, QColor    # pylint: disable=no-name-in-module
@@ -18,11 +18,15 @@ iconsDocTypes = {'Measurements':'fa5s.thermometer-half',
 
 shortCuts = {'measurement':'m', 'sample':'s', 'procedure':'p', 'instrument':'i', 'x0':'space'}
 
+class ExecutableWidget(Protocol):
+  """ Widget interface used by buttons and actions. """
+  def execute(self, command:list[str]) -> None:
+    """ Execute a command emitted by a button or action. """
 
 class TextButton(QPushButton):
   """ Button that has only text"""
-  def __init__(self, label:str, widget:Optional[QWidget], command:list[str]=[],
-               layout:Optional[QLayout]=None, tooltip:str='', checkable:bool=False, style:str='',
+  def __init__(self, label:str, widget:ExecutableWidget | None, command:list[str]=[],
+               layout:QLayout | None=None, tooltip:str='', checkable:bool=False, style:str='',
                hide:bool=False, iconName:str=''):
     """
     Args:
@@ -56,8 +60,8 @@ class TextButton(QPushButton):
 
 class IconButton(QPushButton):
   """ Button that has only an icon"""
-  def __init__(self, iconName:str, widget:QWidget, command:list[str]=[],
-               layout:Optional[QLayout]=None, tooltip:str='', style:str='', hide:bool=False):
+  def __init__(self, iconName:str, widget:ExecutableWidget, command:list[str]=[],
+               layout:QLayout | None=None, tooltip:str='', style:str='', hide:bool=False):
     """
     Args:
       iconName (str): icon to show on button
@@ -87,8 +91,8 @@ class IconButton(QPushButton):
 
 class Action(QAction):
   """ QAction and assign function to menu"""
-  def __init__(self, label:str, widget:QWidget, command:list[str],
-               menu:QMenu, shortcut:Optional[str]=None, icon:str=''):
+  def __init__(self, label:str, widget:Any, command:list[str],
+               menu:QMenu, shortcut:str | None=None, icon:str=''):
     """
     Args:
       label (str): label printed on submenu
@@ -111,7 +115,7 @@ class Action(QAction):
 
 class Image():
   """ Image widget depending on type of data """
-  def __init__(self, data:str, layout:Optional[QLayout], width:int=-1, height:int=-1, anyDimension:int=-1):
+  def __init__(self, data:str, layout:QLayout | None, width:int=-1, height:int=-1, anyDimension:int=-1):
     """
     Args:
       data (str): image data in byte64-encoding or svg-encoding
@@ -122,11 +126,11 @@ class Image():
     """
     if data.startswith('data:image/'): #jpg or png image
       byteArr = QByteArray.fromBase64(bytearray(data[22:] if data[21]==',' else data[23:], encoding='utf-8'))
-      imageW = QImage()
+      image = QImage()
       imageType = data[11:15].upper()
       imageType = imageType[:-1] if imageType.endswith(';') else imageType
-      imageW.loadFromData(byteArr, format=imageType) # type: ignore
-      pixmap = QPixmap.fromImage(imageW)
+      image.loadFromData(byteArr, format=imageType) # type: ignore
+      pixmap = QPixmap.fromImage(image)
       if height>0:
         pixmap = pixmap.scaledToHeight(height)
       if width>0:
@@ -138,27 +142,27 @@ class Image():
           pixmap = pixmap.scaledToWidth(anyDimension)
       label = QLabel()
       label.setPixmap(pixmap)
-      label.setAlignment(Qt.AlignCenter) # type: ignore
+      label.setAlignment(Qt.AlignmentFlag.AlignCenter)
       if layout is not None:
-        layout.addWidget(label, alignment=Qt.AlignHCenter)  # type: ignore
+        layout.addWidget(label, alignment=Qt.AlignmentFlag.AlignHCenter)  # type: ignore
     elif data.startswith('<?xml'): #svg image
-      imageW = QSvgWidget()
-      policy = imageW.sizePolicy()
-      policy.setHorizontalPolicy(QSizePolicy.Fixed)
-      policy.setVerticalPolicy(QSizePolicy.Fixed)
-      imageW.setSizePolicy(policy)
-      imageW.renderer().load(bytearray(data, encoding='utf-8'))
+      svg = QSvgWidget()
+      policy = svg.sizePolicy()
+      policy.setHorizontalPolicy(QSizePolicy.Policy.Fixed)
+      policy.setVerticalPolicy(QSizePolicy.Policy.Fixed)
+      svg.setSizePolicy(policy)
+      svg.renderer().load(bytearray(data, encoding='utf-8'))
       if height>0:
-        imageW.setMaximumSize(int(float(imageW.width())/float(imageW.height())*height) ,height)
+        svg.setMaximumSize(int(float(svg.width())/float(svg.height())*height) ,height)
       if width>0:
-        imageW.setMaximumSize(width, int(float(imageW.height())/float(imageW.width())*width))
+        svg.setMaximumSize(width, int(float(svg.height())/float(svg.width())*width))
       if anyDimension>0:
-        if imageW.height()>imageW.width():
-          imageW.setMaximumSize(int(float(imageW.width())/float(imageW.height())*anyDimension) ,anyDimension)
+        if svg.height()>svg.width():
+          svg.setMaximumSize(int(float(svg.width())/float(svg.height())*anyDimension) ,anyDimension)
         else:
-          imageW.setMaximumSize(anyDimension, int(float(imageW.height())/float(imageW.width())*anyDimension))
+          svg.setMaximumSize(anyDimension, int(float(svg.height())/float(svg.width())*anyDimension))
       if layout is not None:
-        layout.addWidget(imageW, alignment=Qt.AlignHCenter) # type: ignore
+        layout.addWidget(svg, alignment=Qt.AlignmentFlag.AlignHCenter) # type: ignore
     elif len(data)>2:
       logging.warning('WidgetProjectLeaf:What is this image |%s|', data[:50])
     return
@@ -166,8 +170,8 @@ class Image():
 
 class Label(QLabel):
   """ Label widget: headline, ... """
-  def __init__(self, text:str='', size:str='', layout:Optional[QLayout]=None,
-               function:Optional[Callable[[str, str],None]]=None, docID:str='', tooltip:str=''):
+  def __init__(self, text:str='', size:str='', layout:QLayout | None=None,
+               function:Callable[[str, str],None] | None=None, docID:str='', tooltip:str=''):
     """
     Args:
       text (str): text on label
@@ -225,8 +229,8 @@ def showMessage(parent:QWidget, title:str, text:str, icon:str='', style:str='') 
   return
 
 
-def widgetAndLayout(direction:str='V', parentLayout:Optional[QLayout]=None, spacing:str='0', left:str='0', \
-                    top:str='0', right:str='0', bottom:str='0') -> tuple[QWidget, QLayout]:
+def widgetAndLayout(direction:str='V', parentLayout:QLayout | None=None, spacing:str='0', left:str='0', \
+                    top:str='0', right:str='0', bottom:str='0') -> tuple[QWidget, Any]:
   """
   Convenient function for widget and a boxLayout
 
@@ -252,6 +256,7 @@ def widgetAndLayout(direction:str='V', parentLayout:Optional[QLayout]=None, spac
     bottom (str): padding on bottom
   """
   widget = QWidget()
+  layout:Any
   if direction=='V':
     layout = QVBoxLayout(widget)
   elif direction=='H':

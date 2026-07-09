@@ -1,5 +1,4 @@
 """ Editor to identify periodicity: multiple tests in one file """
-from typing import Optional
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -95,7 +94,7 @@ class Periodicity(QDialog):
     mainBarL.addWidget(self.lastLE, stretch=1)                        # type: ignore[call-arg]
 
     #final button box
-    self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel | QDialogButtonBox.Help)
+    self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel | QDialogButtonBox.StandardButton.Help)
     self.buttonBox.clicked.connect(self.save)
     mainL.addWidget(self.buttonBox)
     self.skipEvery = self.comm.binaryFile.optEntropy['skipEvery']
@@ -142,7 +141,7 @@ class Periodicity(QDialog):
         startD = 0
       self.comm.binaryFile.file.seek(startD)
       data = self.comm.binaryFile.file.read(endD-startD)
-      data = preData+data if len(preData)>1 else data
+      data = bytes(preData)+data if len(preData)>1 else data
       try:
         self.graph.axes.plot(xValues, list(data), 'o-', label='default')
       except Exception:  #do not plot if input numbers not correct
@@ -224,7 +223,7 @@ class Periodicity(QDialog):
 
 class MplCanvas(FigureCanvas):
   """ Canvas to draw upon """
-  def __init__(self, _:Optional[QWidget]=None, width:float=5, height:float=4, dpi:int=100):
+  def __init__(self, _:QWidget | None=None, width:float=5, height:float=4, dpi:int=100):
     """
     Args:
       width (float): width in inch

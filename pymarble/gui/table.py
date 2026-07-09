@@ -1,10 +1,10 @@
 """ Main table in app """
 import logging
-from typing import Optional, Any
+from typing import Any
 import numpy as np
 from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
-from PySide6.QtGui import QFont, QResizeEvent                   # pylint: disable=no-name-in-module
+from PySide6.QtGui import QContextMenuEvent, QFont, QResizeEvent # pylint: disable=no-name-in-module
 from .communicate import Communicate
 from .style import widgetAndLayout, Action, hexToColor
 from .defaults import dClass2Color, translateDtypeShort
@@ -31,7 +31,7 @@ class Table(QWidget):
     mainL.addWidget(self.table)
     self.setLayout(mainL)
     self.change()  #paint
-    self.methods:Optional[dict[str,str]] = None
+    self.methods:dict[str,str] | None = None
 
 
   @Slot()
@@ -59,7 +59,9 @@ class Table(QWidget):
           self.table.setColumnWidth(idx, defaultWidth)
     for idx,title in enumerate(self.tableHeaders):
       if title in ['start','length','count','shape','entropy','link','dType']:
-        self.table.horizontalHeaderItem(idx).setBackground(hexToColor('#d8e0f4'))
+        item = self.table.horizontalHeaderItem(idx)
+        if item is not None:
+          item.setBackground(hexToColor('#d8e0f4'))
     self.table.setRowCount(len(content))
     self.rowIDs  = []
     # use content to build models
@@ -127,7 +129,7 @@ class Table(QWidget):
       colName  = self.tableHeaders[item.column()]
       if colName not in ['unit','key','value'] or self.comm.binaryFile is None:
         return
-      setattr(self.comm.binaryFile.content[start], colName, item.data(Qt.EditRole))
+      setattr(self.comm.binaryFile.content[start], colName, item.data(Qt.ItemDataRole.EditRole))
       return
     start = self.rowIDs[self.table.currentRow()]
     if self.comm.binaryFile is None:
@@ -152,7 +154,7 @@ class Table(QWidget):
     return
 
 
-  def contextMenuEvent(self, point:QPoint) -> None:
+  def contextMenuEvent(self, point:QContextMenuEvent) -> None:
     """
     assemble context menu
 
@@ -204,7 +206,7 @@ class Table(QWidget):
       mask = orderArray>=content[start].prob
       minValue = orderArray[mask].min() if len(orderArray[mask])>0 else 49
       idxArray = np.argmin(np.abs(orderArray-minValue))
-      content[start].prob = orderArray[idxArray+1]
+      content[start].prob = int(orderArray[idxArray+1])
     self.change()  #repaint
     return
 

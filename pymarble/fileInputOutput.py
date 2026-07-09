@@ -1,6 +1,5 @@
 """input and output to files; plot to screen"""
 import os, io, struct, json, logging, html
-from typing import Optional
 import xml.etree.ElementTree as ET
 import numpy as np
 import pandas as pd
@@ -131,8 +130,13 @@ class InputOutput():
     # other data: that of list
     filename = root.find('filename')
     for tag in list(filename):   # type: ignore[arg-type]
-      start = int(tag.find('start_offset').text)
-      self.content[start] = Section(data=tag.find('tag_text').text)
+      startElement = tag.find('start_offset')
+      textElement = tag.find('tag_text')
+      if startElement is None or startElement.text is None or textElement is None or textElement.text is None:
+        logging.error('could not loadTags tag data')
+        continue
+      start = int(startElement.text)
+      self.content[start] = Section(data=textElement.text)
     return
 
 
@@ -229,12 +233,12 @@ class InputOutput():
     return
 
 
-  def loadPython(self:FileProtocol, pyFile:Optional[str]=None) -> None:
+  def loadPython(self:FileProtocol, pyFile:str='') -> None:
     '''
     load python file and parse its header information
     '''
     compare = True
-    if pyFile is None:
+    if not pyFile:
       pyFile = os.path.splitext(self.fileName)[0]+'.py'
       compare = False
 
@@ -308,7 +312,7 @@ class InputOutput():
     return
 
 
-  def plot(self:FileProtocol, start:int, plotMode:int=1, show:bool=True) -> Optional[Axes]:
+  def plot(self:FileProtocol, start:int, plotMode:int=1, show:bool=True) -> Axes | None:
     '''
     Plot as graph values found at location i
 

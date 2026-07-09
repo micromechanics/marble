@@ -1,6 +1,5 @@
 """ Editor to identify data saved in rows """
 import struct, logging
-from typing import Optional
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -89,10 +88,10 @@ class RowTool(QDialog):
 
     #custom rows: initial fill
     _, self.propertyRowsL  = widgetAndLayout('V', mainL)
-    self.keyWs:list[QWidget]          = []
-    self.unitWs:list[QWidget]         = []
-    self.linkWs:list[QWidget]         = []
-    self.plotWs:list[QWidget]         = []
+    self.keyWs:list[QLineEdit]        = []
+    self.unitWs:list[QLineEdit]       = []
+    self.linkWs:list[QLineEdit]       = []
+    self.plotWs:list[QCheckBox]       = []
     self.propertyRowsWs:list[QWidget] = []
     #   use existing data and fill
     rowFormatMeta = self.comm.binaryFile.rowFormatMeta
@@ -102,7 +101,7 @@ class RowTool(QDialog):
     self.numberW.setValue(numRows)
 
     #final button box
-    buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+    buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
     buttonBox.clicked.connect(self.save)
     mainL.addWidget(buttonBox)
     self.refresh()
@@ -236,7 +235,7 @@ class RowTool(QDialog):
 
 class MplCanvas(FigureCanvas):
   """ Canvas to draw upon """
-  def __init__(self, _:Optional[QWidget]=None, width:float=5, height:float=4, dpi:int=100):
+  def __init__(self, _:QWidget | None=None, width:float=5, height:float=4, dpi:int=100):
     """
     Args:
       width (float): width in inch

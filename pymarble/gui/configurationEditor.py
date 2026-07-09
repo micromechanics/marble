@@ -38,7 +38,7 @@ class ConfigurationEditor(QDialog):
       groupBoxW.setLayout(groupBoxL)
       mainL.addWidget(groupBoxW)
     #final button box
-    buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+    buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
     buttonBox.clicked.connect(self.save)
     mainL.addWidget(buttonBox)
 

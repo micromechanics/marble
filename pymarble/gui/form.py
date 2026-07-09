@@ -1,6 +1,6 @@
 """ Editor to change metadata of binary file """
 import struct, logging
-from typing import Optional
+from typing import Any
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -29,6 +29,7 @@ class Form(QDialog):
     if self.comm.binaryFile is None:
       return
     self.colorbarPresent = False
+    self.valuesY:list[Any] = []
     #definitions: no self.length etc. since content of textfields only truth
     section  = self.comm.binaryFile.content[start]
     self.lengthInitial = int(section.length)
@@ -196,7 +197,7 @@ class Form(QDialog):
       self.entropyW.setDisabled(True)
 
     #final button box
-    buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+    buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
     buttonBox.clicked.connect(self.save)
     mainL.addWidget(buttonBox)
     self.refresh()
@@ -233,7 +234,7 @@ class Form(QDialog):
     # use the values
     self.startW.setSingleStep(byteSize)
     self.comm.binaryFile.file.seek(startAll)
-    dataAll = self.comm.binaryFile.file.read(byteSizeAll)
+    dataAll:bytes | bytearray = self.comm.binaryFile.file.read(byteSizeAll)
     if len(preData)>1:
       dataAll = preData + dataAll[:-len(preData)]
     if len(dataAll)<byteSizeAll:
@@ -266,7 +267,7 @@ class Form(QDialog):
       for startI in valuesX:
         _, counts = np.unique(dataBin[startI:startI+blockSize], return_counts=True)
         valueI    = np.sum(-counts/blockSize*np.log2(counts/blockSize))
-        self.valuesY.append(valueI)
+        self.valuesY.append(float(valueI))
       labelY  = 'entropy'
       limitX  = (length-blockSize)*byteSize
       limitY  = (0.0, 7.8)
@@ -326,7 +327,7 @@ class Form(QDialog):
         text += ' '+' '.join([f'<font color="#888888">{i:{style1}}</font>' for i in self.valuesY[idxEnd:]])
         self.textEditW.setHtml(text)
       elif self.plotCB.currentText().endswith('byte value'):
-        textArray = self.comm.binaryFile.byteToString(dataAll, 1).split(' ')
+        textArray = self.comm.binaryFile.byteToString(bytes(dataAll), 1).split(' ')
         textArray = [f'<font color="#888888">{i}</font>' for i in textArray[:self.lead]]+ \
                     [f'<b>{i}</b>'                       for i in textArray[self.lead:-self.lead]]+ \
                     [f'<font color="#888888">{i}</font>' for i in textArray[-self.lead:]]
@@ -452,7 +453,7 @@ class Form(QDialog):
 
 class MplCanvas(FigureCanvas):
   """ Canvas to draw upon """
-  def __init__(self, _:Optional[QWidget]=None, width:float=5, height:float=4, dpi:int=100):
+  def __init__(self, _:QWidget | None=None, width:float=5, height:float=4, dpi:int=100):
     """
     Args:
       width (float): width in inch

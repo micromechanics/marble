@@ -36,7 +36,7 @@ class Util():
       data[mask] = np.abs((data[mask]-value)/value)     #relative difference
       data[~mask] = 1.
       found = np.where(data<self.optFind['maxError'])[0]       #threshold
-      output = [self.pretty(i) for i in offsetI+offset+found*byteSize] #output
+      output = [self.pretty(int(i)) for i in offsetI+offset+found*byteSize] #output
       if verbose:
         for idx, offsetJ in enumerate(output):
           print(f'{offsetJ}  found {value} with error {data[found][idx]}')
@@ -329,9 +329,7 @@ class Util():
                                          dType=dType, prob=100, dClass='count', important=True)
           createdNew = True
           break
-    if anchor is None:
-      return -1, False
-    return anchor, createdNew
+    return (-1, False) if anchor is None else (anchor, createdNew)
 
 
   def verify(self:FileProtocol) -> None:
@@ -432,6 +430,6 @@ class Util():
     aString = hex(number)[2:]
     sRef = hex(self.fileLength)[2:]
     aString = '0'*(len(sRef)-len(aString)) + aString
-    aList = [aString[max(i-4,0):i] for i in list(np.arange(len(aString),0,-4))]
+    aList = [aString[max(i-4,0):i] for i in range(len(aString),0,-4)]
     aList.reverse()
     return '0x'+':'.join(aList)

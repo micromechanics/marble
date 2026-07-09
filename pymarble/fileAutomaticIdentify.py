@@ -1,16 +1,16 @@
 """All functions that identify content in binary file automatically"""
 import math, struct, re, time, logging
-from typing import Optional, Union
+from typing import Union
 import xml.etree.ElementTree as ET
 import numpy as np
-from PySide6.QtWidgets import QWidget                            # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QProgressBar                       # pylint: disable=no-name-in-module
 from .section import Section
 from .fileClass import FileProtocol
 
 class Automatic():
   """ Mixin that includes all functions that identify sections """
   def automatic(self:FileProtocol, methodOrder:str='x_z_p_a', start:int=-1, getMethods:bool=False,
-                progress:Optional[QWidget]=None) -> Optional[dict[str,str]]:
+                progress:QProgressBar | None=None) -> dict[str,str] | None:
     '''
     Wrapper that calls the different methods. This is generally the first step
 
@@ -353,7 +353,7 @@ class Automatic():
     Return:
       entropy
     '''
-    results = []
+    results:list[float] = []
     blockSize = self.optEntropy['blockSize']
     if start in self.content:
       self.file.seek(start)
@@ -369,14 +369,14 @@ class Automatic():
     startPoints = np.arange(0,len(data)-blockSize,skipEvery)
     for startI in startPoints:
       _, counts = np.unique(data[startI:startI+blockSize], return_counts=True)
-      counts    = counts/blockSize
-      yValue    = np.sum(-counts*np.log2(counts))
-      results.append(yValue)
+      countsNorm = counts/blockSize
+      yValue    = np.sum(-countsNorm*np.log2(countsNorm))
+      results.append(float(yValue))
     if start in self.content:
-      self.content[start].entropy = np.average(results)
+      self.content[start].entropy = float(np.average(results))
     elif self.verbose>0:
       print('Average entropy:', np.round(np.average(results),4))
-    return np.average(results) if average else results
+    return float(np.average(results)) if average else results
 
 
   def find2DImage(self:FileProtocol, start:int) -> None:

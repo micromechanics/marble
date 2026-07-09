@@ -103,6 +103,7 @@ class MainWindow(QMainWindow):
     lastPath = self.configuration['lastDirectory'] or str(Path.home())
     pyFile   = '' if self.comm.binaryFile is None else \
                f'{os.path.splitext(self.comm.binaryFile.fileName)[0]}.py'
+    dialog:Any
     if command[0]=='open':
       if fileName := QFileDialog.getOpenFileName(self,'Open proprietary binary file', lastPath, '*.*')[0]:
         self.configuration['lastDirectory'] = str(Path(fileName).parent)

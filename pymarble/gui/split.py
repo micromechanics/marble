@@ -42,7 +42,7 @@ class Split(QDialog):
     self.secondW.textChanged.connect(lambda: self.execute(2))
 
     #final button box
-    self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+    self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
     self.buttonBox.clicked.connect(self.save)
     mainL.addWidget(self.buttonBox)
 

@@ -59,7 +59,7 @@ class TerminologyLookup(QDialog):
     self.mainL.addWidget(self.scrollArea)
 
     #Ok and Cancel Buttons
-    btn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+    btn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
     self.buttonBox = QDialogButtonBox(btn)
     self.buttonBox.accepted.connect(self.finalize)
     self.buttonBox.rejected.connect(self.reject)
@@ -253,8 +253,9 @@ class TerminologyLookup(QDialog):
     """
     while layout.count():
       child = layout.takeAt(0)
-      childWidget = child.widget()
-      if childWidget:
+      if child is None:
+        continue
+      if childWidget:= child.widget():
         childWidget.setParent(None)                                            # type: ignore[call-overload]
     return
 
@@ -271,7 +272,7 @@ class TerminologyLookup(QDialog):
     image = requests.get(url)
     pixmap = QPixmap()
     pixmap.loadFromData(image.content)
-    pixmap = pixmap.scaled(40,40, Qt.KeepAspectRatio)
+    pixmap = pixmap.scaled(40,40, Qt.AspectRatioMode.KeepAspectRatio)
     return pixmap
 
 

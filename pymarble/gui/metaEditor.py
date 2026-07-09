@@ -39,7 +39,7 @@ class MetaEditor(QDialog):
       setattr(self, f'key_{key}', QLineEdit(value))
       self.formL.addRow(QLabel(key.capitalize()), getattr(self, f'key_{key}'))
     #final button box
-    buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+    buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
     buttonBox.clicked.connect(self.save)
     mainL.addWidget(buttonBox)
 
