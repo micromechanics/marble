@@ -132,8 +132,8 @@ class Section:
     '''
     localCopy = self.__dict__.copy()
     localCopy['entropy'] = f"{localCopy['entropy']:.2f}"     #Prevent issues with diff in tags file
-    localCopy['count'] = str(localCopy['count'])[1:-1]
-    localCopy['shape'] = str(localCopy['shape'])[1:-1]
+    localCopy['count'] = ', '.join(str(int(i)) if isinstance(i, np.integer) else str(i) for i in localCopy['count'])
+    localCopy['shape'] = ', '.join(str(int(i)) if isinstance(i, np.integer) else str(i) for i in localCopy['shape'])
     return [localCopy[i] for i in SECTION_OUTPUT_ORDER]
 
 

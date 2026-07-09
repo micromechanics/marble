@@ -83,8 +83,8 @@ fi
 #use this python file to decipher this datafile and other raw datafile
 echo
 echo "Test Python script"
-python3 tests/examples/Membrane_Repeatability_05.py tests/examples/Membrane_Repeatability_05.mvl
-python3 tests/examples/Membrane_Repeatability_05.py tests/examples/Membrane_Repeatability_08.mvl
+"${PYTHON:-.venv/bin/python}" tests/examples/Membrane_Repeatability_05.py tests/examples/Membrane_Repeatability_05.mvl
+"${PYTHON:-.venv/bin/python}" tests/examples/Membrane_Repeatability_05.py tests/examples/Membrane_Repeatability_08.mvl
 
 
 echo
@@ -96,4 +96,3 @@ diff tests/examples/Membrane_Repeatability_05.mvl.tags tests/examples/Membrane_R
 
 # Some sanity checks just for this testBackend script and programming
 ./marbleCLI.py tests/examples/Membrane_Repeatability_05.mvl "it; x verify"
-

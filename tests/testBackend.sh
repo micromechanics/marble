@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 #TEST TUTORIALS
+export PATH="$PWD/.venv/bin:$PATH"
+export PYTHON="${PYTHON:-$PWD/.venv/bin/python}"
+export MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/pymarble-matplotlib}"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-/tmp/pymarble-config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-/tmp/pymarble-cache}"
+mkdir -p "$MPLCONFIGDIR"
+mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
 
 echo
 echo "Run first test: tests/examples/Membrane_Repeatability_05.mvl"
@@ -15,7 +22,7 @@ echo "======================================================================"
 echo
 echo "Run the Python unit-test: short siblings of previous"
 rm -f tests/examples/*.tags tests/examples/*.py tests/examples/*.hdf5  # Remove all previously generated files
-python3 -m unittest discover tests/ > thisOutput.log
+"$PYTHON" -m unittest discover tests/ > thisOutput.log
 echo "check if output are equal to supposted output: diff.."
 diff -bZw thisOutput.log tests/defaultSolutions/unittest.log
 echo "======================================================================"
@@ -53,6 +60,5 @@ echo "======================================================================"
 echo
 echo "Run the ALL Python test"
 rm -f tests/examples/*.tags tests/examples/*.py tests/examples/*.hdf5  # Remove all previously generated files
-pytest tests > thisOutput.log
+"$PYTHON" -m pytest tests > thisOutput.log
 echo "======================================================================"
-

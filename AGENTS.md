@@ -100,3 +100,5 @@ Follow existing local style in touched files first, then static checks. Do minim
 3. Run narrow tests first (single-test commands above).
 4. Run broader lint/type/test checks when scope grows.
 5. Report what changed, how it was validated, and any remaining risks.
+- Do not suggest regression tests, never.
+- Never execute git commands; the user handles git operations.

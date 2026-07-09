@@ -91,7 +91,7 @@ fi
 
 # write python file and test it
 ./marbleCLI.py tests/examples/alone.idr 'it; op'
-python3 tests/examples/alone.py tests/examples/alone.idr
+"${PYTHON:-.venv/bin/python}" tests/examples/alone.py tests/examples/alone.idr
 
 echo
 echo "Test python import, and then compare the output, incl. diff"

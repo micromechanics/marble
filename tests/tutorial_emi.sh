@@ -35,7 +35,7 @@ fi
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi 'it; op'
 
 # Test
-python3 tests/examples/1-11-OA_0000.py tests/examples/1-11-OA_0000.emi
+"${PYTHON:-.venv/bin/python}" tests/examples/1-11-OA_0000.py tests/examples/1-11-OA_0000.emi
 
 echo
 echo "Test python import, and then compare the output, incl. diff"
@@ -43,5 +43,4 @@ mv tests/examples/1-11-OA_0000.emi.tags tests/examples/1-11-OA_0000.tags
 ## Read python file
 ./marbleCLI.py tests/examples/1-11-OA_0000.emi "ip; ot"
 diff -q tests/examples/1-11-OA_0000.emi.tags tests/examples/1-11-OA_0000.tags
-
 
