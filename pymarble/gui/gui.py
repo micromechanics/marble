@@ -153,6 +153,9 @@ class MainWindow(QMainWindow):
       dialog = MetaEditor(self.comm)
       dialog.exec()
     elif command[0]=='rowTool':
+      if not any(section.dClass=='primary' for section in self.comm.binaryFile.content.values()):
+        showMessage(self, 'Error', 'Select one primary data to analyse', 'Critical')
+        return
       dialog = RowTool(self.comm)
       dialog.exec()
     elif command[0]=='periodicity':

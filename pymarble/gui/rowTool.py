@@ -26,6 +26,7 @@ class RowTool(QDialog):
     if self.comm.binaryFile is None:
       return
     self.space = 20
+    self.maxPreviewValues = 12500
 
     # GUI elements
     self.setWindowTitle('Identify rows of data')
@@ -39,6 +40,8 @@ class RowTool(QDialog):
     self.graphToolbar = NavigationToolbar(self.graph, self)
     graphL.addWidget(self.graphToolbar)
     graphL.addWidget(self.graph, stretch=1)                               # type: ignore[call-arg]
+    self.previewLabelW = QLabel()
+    graphL.addWidget(self.previewLabelW)
 
     #main row
     content = self.comm.binaryFile.content
@@ -145,26 +148,41 @@ class RowTool(QDialog):
       start      = int(self.sectionCB.currentText().split(' - ')[0][7:]) #change here if text format changes
       self.start = start
       section    = self.comm.binaryFile.content[start]
-      byteFormat = section.size()
-      byteSize   = section.byteSize()
+      dType      = section.dType
+      totalItems = section.length
     else:                               #use information as given by this gui's start, length
       start      = self.startW.value()
-      byteFormat = str(int(self.lengthW.text())*self.numberW.value())+\
-                   translateDtypeInv[self.dTypeCB.currentText()]
-      byteSize   = struct.calcsize(byteFormat)
+      dType      = translateDtypeInv[self.dTypeCB.currentText()]
+      totalItems = int(self.lengthW.text())*self.numberW.value()
+    numberCurves = self.numberW.value()
+    itemSize = struct.calcsize(dType)
+    totalRows = totalItems//numberCurves
+    availableItems = max(0, (self.comm.binaryFile.fileLength-start)//itemSize)
+    availableRows = min(totalRows, availableItems//numberCurves)
+    maxPreviewRows = max(1, self.maxPreviewValues//numberCurves)
+    previewRows = min(availableRows, maxPreviewRows)
+    previewItems = previewRows*numberCurves
     #use data
     self.comm.binaryFile.file.seek(start)
-    dataBin = self.comm.binaryFile.file.read(byteSize)
-    if len(dataBin)<byteSize:
-      dataBin = dataBin + bytearray(byteSize-len(dataBin))
-    data = struct.unpack(byteFormat, dataBin)
+    dataBin = self.comm.binaryFile.file.read(previewItems*itemSize)
+    itemsRead = len(dataBin)//itemSize
+    itemsRead -= itemsRead%numberCurves
+    dataBin = dataBin[:itemsRead*itemSize]
+    data = struct.unpack(f'{itemsRead}{dType}', dataBin) if itemsRead else ()
+    previewRows = itemsRead//numberCurves
+    if previewRows < totalRows:
+      self.previewLabelW.setText(f'Previewing first {previewRows:,} of {totalRows:,} rows.')
+    else:
+      self.previewLabelW.setText(f'Previewing all {previewRows:,} rows.')
     self.graph.axes.cla()                        # Clear the canvas
-    numberCurves = self.numberW.value()
+    plotsPresent = False
     for i in range(numberCurves):
       if self.plotWs[i].isChecked():
         label = self.keyWs[i].text() or f'curve {i+1}'
-        self.graph.axes.plot(data[i::numberCurves], '.-', label=label)
-    self.graph.axes.legend()
+        self.graph.axes.plot(data[i::numberCurves], '-', label=label)
+        plotsPresent = True
+    if plotsPresent:
+      self.graph.axes.legend()
     self.graph.axes.set_xlabel('increment')
     self.graph.axes.set_ylabel('numerical value')
     self.graph.draw() # Trigger the canvas to update and redraw.
@@ -199,7 +217,6 @@ class RowTool(QDialog):
       section = self.comm.binaryFile.content[self.start]
       self.lengthW.setValue(int(section.length/self.numberW.value()))
       self.dTypeCB.setCurrentText(translateDtype[section.dType])
-      self.refresh()
     self.refresh()
     return
 

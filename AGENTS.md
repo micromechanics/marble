@@ -87,6 +87,7 @@ Follow existing local style in touched files first, then static checks. Do minim
 - Prefer specific exceptions in new logic
 - Broad `except Exception` exists at some CLI/GUI boundaries; if used, provide clear user/log context
 - Avoid silent swallowing of exceptions unless behavior is intentionally best-effort
+- When a missing prerequisite would crash a tool, inform the user about the necessary step and prevent the tool from starting with a single guard `if` statement. Do not presume values or state to continue.
 ### Logging and User Output
 - Use `logging` for library and GUI diagnostics
 - CLI uses `print` for interactive user output; follow existing patterns there
