@@ -99,6 +99,7 @@ Additional information
    :maxdepth: 1
 
    concepts
+   gui_tutorial
    advanced
    install
 
