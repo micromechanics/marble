@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# PASTA-ELN documentation build configuration file, created by
+# pymarble documentation build configuration file, created by
 # sphinx-quickstart on Tue Oct 13 08:41:19 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -48,7 +48,6 @@ extensions = [
     #'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
@@ -73,9 +72,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'PASTA-ELN'
-copyright = u'2022-{}, PASTA-ELN team'.format(datetime.datetime.now().year)
-author = u'PASTA-ELN team'
+project = u'pymarble'
+copyright = u'2022-{}, pymarble team'.format(datetime.datetime.now().year)
+author = u'pymarble team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -99,9 +98,6 @@ pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'<name>': ('https://docs.python.org/', None)}
 
 # -- Options for HTML output ----------------------------------------------
 

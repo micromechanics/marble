@@ -1,12 +1,12 @@
 .. _install:
 
-Installation_MacOS
-******************
+Installation
+************
 
-Make sure, Python 3 is absorbed; otherwise install it as described below.
+MARBLE requires Python 3.10 or newer.
 
-Prerequisits
-============
+Prerequisites
+=============
 
 * python 3.10 or higher
 * pip3
@@ -14,8 +14,9 @@ Prerequisits
 PyMarble
 ========
 
-The Marble GUI and CLI are available through the [https://pypi.org/project/pymarble/](PyMarble) python package.
-Install it using PIP
+The MARBLE GUI and CLI are available through the
+`pymarble package on PyPI <https://pypi.org/project/pymarble/>`_.
+Install it using pip:
 
 .. code-block:: bash
 
@@ -31,7 +32,7 @@ The team is working on a fix at the moment.
 Python
 ======
 
-1. Download Python 3 from [https://www.python.org/downloads/](the official Site)
+1. Download Python 3.10 or newer from the `official Python website <https://www.python.org/downloads/>`_.
 2. Use Homebrew
 
    1. install xcode
@@ -85,7 +86,19 @@ Development
     python marbleCLI.py
     python marbleGUI.py
 
-Installation Windows
-********************
+Installation on Windows
+***********************
 
-**TODO**
+Install Python 3.10 or newer from the `official Python website <https://www.python.org/downloads/>`_,
+make sure that Python is added to ``PATH``, and then run:
+
+.. code-block:: powershell
+
+   py -m pip install pymarble
+
+The installed commands are:
+
+.. code-block:: powershell
+
+   marbleGUI
+   marbleCLI

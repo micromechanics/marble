@@ -1,28 +1,29 @@
 Documentation on software for deciphering proprietary binary data-files
 ***********************************************************************
 
-Scientific instruments produce proprietary binary data that contains a multitude of primary and metadata.
-This project aims to create a software that supports the domain scientist in deciphering this data and metadata
-and supply python scripts that decipher the instrument measurements.
+Scientific instruments produce proprietary binary data that contains a multitude of primary data and metadata.
+This project provides software that helps domain scientists decipher this data and metadata,
+and generates Python scripts that translate instrument measurements.
 
-MARBLE is open und free software and can be found at a `Repository <https://github.com/micromechanics/marble>`_.
+MARBLE is open-source and free software. The source code is available in the
+`GitHub repository <https://github.com/micromechanics/marble>`_.
 
 Contributors
 ============
 
 * Steffen Brinckmann (IEK-2, FZJ) [Principal investigator]
 * Volker Hofmann (IAS-9 and HMC, FZJ)
-* Fiona D.Mello (IAS-9 and HMC, FZJ)
+* Fiona D'Mello (IAS-9 and HMC, FZJ)
 
 Introduction into proprietary binary data-files and MARBLE
 ==========================================================
 
-In  proprietary binary files, data can be grouped sequentially in **sections** - like sequential chapters in a
+In proprietary binary files, data can be grouped sequentially in **sections** - like sequential chapters in a
 book, and can have very different lengths. The **sections** can have very different lengths: some section only
 contains the name of the operator while another section contains thousands of temperature values. These files
 are called **binary** because they are not human readable but are a list of 1s and 0s and they are called
 **proprietary** because the instrument vendor has designed them particularly for this company or even instrument.
-As such, these files cannot be deciphered manually and MARBLE supports the scientist in this task.
+As such, these files cannot be deciphered manually, and MARBLE supports scientists in this task.
 
 MARBLE reads the proprietary binary files and - with the help of the scientist - outputs a **python converter**.
 This python converter can then be used to translate all proprietary binary files from this instrument into an
@@ -79,25 +80,25 @@ How to use the GUI
 How to use the graphical user interface (GUI) and the command line interface (CLI)
 ==================================================================================
 
-The graphical user interface (GUI) and the command line interface (CLI) allow you to learn more about proprietary binary files and MARBLE. If you want to become more advanced, follow the tutorials in this section.
+The graphical user interface (GUI) and the command-line interface (CLI) allow you to learn more about proprietary binary files and MARBLE. If you want to become more advanced, follow the tutorials in this section.
 
-- [Tensile machine](https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_05mvl.sh)
-- [Tensile machine, large file](https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_08mvl.sh)
-- [Image data](https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_emi.sh)
-- [Data of multiple tests in one file](https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_idr.sh)
-- [Tensile machine from above but larger file, that coincidentally requires more understanding](https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_08mvl.sh)
+* `Tensile machine <https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_05mvl.sh>`_
+* `Tensile machine, large file <https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_08mvl.sh>`_
+* `Image data <https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_emi.sh>`_
+* `Data of multiple tests in one file <https://raw.githubusercontent.com/micromechanics/marble/main/tests/tutorial_idr.sh>`_
 
 Notes regarding tutorials for the CLI version:
 
 * You can read them and follow those commands. However, you can also just execute them with the argument "m", without the quotation marks.
 * All of these tutorials are in the form of linux scripts, which are used for verification of the code at each development step.
 
-Addititional information
-========================
+Additional information
+======================
 
 .. toctree::
    :maxdepth: 1
 
+   concepts
    advanced
    install
 
