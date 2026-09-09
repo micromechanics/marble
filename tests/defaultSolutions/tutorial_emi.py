@@ -147,8 +147,8 @@ try:
   else:
     print("Translation successful")
 
-except:
-  print("**ERROR** Exception in translation")
+except Exception as error:
+  print(f"**ERROR** {type(error).__name__}: {error}")
 
 
 

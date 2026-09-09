@@ -203,7 +203,7 @@ class InputOutput():
       fOut.write('    print("Translation NOT successful")\n')
       fOut.write('  else:\n')
       fOut.write('    print("Translation successful")\n')
-      fOut.write('\nexcept:\n  print("**ERROR** Exception in translation")\n')
+      fOut.write('\nexcept Exception as error:\n  print(f"**ERROR** {type(error).__name__}: {error}")\n')
 
       # FORMALIZED DESCRIPTION OF BINARY-FILE-STRUCTURE
       #revert count->metadata so it can be saved again

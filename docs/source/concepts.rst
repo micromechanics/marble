@@ -70,9 +70,9 @@ Byte order
 ==========
 
 Multi-byte values can store their bytes in different orders. This is called
-**endianness**. MARBLE describes the common little-endian order as ``small``
-in its metadata. If a value looks implausibly large or small, an incorrect byte
-order or data type may be the reason.
+**endianness**. MARBLE supports the common little-endian order, shown as
+``small`` in its metadata. It is intended for typical desktop
+computers and instrument files.
 
 Sections, lengths, and counts
 =============================
@@ -131,7 +131,9 @@ causes are an incorrect start offset, length, data type, or count relationship.
 How to interpret confidence
 ===========================
 
-Each section has a probability or confidence value. Use the score as a review queue:
+Each section has a probability or confidence value. It is intentionally a
+user-editable heuristic that helps organize review work, rather than a
+mathematical certainty score. Use it as a review queue:
 
 * **0** means that the section is still unidentified.
 * **10-40** usually means that an automatic method found a weak clue, such as
@@ -141,11 +143,13 @@ Each section has a probability or confidence value. Use the score as a review qu
   meaning of the values.
 * **50-90** indicates a stronger numerical fit or a longer recognizable text
   fragment.
-* **99-100** is reserved for particularly strong automatic findings or manual
-  labels.
+* **99-100** is useful for sections that have been manually reviewed or have
+  particularly strong automatic evidence.
 
-Before marking a section important, verify that its values, byte size, length,
-and units agree with the experiment.
+Adjust the value as your understanding develops. It helps distinguish sections
+you still need to inspect from those you have already reviewed. Before marking
+a section important, verify that its values, byte size, length, and units agree
+with the experiment.
 
 
 
@@ -279,12 +283,10 @@ failure when the interpreted sections do not consume the expected file layout.
 Incorrect byte order
 --------------------
 
-This is typically not an often encounterd issue . If every multi-byte value is implausibly large, tiny, or patterned, check the
-file's byte order. MARBLE's file metadata commonly describes the order as
-``small`` (little-endian). Do not repair a byte-order problem by changing the
-physical unit or multiplying values by an arbitrary factor. Confirm the order
-from the instrument documentation or a known value, then recheck the same
-offset and type using that interpretation.
+MARBLE supports only ``small`` (little-endian) files on typical little-endian
+computers. Big-endian files are outside the current scope. If every multi-byte
+value is implausibly large, tiny, or patterned, first confirm that the source
+file is little-endian; otherwise use a tool that supports its byte order.
 
 General recovery procedure
 --------------------------

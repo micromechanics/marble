@@ -27,11 +27,8 @@ class MetaEditor(QDialog):
     for key, value in self.metaFields.items():
       if key == 'endian':
         continue
-      # Note: small and big endian are implemented in the config file, this dialog
-      # - they are not included in any of the struct.unpack functions
-      # - included in BinaryFile endian
-      # - not sure it is required for any data files
-      # - if user does not find any solution: suggest to switch endian-ness
+      # MARBLE supports only typical little-endian systems and input files.
+      # The metadata is retained for compatibility but is not configurable.
       #
       # self.endianComboBox = QComboBox()
       # self.endianComboBox.addItems(['big','small'])

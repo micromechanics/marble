@@ -20,7 +20,12 @@ SCREENSHOT_NAMES = [
 
 
 def test_gui_tutorial_screenshots(qtbot, tmp_path):
-  """Run the sample workflow and save screenshots for the GUI tutorial."""
+  """Create GUI tutorial screenshots through the model-level workflow.
+
+  This is intentionally a documentation asset-generation test. It prepares the
+  GUI table with direct BinaryFile calls so the screenshots are deterministic;
+  testing clicks and section-form controls is outside its scope.
+  """
   repository = Path(__file__).parents[1]
   source = repository/'tests'/'examples'/'Membrane_Repeatability_05.mvl'
   sample = tmp_path/source.name

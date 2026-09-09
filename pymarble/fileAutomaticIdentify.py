@@ -3,7 +3,7 @@ import math, struct, re, time, logging
 from typing import Union
 import xml.etree.ElementTree as ET
 import numpy as np
-from PySide6.QtWidgets import QProgressBar                       # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QApplication, QProgressBar         # pylint: disable=no-name-in-module
 from .section import Section
 from .fileClass import FileProtocol
 
@@ -73,6 +73,7 @@ class Automatic():
       self.fill()
       if progress is not None:
         progress.setValue(int((idx+1)*100/len(methodOrder.split('_'))))
+        QApplication.processEvents()
       if self.verbose>1:
         print(f'  End method {method}. Duration={str(round(time.time() - startTime))}sec')
     if progress is not None:
