@@ -8,7 +8,7 @@ Make sure, Python 3 is absorbed; otherwise install it as described below.
 Prerequisits
 ============
 
-* python 3.7 or higher
+* python 3.10 or higher
 * pip3
 
 PyMarble

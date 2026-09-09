@@ -1,6 +1,7 @@
 """input and output to files; plot to screen"""
 import os, io, struct, json, logging, html
 import xml.etree.ElementTree as ET
+from xml.sax.saxutils import escape, quoteattr
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -60,14 +61,14 @@ class InputOutput():
     with open(tagsFile, 'w', encoding='utf-8') as fOut:
       fOut.write('<?xml version="1.0" encoding="UTF-8"?>\n')
       fOut.write('<wxHexEditor_XML_TAG>\n')
-      fOut.write('  <filename path="'+self.fileName+'">\n')
+      fOut.write(f'  <filename path={quoteattr(self.fileName)}>\n')
       for idx, start in enumerate(self.content):
         section = self.content[start]
         end     = start + struct.calcsize(str(section.length)+section.dType)
         fOut.write(f'    <TAG id="{idx}' + '">\n')
         fOut.write(f'      <start_offset>{start}' + '</start_offset>\n')
         fOut.write(f'      <end_offset>{end}' + '</end_offset>\n')
-        fOut.write(f'      <tag_text>{section}' + '</tag_text>\n')
+        fOut.write(f'      <tag_text>{escape(str(section))}' + '</tag_text>\n')
         if section.dType=='d':
           fOut.write('      <font_colour>#000000</font_colour>\n')
           fOut.write('      <note_colour>#4EB371</note_colour>\n')
@@ -88,10 +89,10 @@ class InputOutput():
           fOut.write('      <note_colour>#FF0000</note_colour>\n')
         fOut.write('    </TAG>\n')
       fOut.write('  </filename>\n')
-      fOut.write(f'  <meta>{json.dumps(self.meta)}' + '</meta>\n')
-      fOut.write(f'  <periodicity>{json.dumps(self.periodicity)}</periodicity>\n')
-      fOut.write(f'  <row_meta>{json.dumps(self.rowFormatMeta)}</row_meta>\n')
-      fOut.write(f'  <row_segments>{json.dumps([int(i) for i in self.rowFormatSegments])}</row_segments>\n')
+      fOut.write(f'  <meta>{escape(json.dumps(self.meta))}' + '</meta>\n')
+      fOut.write(f'  <periodicity>{escape(json.dumps(self.periodicity))}</periodicity>\n')
+      fOut.write(f'  <row_meta>{escape(json.dumps(self.rowFormatMeta))}</row_meta>\n')
+      fOut.write(f'  <row_segments>{escape(json.dumps([int(i) for i in self.rowFormatSegments]))}</row_segments>\n')
       fOut.write('</wxHexEditor_XML_TAG>\n')
     return
 

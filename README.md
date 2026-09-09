@@ -18,13 +18,7 @@
 - Fiona D'Mello (IAS-9 and HMC, FZJ)
 
 ## Open Issues
-Default location for open issues: this section.
-
-1. High `pymarble/section.py:64-97` - `Section.setData()` raises `UnboundLocalError` for dict input.
-2. High `pymarble/fileUtil.py:24-38` - `findValue()` fails for zero-valued searches because it divides by the target value.
-3. High `setup.cfg:15`, `pymarble/cli.py:50`, `pymarble/file.py:15-16` - the declared Python 3.7 floor conflicts with runtime `list[str]` / `dict[str, ...]` annotations.
-4. Medium `pymarble/fileUtil.py:26-48` - `findValue()` returns `[]` in its default verbose mode, so callers do not get the matches back.
-5. Medium `pymarble/fileInputOutput.py:60-96`, `pymarble/section.py:108-116` - tag serialization is not escaped and breaks on `|` and XML metacharacters.
+No known open issues are tracked in this developer README.
 
 ## Documentation
 ### Backend
@@ -45,35 +39,37 @@ Default location for open issues: this section.
 ## Quick developer checks
 Run these before opening a PR:
 ``` bash
-pylint $(git ls-files 'pymarble/*')
-mypy pymarble
-pytest tests
-make -C docs html
+.venv/bin/pylint $(git ls-files 'pymarble/*')
+.venv/bin/python -m mypy pymarble
+.venv/bin/python -m pytest tests
+.venv/bin/make -C docs html
 ```
+
+The full test suite, pylint, and mypy are time-consuming checks and should be run only when explicitly requested.
 
 ### Run a single test (recommended during development)
 Single file:
 ``` bash
-pytest tests/test_section.py
+.venv/bin/python -m pytest tests/test_section.py
 ```
 
 Single test function:
 ``` bash
-pytest tests/test_section.py::testSection
+.venv/bin/python -m pytest tests/test_section.py::testSection
 ```
 
 Name filter:
 ``` bash
-pytest tests -k testSection
+.venv/bin/python -m pytest tests -k testSection
 ```
 
 ## Steps for publishing code
 ``` bash
-pylint $(git ls-files 'pymarble/*')
-mypy pymarble
-make -C docs html
+.venv/bin/pylint $(git ls-files 'pymarble/*')
+.venv/bin/python -m mypy pymarble
+.venv/bin/make -C docs html
 
-pytest tests
+.venv/bin/python -m pytest tests
 ```
 
 Optional legacy e2e/tutorial regression:

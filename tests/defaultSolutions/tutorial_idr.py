@@ -136,7 +136,7 @@ try:
   fIn.seek(0)
   numberOfTests = readData(0, "1i")[0]
   fIn.seek(0)
-  addAttrs(0, "1i", fOut, "peridicity_count")
+  addAttrs(0, "1i", None, "peridicity_count")
   for idxTest in range(numberOfTests):
     hdfBranch_ = fOut.create_group("test_"+str(idxTest+1))
     hdfBranch_.attrs["NX_class"] = b"NXentry"

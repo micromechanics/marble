@@ -3,7 +3,7 @@ Guidance for autonomous coding agents in this repository.
 
 ## Project Basics
 - Package: `pymarble`
-- Language: Python (>=3.7; CI runs Python 3.10)
+- Language: Python (>=3.10; CI runs Python 3.10)
 - Entry points:
   - CLI: `marbleCLI` -> `pymarble.cli:main`
   - GUI: `marbleGUI` -> `pymarble.gui.gui:main`
@@ -58,6 +58,8 @@ Name filter:
 bash tests/testBackend.sh
 ```
 - Writes generated artifacts under `tests/examples/`; uses external tool `punx`.
+- Rerun the full `bash tests/testBackend.sh` suite only when the user explicitly requests it; it is very time-consuming.
+- Run pylint and mypy only when the user explicitly requests them.
 ### Docs Build
 ```bash
 .venv/bin/make -C docs html

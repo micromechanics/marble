@@ -89,8 +89,26 @@ class Section:
        shape: shape of the array
 
     '''
+    dataList: list[str] = []
     if isinstance(data, str):
-      dataList = [i.strip() for i in data.split('|')]
+      # Ensure that the str does handle special characters correctly
+      dataList = []
+      field: list[str] = []
+      escaped = False
+      for character in data:
+        if escaped:
+          field.append(character)
+          escaped = False
+        elif character == '\\':
+          escaped = True
+        elif character == '|':
+          dataList.append(''.join(field).strip())
+          field = []
+        else:
+          field.append(character)
+      if escaped:
+        field.append('\\')
+      dataList.append(''.join(field).strip())
       for idx, name in enumerate(SECTION_OUTPUT_ORDER):
         if idx<len(dataList) and len(dataList[idx])>0:
           if isinstance( getattr(self,name), list):
@@ -130,7 +148,7 @@ class Section:
     Returns:
       serialized section text
     '''
-    strList = [str(i) for i in self.toList()]
+    strList = [str(i).replace('\\', '\\\\').replace('|', '\\|') for i in self.toList()]
     return '|'.join( strList )
 
 

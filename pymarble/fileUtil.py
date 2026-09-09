@@ -23,8 +23,7 @@ class Util():
     '''
     if isinstance(value, str):
       value = float(value)
-    if not verbose:
-      allFound, allError = [], []
+    allFound, allError = [], []
     byteSize = struct.calcsize(dType)
     for offsetI in range(byteSize):
       self.file.seek(offsetI+offset)
@@ -33,7 +32,10 @@ class Util():
       dataByte = dataByte[:struct.calcsize(str(numData)+dType)] #crop binary data
       data = np.array(struct.unpack(str(numData)+dType, dataByte), dtype=np.float128)    #get data
       mask = np.isfinite(data)
-      data[mask] = np.abs((data[mask]-value)/value)     #relative difference
+      if value == 0:
+        data[mask] = np.abs(data[mask])
+      else:
+        data[mask] = np.abs((data[mask]-value)/value)     #relative difference
       data[~mask] = 1.
       found = np.where(data<self.optFind['maxError'])[0]       #threshold
       output = [self.pretty(int(i)) for i in offsetI+offset+found*byteSize] #output
@@ -42,10 +44,9 @@ class Util():
           print(f'{offsetJ}  found {value} with error {data[found][idx]}')
         if not output:
           print('... found nothing')
-      else:
-        allFound += output
-        allError += list(data[found])
-    return [] if verbose else [x for _, x in sorted(zip(allError, allFound))]
+      allFound += output
+      allError += list(data[found])
+    return [x for _, x in sorted(zip(allError, allFound))]
 
 
   def findBytes(self:FileProtocol, value:Union[str,float], dType:str='d', offset:int=0) -> int:
