@@ -46,9 +46,6 @@ class SearchTool(QDialog):
   def execute(self, _:list[str]) -> None:
     """
     Execute command
-
-    Args:
-      _: command emitted by the search button, unused
     """
     if self.comm.binaryFile is None:
       return

@@ -281,7 +281,7 @@ class TerminologyLookup(QDialog):
     Returns:
       QPixmap: image / logo
     """
-    image = requests.get(url)
+    image = requests.get(url, timeout=10)
     pixmap = QPixmap()
     pixmap.loadFromData(image.content)
     pixmap = pixmap.scaled(40,40, Qt.AspectRatioMode.KeepAspectRatio)

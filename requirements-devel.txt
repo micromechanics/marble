@@ -4,6 +4,7 @@ pytest-cov
 pytest-qt
 coverage
 mypy
+pylint
 punx
 sphinx
 sphinx_rtd_theme

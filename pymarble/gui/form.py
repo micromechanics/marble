@@ -240,6 +240,10 @@ class Form(QDialog):
     if len(dataAll)<byteSizeAll:
       dataAll = dataAll + bytearray(byteSizeAll-len(dataAll))
     # depending on plot/print type
+    limitX = 0
+    labelY = ''
+    limitY = (0.0, 1.0)
+    lineStyle = '-'
     if self.plotCB.currentText().endswith('byte value') or self.plotCB.currentText().endswith('character') or\
        (dType in {'b', 'B'} and self.plotCB.currentText().endswith('numerical value')):
       valuesX = np.arange(-lead*byteSize, (length+lead)*byteSize)
@@ -297,6 +301,9 @@ class Form(QDialog):
       self.graph.axes.cla()                        # Clear the canvas.
       if height*width==len(self.valuesY):
         img = self.graph.axes.imshow(np.reshape(self.valuesY, (height, width)), cmap='Greys_r')
+      else:
+        logging.error('2D graph dimensions do not match the data length')
+        return
       if not self.colorbarPresent:
         self.graph.axes.get_figure().colorbar(img) # type: ignore [union-attr]
         self.colorbarPresent = True
