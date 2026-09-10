@@ -13,7 +13,7 @@ import numpy as np
 #   - cannot be the variable name because formalized description should not have variable name
 # shape: shape of array for primary data
 #   - linear vector is turned into shape
-#   - each primary data should have one.
+#   - each primary data should have one
 #   - however, not really needed since count says it all
 #     benefit is only the ability for user to supply shape
 
@@ -25,7 +25,7 @@ import numpy as np
 #   - 40-60 sequences: tho longer the higher: cutoff at 100-long
 #   - 100   if manually set key,unit,link
 # entropy -> see automaticIdentify:entropy
-# TODO document dTypes: ...
+# TODO document dTypes: …
 SECTION_OUTPUT_ORDER = ['length','dType','key','unit','link','dClass','count','shape','prob','entropy',\
                         'important','value']
 

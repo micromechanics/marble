@@ -22,7 +22,7 @@ class ExecutableWidget(Protocol):
   """ Widget interface used by buttons and actions. """
   def execute(self, command:list[str]) -> None:
     """
-    Execute a command emitted by a button or action.
+    Execute a command emitted by a button or action
 
     Args:
       command: command parts emitted by the UI action

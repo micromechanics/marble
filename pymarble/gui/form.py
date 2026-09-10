@@ -154,7 +154,7 @@ class Form(QDialog):
     self.unitW.setMaximumWidth(60)
     keyValueL.addWidget(self.unitW)
 
-    #dClass etc.
+    #dClass etc
     _, dClassL = widgetAndLayout('H', mainL)
     dClassL.addWidget(QLabel('dClass:'))
     self.dClassCB = QComboBox()
@@ -285,20 +285,20 @@ class Form(QDialog):
         logging.info('Data too large: plot only every %sth point', scaleDown)
         valuesX = valuesX[::scaleDown]
         self.valuesY = self.valuesY[::scaleDown]
-      self.graph.axes.cla()                        # Clear the canvas.
+      self.graph.axes.cla()                        # Clear the canvas
       self.graph.axes.axvline(0, color='k')
       self.graph.axes.axvline(limitX-1, color='k')  #plot from 0 to limit-1
       self.graph.axes.plot(valuesX, self.valuesY, lineStyle)
       self.graph.axes.set_ylim(limitY)
       self.graph.axes.set_xlabel('bytes')
       self.graph.axes.set_ylabel(labelY)
-      self.graph.draw() # Trigger the canvas to update and redraw.
+      self.graph.draw() # Trigger the canvas to update and redraw
       self.textEditW.hide()
       self.graphToolbar.show()
       self.graph.show()
     elif self.plotCB.currentText().startswith('2D graph'):
       width, height = int(self.widthW.text()), int(self.heightW.text())
-      self.graph.axes.cla()                        # Clear the canvas.
+      self.graph.axes.cla()                        # Clear the canvas
       if height*width==len(self.valuesY):
         img = self.graph.axes.imshow(np.reshape(self.valuesY, (height, width)), cmap='Greys_r')
       else:
@@ -307,7 +307,7 @@ class Form(QDialog):
       if not self.colorbarPresent:
         self.graph.axes.get_figure().colorbar(img) # type: ignore [union-attr]
         self.colorbarPresent = True
-      self.graph.draw() # Trigger the canvas to update and redraw.
+      self.graph.draw() # Trigger the canvas to update and redraw
       self.textEditW.hide()
       self.graphToolbar.show()
       self.graph.show()

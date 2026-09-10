@@ -163,7 +163,7 @@ class Periodicity(QDialog):
       self.graph.axes.axvline(0, c='r', linewidth=2)
       self.graph.axes.set_ylabel('byte value')
       self.graph.axes.set_xlabel('period start')
-    self.graph.draw() # Trigger the canvas to update and redraw.
+    self.graph.draw() # Trigger the canvas to update and redraw
     return
 
 

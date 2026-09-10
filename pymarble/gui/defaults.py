@@ -5,7 +5,9 @@ defaultConfiguration = {
   "columns": ["start", "length", "key", "value"],
   "optFind": {"maxError":1e-4},
   "optAutomatic": {"minChars":10,   "minArray": 50, "maxExp":11, "minZeros":16, "minEntropy":3},
-  "optEntropy": {"blockSize":256, "skipEvery":5}
+  "optEntropy": {"blockSize":256, "skipEvery":5},
+  "llm": {"type":"openAI", "server":"https://api.openai.com/v1", "model":"",
+          "keyringId":"pymarble-openai-default", "comment":"", "keyStorage":"keyring"}
 }
 # the opt...: properties are the same as in file.py
 #
@@ -66,6 +68,19 @@ Additional shortcuts:<br>
 </ul>
 """
 
+HELP_TABLE = """
+<h3>Working with table sections</h3>
+<ul>
+<li>Click <b>✎</b> in the Edit column to open the section editor.</li>
+<li>Right-click a row for automatic identification, splitting, removal, and other section actions.</li>
+<li>Use the <b>dClass</b> drop-down to choose metadata, primary data, count, or unknown.</li>
+<li>Use the <b>prob</b> drop-down to set the confidence of an identification.</li>
+<li>Click <b>important</b> to include or exclude a section from generated output.</li>
+<li>Click cells in the <b>key</b>, <b>unit</b>, and <b>value</b> columns to edit them directly.</li>
+<li>Hover over a column heading or cell for a short explanation.</li>
+</ul>
+"""
+
 INFO_EXPORTED_FILE = """
 Use a format that is readable by the default of np.loadtxt<br><br>
 Example:<br>
@@ -73,7 +88,7 @@ Example:<br>
 #time temperature<br>
 0.1   21.2<br>
 0.2   25.3<br>
-...
+…
 </tt>
 """
 

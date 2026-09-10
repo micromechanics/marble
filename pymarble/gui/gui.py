@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt                                        # pylint: d
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QResizeEvent    # pylint: disable=no-name-in-module
 
 from ..file import BinaryFile
-from .defaults import defaultConfiguration, ABOUT_TEXT, INFO_EXPORTED_FILE
+from .defaults import defaultConfiguration, ABOUT_TEXT, HELP_TABLE, INFO_EXPORTED_FILE
 from .style import Action, showMessage
 from .communicate import Communicate
 from .table import Table
@@ -18,6 +18,7 @@ from .rowTool import RowTool
 from .periodicity import Periodicity
 from .searchTool import SearchTool
 from .terminologyLookup import TerminologyLookup
+from .onlineLookup import OnlineLookup
 from .misc import restart
 
 os.environ['QT_API'] = 'pyside6'
@@ -65,10 +66,13 @@ class MainWindow(QMainWindow):
     Action('Periodicity tool',          self, ['periodicity'],  toolsMenu, shortcut='Ctrl+P')
     Action('Find data',                 self, ['searchTool'],   toolsMenu, shortcut='Ctrl+F')
     Action('Terminology lookup for all',self, ['terminology'],  toolsMenu, shortcut='Ctrl+T')
+    Action('Online lookup',              self, ['onlineLookup'], toolsMenu)
     toolsMenu.addSeparator()
     Action('Configuration',             self, ['configuration'],toolsMenu)
 
     helpMenu = menu.addMenu("&Help")
+    Action('&Table help',               self, ['tableHelp'],    helpMenu)
+    helpMenu.addSeparator()
     Action('&Website',                  self, ['website'],      helpMenu)
     Action('&About',                    self, ['about'],        helpMenu)
 
@@ -124,6 +128,8 @@ class MainWindow(QMainWindow):
       webbrowser.open('https://pypi.org/project/pymarble/')
     elif command[0]=='about':
       showMessage(self, 'About MARBLE', ABOUT_TEXT)
+    elif command[0]=='tableHelp':
+      showMessage(self, 'Table help', HELP_TABLE, 'Information')
     elif command[0]=='exit':
       self.close()
     elif command[0] in ['F5','F6','F7']:
@@ -171,6 +177,9 @@ class MainWindow(QMainWindow):
       dialog.exec()
       for idx, reply in enumerate(dialog.returnValues):
         content[list(searchTerms.keys())[idx]].link = ' '.join(reply)
+    elif command[0]=='onlineLookup':
+      self.onlineLookupDialog = OnlineLookup(self.comm.binaryFile, self.configuration, self)
+      self.onlineLookupDialog.show()
     elif command[0]=='searchTool':
       dialog = SearchTool(self.comm)
       dialog.exec()
@@ -254,6 +263,10 @@ def main() -> None:
       fOut.write(json.dumps(defaultConfiguration, indent=2))
   with open(Path.home()/'.pyMARBLE.json', 'r', encoding='utf-8') as fIn:
     configuration = json.load(fIn)
+  for key, value in defaultConfiguration.items():
+    if key not in configuration:
+      configuration[key] = value
+  configuration['llm'] = defaultConfiguration['llm'] | configuration.get('llm', {})
   # logging has to be started first
   # - to screen
   #   logPath = Path.home()/'pyMARBLE.log'

@@ -23,7 +23,7 @@ class Automatic():
     The default order is good for small time-series data-files
 
     Args:
-      methodOrder: method order to be used.
+      methodOrder: method order to be used
       start: section start to process, or -1 for the whole file
       getMethods: return the available automatic methods instead of only processing
       progress: optional progress bar updated while methods run
@@ -194,7 +194,7 @@ class Automatic():
     for col in range(dataTXT.shape[1]):
       idxMax = np.argmax(dataTXT[:,col])
       valMax = dataTXT[idxMax,col]
-      # Above change allowed fot test script to run successfully.
+      # Above change allowed fot test script to run successfully
       if self.verbose>1:
         print('\nStart with column:',col,' max. value:',valMax)
       bestOffset, bestMax, bestDType = None, None, None

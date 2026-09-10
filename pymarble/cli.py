@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """ Main function when command-line commands used
 """
-import warnings, sys, traceback
+import warnings, sys, traceback, json
+from pathlib import Path
 from .file import BinaryFile
+from .onlineLookup import lookup
 
 def printHelp() -> None:
   """
@@ -39,6 +41,7 @@ def printHelp() -> None:
   print('ip           : import python file')
   print('x fill       : fill content and check order')
   print('x verify     : verify some sanity tests')
+  print('w            : online file-format lookup')
   print('q            : quit')
   print('h            : help')
   print('')
@@ -61,7 +64,12 @@ def main(argv:list[str]) -> None:
     printHelp()
 
   else:
-    fBIN = BinaryFile(argv[1], verbose=1)
+    configuration = {}
+    configPath = Path.home()/'.pyMARBLE.json'
+    if configPath.exists():
+      with open(configPath, 'r', encoding='utf-8') as fIn:
+        configuration = json.load(fIn)
+    fBIN = BinaryFile(argv[1], verbose=1, config=configuration)
     numCommands = 99999 if len(argv)==2 else len(argv[2].split(';'))
     for idx in range(numCommands):
       if len(argv)==2:
@@ -127,6 +135,8 @@ def main(argv:list[str]) -> None:
           fBIN.fill()                                             # type: ignore[misc]
         elif command=='x verify':
           fBIN.verify()                                           # type: ignore[misc]
+        elif command=='w':
+          print(lookup(fBIN, configuration))
         elif command=='q':
           break
         elif command=='h':

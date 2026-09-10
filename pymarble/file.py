@@ -30,9 +30,9 @@ class BinaryFile(InputOutput, Automatic, Util, Commandline):
     self.optAutomatic = {'minChars':10,   'minArray': 50, 'maxExp':11, 'minZeros':16, 'minEntropy':3}
     self.optEntropy   = {'blockSize':256, 'skipEvery':5}
     if config:
-      self.optFind      |= config['optFind']
-      self.optAutomatic |= config['optAutomatic']
-      self.optEntropy   |= config['optEntropy']
+      self.optFind      |= config.get('optFind', {})
+      self.optAutomatic |= config.get('optAutomatic', {})
+      self.optEntropy   |= config.get('optEntropy', {})
 
     self.fileType   = fileType  #'disk': read directly from disk; 'ram' copy file in ram and work in virt. disk
                                 #'data': #futureFeature copy file into data & work on different sections

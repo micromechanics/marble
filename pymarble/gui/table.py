@@ -1,15 +1,31 @@
 """ Main table in app """
 import logging
 from typing import Any
-import numpy as np
-from PySide6.QtWidgets import QWidget, QMenu, QTableWidget, QTableWidgetItem  # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QWidget, QComboBox, QMenu, QMessageBox, QTableWidget, QTableWidgetItem, QToolButton  # pylint: disable=no-name-in-module
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
-from PySide6.QtGui import QContextMenuEvent, QFont, QResizeEvent # pylint: disable=no-name-in-module
+from PySide6.QtGui import QFont, QResizeEvent # pylint: disable=no-name-in-module
 from .communicate import Communicate
 from .style import widgetAndLayout, Action, hexToColor
 from .defaults import dClass2Color, translateDtypeShort
 from .form import Form
 from .split import Split
+
+COLUMN_TOOLTIPS = {
+  'actions':'Edit this section',
+  'start':'Byte offset at which this section starts',
+  'length':'Number of values in this section',
+  'dType':'Data type used to interpret this section',
+  'key':'Click to edit the section key',
+  'unit':'Click to edit the physical unit',
+  'link':'Reference or terminology link for this section',
+  'dClass':'Choose whether this section is metadata, primary data, a count, or unknown',
+  'count':'Offsets of sections that define the dimensions',
+  'shape':'Dimensions of the interpreted data',
+  'prob':'Choose the confidence assigned to this identification',
+  'entropy':'Calculated entropy of this section',
+  'important':'Click to include or exclude this section from generated output',
+  'value':'Click to edit the displayed value or description',
+}
 
 class Table(QWidget):
   """ widget that shows the table of the items """
@@ -27,8 +43,9 @@ class Table(QWidget):
     self.table = QTableWidget(self)
     self.table.verticalHeader().hide()
     self.table.clicked.connect(self.cellClicked)
-    self.table.doubleClicked.connect(self.cell2Clicked)
     self.table.itemChanged.connect(lambda x: self.execute(['itemChanged',x]))
+    self.table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+    self.table.customContextMenuRequested.connect(self.openContextMenu)
     header = self.table.horizontalHeader()
     header.setSectionsMovable(True)
     header.setStretchLastSection(True)
@@ -50,22 +67,26 @@ class Table(QWidget):
       return
     # initialize
     content    = self.comm.binaryFile.content
-    self.tableHeaders = self.comm.configuration['columns']
+    self.tableHeaders = ['actions'] + self.comm.configuration['columns']
     self.table.setColumnCount(len(self.tableHeaders))
-    self.table.setHorizontalHeaderLabels(self.tableHeaders)
+    self.table.setHorizontalHeaderLabels(['Edit' if key == 'actions' else key for key in self.tableHeaders])
     if resizeColumns:
       extraSize = 4
       defaultWidth = int(self.width()/(len(self.tableHeaders)+extraSize))
       for idx,colName in enumerate(self.tableHeaders):
-        if colName=='value':
+        if colName == 'actions':
+          self.table.setColumnWidth(idx, 44)
+        elif colName=='value':
           self.table.setColumnWidth(idx, defaultWidth*extraSize)
         else:
           self.table.setColumnWidth(idx, defaultWidth)
     for idx,title in enumerate(self.tableHeaders):
+      headerItem = self.table.horizontalHeaderItem(idx)
+      if headerItem is not None:
+        headerItem.setToolTip(COLUMN_TOOLTIPS.get(title, f'Section {title}'))
       if title in ['start','length','count','shape','entropy','link','dType']:
-        item = self.table.horizontalHeaderItem(idx)
-        if item is not None:
-          item.setBackground(hexToColor('#d8e0f4'))
+        if headerItem is not None:
+          headerItem.setBackground(hexToColor('#d8e0f4'))
     self.table.setRowCount(len(content))
     self.rowIDs  = []
     # use content to build models
@@ -87,6 +108,16 @@ class Table(QWidget):
         continue
       row += 1
       for col, key in enumerate(self.tableHeaders):
+        if key == 'actions':
+          item = QTableWidgetItem()
+          item.setToolTip(COLUMN_TOOLTIPS[key])
+          button = QToolButton()
+          button.setText('✎')
+          button.setToolTip(COLUMN_TOOLTIPS[key])
+          button.clicked.connect(lambda _checked=False, start=start: self.execute(['edit', str(start)]))
+          self.table.setItem(row, col, item)
+          self.table.setCellWidget(row, col, button)
+          continue
         if key == 'dType':
           item = QTableWidgetItem(translateDtypeShort[rowData[key]])
         elif key == 'entropy':
@@ -98,12 +129,30 @@ class Table(QWidget):
           item = QTableWidgetItem(self.comm.binaryFile.pretty(start))        # type: ignore[misc]
         else:
           item = QTableWidgetItem(str(rowData[key]))
+        item.setToolTip(COLUMN_TOOLTIPS.get(key, f'Section {key}'))
         if key in ['unit','key','value']:
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled | Qt.ItemIsEditable)# type: ignore
         else:
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
         item.setBackground(hexToColor(dClass2Color[rowData['dClass']]))
         self.table.setItem(row, col, item)
+        if key == 'dClass':
+          combo = QComboBox()
+          combo.addItems(['unknown', 'metadata', 'primary', 'count'])
+          combo.setCurrentText(rowData[key] or 'unknown')
+          combo.setToolTip(COLUMN_TOOLTIPS[key])
+          combo.activated.connect(lambda _index, start=start, combo=combo:
+                                  self.execute(['setDClass', start, combo.currentText()]))
+          self.table.setCellWidget(row, col, combo)
+        elif key == 'prob':
+          combo = QComboBox()
+          probabilities = sorted({0, 25, 50, 75, 100, int(rowData[key])})
+          combo.addItems([str(probability) for probability in probabilities])
+          combo.setCurrentText(str(rowData[key]))
+          combo.setToolTip(COLUMN_TOOLTIPS[key])
+          combo.activated.connect(lambda _index, start=start, combo=combo:
+                                  self.execute(['setProbability', start, combo.currentText()]))
+          self.table.setCellWidget(row, col, combo)
       self.rowIDs.append(start)
     self.table.setRowCount(row+1)
     self.table.show()
@@ -127,7 +176,7 @@ class Table(QWidget):
 
   def execute(self, command:list[Any]) -> None:
     """
-    execute actions from context menu, etc.
+    execute actions from context menu, etc
 
     Args:
       command (list): command to execute
@@ -142,18 +191,30 @@ class Table(QWidget):
         return
       setattr(self.comm.binaryFile.content[start], colName, item.data(Qt.ItemDataRole.EditRole))
       return
-    start = self.rowIDs[self.table.currentRow()]
     if self.comm.binaryFile is None:
       return
-    if command[0]   == 'autoTime': #look for xml data, zero data, primary data and ascii data
+    start = int(command[1]) if len(command)>1 else self.rowIDs[self.table.currentRow()]
+    if command[0] == 'setDClass':
+      self.comm.binaryFile.content[start].dClass = '' if command[2] == 'unknown' else command[2]
+    elif command[0] == 'setProbability':
+      self.comm.binaryFile.content[start].prob = int(command[2])
+    elif command[0] == 'edit':
+      formDialog = Form(self.comm, start)
+      formDialog.exec()
+    elif command[0] == 'autoTime': #look for xml data, zero data, primary data and ascii data
       self.comm.binaryFile.automatic('x_z_p_a', progress=self.comm.progress)  # type: ignore[misc]
     elif command[0] == 'autoElse': #look for xml data, zero data and ascii data
       self.comm.binaryFile.automatic('x_z_a')    # type: ignore[misc]
     elif command[0] == 'split':
-      dialog = Split(self.comm, start)
-      dialog.exec()
+      splitDialog = Split(self.comm, start)
+      splitDialog.exec()
       self.change()  #repaint
     elif command[0] == 'remove':
+      answer = QMessageBox.question(self, 'Remove information',
+        f'Remove the section at {self.comm.binaryFile.pretty(start)}?',  # type: ignore[misc]
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel)
+      if answer != QMessageBox.StandardButton.Yes:
+        return
       del self.comm.binaryFile.content[start]
       self.comm.binaryFile.fill()                                 # type: ignore[misc]
     elif command[0].startswith('_') and command[0].endswith('_'):
@@ -165,31 +226,43 @@ class Table(QWidget):
     return
 
 
-  def contextMenuEvent(self, point:QContextMenuEvent) -> None:
+  def openContextMenu(self, point:QPoint) -> None:
     """
-    assemble context menu
+    Open the action menu for the row under the pointer
 
     Args:
-      point (QPoint): point at which was clicked
+      point: position within the table viewport
     """
+    row = self.table.indexAt(point).row()
+    if row < 0:
+      return
+    self.showContextMenu(row, self.table.viewport().mapToGlobal(point))
+
+
+  def showContextMenu(self, row:int, globalPoint:QPoint) -> None:
+    """Assemble and show the action menu for one row"""
     if self.comm.binaryFile is None:
       return
     if self.methods is None:
       self.methods = self.comm.binaryFile.automatic('_',getMethods=True)  # type: ignore[misc]
     if self.methods is None:
       return
+    start = self.rowIDs[row]
+    self.table.setCurrentCell(row, 0)
     context = QMenu(self)
+    Action('Edit section', self, ['edit', str(start)], context)
+    context.addSeparator()
     if len(self.comm.binaryFile.content) == 1:
-      Action('Automatic for time series', self, ['autoTime'], context)
-    Action('Automatic for general data',  self, ['autoElse'], context)
+      Action('Automatic for time series', self, ['autoTime', str(start)], context)
+    Action('Automatic for general data',  self, ['autoElse', str(start)], context)
     context.addSeparator()
     for key, value in self.methods.items():
-      Action(value,                       self, [f'_{key}_'], context)
+      Action(value,                       self, [f'_{key}_', str(start)], context)
     context.addSeparator()
     if len(self.comm.binaryFile.content) > 1:
-      Action('Split into parts',          self, ['split'],    context)
-      Action('Remove information',        self, ['remove'],   context)
-    context.exec(point.globalPos())
+      Action('Split into parts',          self, ['split', str(start)],    context)
+      Action('Remove information',        self, ['remove', str(start)],   context)
+    context.exec(globalPoint)
     return
 
 
@@ -208,34 +281,6 @@ class Table(QWidget):
     content  = self.comm.binaryFile.content
     if colName == 'important':
       content[start].important = not content[start].important
-    elif colName == 'dClass':
-      orderList = ['', 'metadata', 'primary', '']
-      idxList   = orderList.index(content[start].dClass)
-      content[start].dClass = orderList[idxList+1]
-    elif colName == 'prob':
-      orderArray = np.array([49, 100, 75, 50])
-      mask = orderArray>=content[start].prob
-      minValue = orderArray[mask].min() if len(orderArray[mask])>0 else 49
-      idxArray = np.argmin(np.abs(orderArray-minValue))
-      content[start].prob = int(orderArray[idxArray+1])
-    self.change()  #repaint
-    return
-
-
-  def cell2Clicked(self, item:QTableWidgetItem) -> None:
-    """
-    What happens when user double clicks cell in table of projects
-
-    Args:
-      item (QStandardItem): cell clicked
-    """
-    colName  = self.tableHeaders[item.column()]
-    if colName in ['unit','key','value']:
-      return
-    row = item.row()
-    start = self.rowIDs[row]
-    dialog = Form(self.comm, start)
-    dialog.exec()
     self.change()  #repaint
     return
 

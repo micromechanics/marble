@@ -27,8 +27,8 @@ class MetaEditor(QDialog):
     for key, value in self.metaFields.items():
       if key == 'endian':
         continue
-      # MARBLE supports only typical little-endian systems and input files.
-      # The metadata is retained for compatibility but is not configurable.
+      # MARBLE supports only typical little-endian systems and input files
+      # The metadata is retained for compatibility but is not configurable
       #
       # self.endianComboBox = QComboBox()
       # self.endianComboBox.addItems(['big','small'])

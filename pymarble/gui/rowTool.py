@@ -185,7 +185,7 @@ class RowTool(QDialog):
       self.graph.axes.legend()
     self.graph.axes.set_xlabel('increment')
     self.graph.axes.set_ylabel('numerical value')
-    self.graph.draw() # Trigger the canvas to update and redraw.
+    self.graph.draw() # Trigger the canvas to update and redraw
     return
 
 

@@ -13,7 +13,7 @@ from .fileClass import FileProtocol
 class InputOutput():
   """ Mixin that includes all input and output functions """
   def __init__(self:FileProtocol):
-    """ defaults if this class is used separately, aka. never.
+    """ defaults if this class is used separately, aka. never
     """
     self.file                      = io.BytesIO()
     self.periodicity:dict[str,int] = {}
@@ -344,16 +344,8 @@ class InputOutput():
     if plotMode==1:
       ax1 = plt.subplot(111)
       ax1.plot(valuesX, valuesY, '-o')
-      def toHex(num:str, _pos:int) -> str:
-        """
-        Args:
-          num: tick value as string
-        Returns:
-          hexadecimal tick label
-        """
-        return f'0x{int(num)}'
       if self.printMode=='hex':
-        ax1.get_xaxis().set_major_formatter(ticker.FuncFormatter(toHex))
+        ax1.get_xaxis().set_major_formatter(ticker.FuncFormatter(lambda num, _pos: f'0x{int(num)}'))
       yMin = np.percentile(valuesY,2)
       yMax = np.percentile(valuesY,98)
       yMin = 1.1*yMin-0.1*yMax
