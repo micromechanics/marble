@@ -52,7 +52,7 @@ class Automatic():
         allMethods |= {'i': 'Search for image'}
       if method == 'i':
         for startI in self.content if start==-1 else [start]:
-          self.find2DImage(start)
+          self.find2DImage(startI)
       if getMethods:
         allMethods |= {'p': 'Search for time series data'}
       if method == 'p':
@@ -88,14 +88,33 @@ class Automatic():
     Args:
       start: start position
     '''
+    # initialize
+    length = self.content[start].byteSize() if start in self.content else self.fileLength-start
+    if length <= 0:
+      return
     self.file.seek(start)
-    dataBin = struct.unpack(f'{str(self.fileLength)}B', self.file.read())
-    dataZero = np.where(np.array(dataBin)==0)[0]                  #where is zero
-    dataConsecutive = np.split(dataZero, np.where(np.diff(dataZero)!=1)[0]+1) #find consecutive areas
-    data = [ [i[0],len(i)] for i in dataConsecutive if len(i)>=self.optAutomatic['minZeros'] ]
-    for i in data:
-      section = Section(length=i[1], dType='B', value=f'Zeros {i[1]}', prob=10, entropy=0)
-      self.content[i[0]] = section
+    remaining = length
+    offset = start
+    trailingZeros = b''
+
+    while remaining: # read in chunks of 1MB
+      chunk = self.file.read(min(1024 * 1024, remaining))
+      if not chunk:
+        break
+      # use trailing zeros' from last loop
+      data = trailingZeros + chunk
+      dataStart = offset-len(trailingZeros)
+      trailingLength = len(data)-len(data.rstrip(b'\0'))
+      completeData = data[:-trailingLength] if trailingLength else data
+      for match in re.finditer(b'\0{'+str(self.optAutomatic['minZeros']).encode()+b',}', completeData):
+        runLength = len(match.group())
+        self.content[dataStart+match.start()] = Section(length=runLength, dType='B', value=f'Zeros {runLength}', prob=10, entropy=0)
+      trailingZeros = data[-trailingLength:] if trailingLength else b''
+      offset += len(chunk)
+      remaining -= len(chunk)
+    if len(trailingZeros) >= self.optAutomatic['minZeros']:
+      self.content[offset-len(trailingZeros)] = Section(length=len(trailingZeros), dType='B',
+                                                         value=f'Zeros {len(trailingZeros)}', prob=10, entropy=0)
     return
 
 

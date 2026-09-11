@@ -3,6 +3,7 @@ import logging
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit  # pylint: disable=no-name-in-module
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
+from ..section import safeText
 
 class MetaEditor(QDialog):
   """ Editor to change metadata of binary file """
@@ -55,7 +56,7 @@ class MetaEditor(QDialog):
         if key == 'endian':
           continue
           # self.metaFields[key]=self.endianComboBox.currentText()
-        self.metaFields[key]=getattr(self, f'key_{key}').text().strip()
+        self.metaFields[key]=safeText(getattr(self, f'key_{key}').text().strip())
       self.comm.binaryFile.meta = self.metaFields
       self.accept()
     else:

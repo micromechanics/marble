@@ -9,6 +9,7 @@ from .style import widgetAndLayout, Action, dClassColor
 from .defaults import dClass2Color, translateDtypeShort
 from .form import Form
 from .split import Split
+from ..section import safeText
 
 COLUMN_TOOLTIPS = {
   'actions':'Edit this section',
@@ -187,7 +188,7 @@ class Table(QWidget):
       colName  = self.tableHeaders[item.column()]
       if colName not in ['unit','key','value'] or self.comm.binaryFile is None:
         return
-      setattr(self.comm.binaryFile.content[start], colName, item.data(Qt.ItemDataRole.EditRole))
+      setattr(self.comm.binaryFile.content[start], colName, safeText(item.data(Qt.ItemDataRole.EditRole)))
       return
     if self.comm.binaryFile is None:
       return

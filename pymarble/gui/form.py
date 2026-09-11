@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, \
                               QSpinBox, QCheckBox, QWidget, QTextEdit  # pylint: disable=no-name-in-module
 from PySide6.QtGui import QFont  # pylint: disable=no-name-in-module
-from ..section import Section
+from ..section import Section, safeText
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
 from .terminologyLookup import TerminologyLookup
@@ -445,8 +445,8 @@ class Form(QDialog):
       entropy = -1.0
       dClass = '' if self.dClassCB.currentText()=='unknown' else self.dClassCB.currentText()
       section = Section(length=length, dType=dType,
-                        key=self.keyW.text(), unit=self.unitW.text(), value=value,
-                        link=self.linkW.text(), dClass=dClass, count=count, shape=shape,
+                        key=safeText(self.keyW.text()), unit=safeText(self.unitW.text()), value=safeText(value),
+                        link=safeText(self.linkW.text()), dClass=dClass, count=count, shape=shape,
                         prob=200, entropy=entropy, important=self.importantW.isChecked())
       #first save section with semi-infinite probability, fill/clean, save real section
       binaryFile.content[start] = section
