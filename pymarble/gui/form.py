@@ -332,9 +332,9 @@ class Form(QDialog):
         self.textEditW.setHtml(text)
       elif self.plotCB.currentText().endswith('byte value'):
         textArray = self.comm.binaryFile.byteToString(bytes(dataAll), 1).split(' ')
-        textArray = [i for i in textArray[:self.lead]]+ \
+        textArray = list(textArray[:self.lead])+ \
                     [f'<b>{i}</b>' for i in textArray[self.lead:-self.lead]]+ \
-                    [i for i in textArray[-self.lead:]]
+                    list(textArray[-self.lead:])
         text  = ' _ '.join([' '.join(textArray[i:i+8]) for i in range(0, len(textArray), 8)])
         self.textEditW.setHtml(text)
       else: #character
