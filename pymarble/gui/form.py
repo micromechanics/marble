@@ -137,7 +137,6 @@ class Form(QDialog):
     _, keyValueL = widgetAndLayout('H', mainL)
     self.keyW = QLineEdit(section.key,self)
     self.keyW.setToolTip('key')
-    self.keyW.setStyleSheet('background-color:#d8e0f4')
     keyValueL.addWidget(self.keyW)
     keyValueL.addWidget(QLabel('  :  '))
     self.valueW = QLineEdit(section.value,self)
@@ -150,7 +149,6 @@ class Form(QDialog):
     keyValueL.addSpacing(space)
     keyValueL.addWidget(QLabel('Unit:'))
     self.unitW = QLineEdit(section.unit,self)
-    self.unitW.setStyleSheet('background-color:#d8e0f4')
     self.unitW.setMaximumWidth(60)
     keyValueL.addWidget(self.unitW)
 
@@ -164,7 +162,6 @@ class Form(QDialog):
     dClassL.addSpacing(space)
     dClassL.addWidget(QLabel('Link:'))
     self.linkW = QLineEdit(section.link,self)
-    self.linkW.setStyleSheet('background-color:#d8e0f4')
     dClassL.addWidget(self.linkW)
     IconButton('fa5s.search', self, ['terminologyLookup'], dClassL, 'Lookup from terminology servers')
 
@@ -329,21 +326,20 @@ class Form(QDialog):
           style1, style2 = '6', '6'
         else:
           style1, style2 = '9.3e', '.3e'
-        text  =     ' '.join([f'<font color="#888888">{i:{style1}}</font>' for i in self.valuesY[:idxStart]])
+        text  =     ' '.join([f'{i:{style1}}' for i in self.valuesY[:idxStart]])
         text += ' '+' '.join([f'<b>{i:{style2}}</b>'                 for i in self.valuesY[idxStart:idxEnd]])
-        text += ' '+' '.join([f'<font color="#888888">{i:{style1}}</font>' for i in self.valuesY[idxEnd:]])
+        text += ' '+' '.join([f'{i:{style1}}' for i in self.valuesY[idxEnd:]])
         self.textEditW.setHtml(text)
       elif self.plotCB.currentText().endswith('byte value'):
         textArray = self.comm.binaryFile.byteToString(bytes(dataAll), 1).split(' ')
-        textArray = [f'<font color="#888888">{i}</font>' for i in textArray[:self.lead]]+ \
-                    [f'<b>{i}</b>'                       for i in textArray[self.lead:-self.lead]]+ \
-                    [f'<font color="#888888">{i}</font>' for i in textArray[-self.lead:]]
+        textArray = [i for i in textArray[:self.lead]]+ \
+                    [f'<b>{i}</b>' for i in textArray[self.lead:-self.lead]]+ \
+                    [i for i in textArray[-self.lead:]]
         text  = ' _ '.join([' '.join(textArray[i:i+8]) for i in range(0, len(textArray), 8)])
         self.textEditW.setHtml(text)
       else: #character
         text = bytearray(dataAll).decode('utf-8', errors='replace').replace('\x00','~')
-        text = f'<font color="#888888">{text[:idxStart]}</font><b>{text[idxStart:idxEnd]}</b>'+\
-               f'<font color="#888888">{text[idxEnd:]}</font>'
+        text = f'{text[:idxStart]}<b>{text[idxStart:idxEnd]}</b>{text[idxEnd:]}'
         self.textEditW.setHtml(text)
       self.graph.hide()
       self.graphToolbar.hide()

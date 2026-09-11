@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget, QComboBox, QMenu, QMessageBox, QTableWidg
 from PySide6.QtCore import Qt, QPoint, Slot                     # pylint: disable=no-name-in-module
 from PySide6.QtGui import QFont, QResizeEvent # pylint: disable=no-name-in-module
 from .communicate import Communicate
-from .style import widgetAndLayout, Action, hexToColor
+from .style import widgetAndLayout, Action, dClassColor
 from .defaults import dClass2Color, translateDtypeShort
 from .form import Form
 from .split import Split
@@ -84,9 +84,6 @@ class Table(QWidget):
       headerItem = self.table.horizontalHeaderItem(idx)
       if headerItem is not None:
         headerItem.setToolTip(COLUMN_TOOLTIPS.get(title, f'Section {title}'))
-      if title in ['start','length','count','shape','entropy','link','dType']:
-        if headerItem is not None:
-          headerItem.setBackground(hexToColor('#d8e0f4'))
     self.table.setRowCount(len(content))
     self.rowIDs  = []
     # use content to build models
@@ -134,7 +131,8 @@ class Table(QWidget):
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled | Qt.ItemIsEditable)# type: ignore
         else:
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
-        item.setBackground(hexToColor(dClass2Color[rowData['dClass']]))
+        if backgroundColor := dClassColor(rowData['dClass'], dClass2Color):
+          item.setBackground(backgroundColor)
         self.table.setItem(row, col, item)
         if key == 'dClass':
           combo = QComboBox()

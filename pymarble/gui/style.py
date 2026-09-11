@@ -1,9 +1,9 @@
 """ all styling of buttons and other general widgets, some defined colors... """
 import logging
 from typing import Any, Callable, Protocol
-from PySide6.QtWidgets import QPushButton, QLabel, QSizePolicy, QMessageBox, QLayout, QWidget, QMenu, \
+from PySide6.QtWidgets import QApplication, QPushButton, QLabel, QSizePolicy, QMessageBox, QLayout, QWidget, QMenu, \
                               QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout # pylint: disable=no-name-in-module
-from PySide6.QtGui import QImage, QPixmap, QAction, QKeySequence, QMouseEvent, QColor    # pylint: disable=no-name-in-module
+from PySide6.QtGui import QImage, QPixmap, QAction, QKeySequence, QMouseEvent, QColor, QPalette    # pylint: disable=no-name-in-module
 from PySide6.QtCore import QByteArray, Qt           # pylint: disable=no-name-in-module
 from PySide6.QtSvgWidgets import QSvgWidget         # pylint: disable=no-name-in-module
 import qtawesome as qta
@@ -58,7 +58,7 @@ class TextButton(QPushButton):
     if hide:
       self.hide()
     if iconName:
-      icon = qta.icon(iconName, color='black', scale_factor=1)
+      icon = qta.icon(iconName, color=paletteTextColor(), scale_factor=1)
       self.setIcon(icon)
     if layout is not None:
       layout.addWidget(self)
@@ -79,7 +79,7 @@ class IconButton(QPushButton):
       hide (bool): hidden or shown initially
     """
     super().__init__()
-    icon = qta.icon(iconName, color='black', scale_factor=1)
+    icon = qta.icon(iconName, color=paletteTextColor(), scale_factor=1)
     self.setIcon(icon)
     self.clicked.connect(lambda: widget.execute(command))
     self.setFixedHeight(30)
@@ -113,7 +113,7 @@ class Action(QAction):
     self.setText(label)
     self.triggered.connect(lambda : widget.execute(command))
     if icon:
-      self.setIcon(qta.icon(icon, scale_factor=1))
+      self.setIcon(qta.icon(icon, color=paletteTextColor(), scale_factor=1))
     if shortcut:
       self.setShortcut(QKeySequence(shortcut))
     menu.addAction(self)
@@ -292,3 +292,22 @@ def hexToColor(code:str) -> QColor:
   codeHex = code.replace("#", "")
   rgb = tuple(int(codeHex[i:i+2], 16) for i in (0, 2, 4))
   return QColor.fromRgb(rgb[0], rgb[1], rgb[2])
+
+
+def paletteTextColor() -> str:
+  """Return the current Qt text color for theme-aware icons."""
+  return QApplication.palette().color(QPalette.ColorRole.ButtonText).name()
+
+
+def dClassColor(dClass:str, accents:dict[str, str]) -> QColor | None:
+  """Return a theme-aware background for a meaningful data class."""
+  if dClass not in accents:
+    return None
+  base = QApplication.palette().color(QPalette.ColorRole.Base)
+  accent = hexToColor(accents[dClass])
+  mix = 0.25
+  return QColor.fromRgb(*[
+    round(baseComponent * (1 - mix) + accentComponent * mix)
+    for baseComponent, accentComponent in zip((base.red(), base.green(), base.blue()),
+                                                (accent.red(), accent.green(), accent.blue()))
+  ])
