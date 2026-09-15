@@ -366,4 +366,3 @@ def readData(relPos, format):
 def safeText(value:str) -> str:
   """Return text that can safely be embedded in a generated Python converter."""
   return ''.join(character for character in value if character not in "\\\r\n'\"")
-
