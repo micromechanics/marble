@@ -3,12 +3,12 @@
 [![pypi](https://github.com/micromechanics/marble/actions/workflows/pypi.yml/badge.svg)](https://github.com/micromechanics/marble/actions/workflows/pypi.yml)
 [![coverage](https://codecov.io/gh/micromechanics/marble/graph/badge.svg?token=3Z5TL6SG1H)](https://codecov.io/gh/micromechanics/marble)
 
-# Software for deciphering proprietary binary data files | Developer notes
+# Software for deciphering proprietary binary data files | Developer hints
 
 
 > :warning: **Users: all documentation is available on [GitHub Pages](https://micromechanics.github.io/marble/).**
 >
-> **This page is for developers and contains helpful project notes.**
+> **This page is for developers and contains helpful project hints**
 
 ---
 
@@ -77,7 +77,7 @@ Optional legacy e2e/tutorial regression:
 ``` bash
 bash tests/testBackend.sh
 ```
-Note: `testBackend.sh` uses the external tool `punx` and writes generated files to `tests/examples/`.
+info: `testBackend.sh` uses the external tool `punx` and writes generated files to `tests/examples/`.
 
 ### Create code coverage
 ``` bash
