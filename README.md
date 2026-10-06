@@ -17,8 +17,9 @@
 - Volker Hofmann (IAS-9 and HMC, FZJ)
 - Fiona D'Mello (IAS-9 and HMC, FZJ)
 
-## Open Issues
-No known open issues are tracked in this developer README.
+## Issues
+
+## Notes
 
 ## Documentation
 ### Backend
