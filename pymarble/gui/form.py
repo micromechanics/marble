@@ -243,7 +243,7 @@ class Form(QDialog):
     lineStyle = '-'
     if self.plotCB.currentText().endswith('byte value') or self.plotCB.currentText().endswith('character') or\
        (dType in {'b', 'B'} and self.plotCB.currentText().endswith('numerical value')):
-      valuesX = np.arange(-lead*byteSize, (length+lead)*byteSize)
+      valuesX: np.ndarray = np.arange(-lead*byteSize, (length+lead)*byteSize)
       self.valuesY = list(dataAll)
       limitX  = length*byteSize
       labelY  = 'byte value'
@@ -308,7 +308,7 @@ class Form(QDialog):
       self.textEditW.hide()
       self.graphToolbar.show()
       self.graph.show()
-    elif self.plotCB.currentText().startswith('print'): #many bugs and formating issues -> to html
+    elif self.plotCB.currentText().startswith('print'): #many bugs and formatting issues -> to html
       # - if integer and integer is small print as 0001
       if len(dataAll)>self.critPrint:
         scaleDown = max(int(length/self.critPrint), 1)

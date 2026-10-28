@@ -95,7 +95,7 @@ def main(argv:list[str]) -> None:
         elif command.startswith('e'):
           fBIN.useExportedFile(command.split()[1])                # type: ignore[misc]
 
-        # print informaton
+        # print information
         elif command.startswith('p'):
           fBIN.printNext(int(command.split()[1]),command[1])      # type: ignore[misc]
         elif command.startswith('a'):

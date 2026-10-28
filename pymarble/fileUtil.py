@@ -198,7 +198,7 @@ class Util():
           self.content[end] = Section(length=starts[idx+1]-end, dType='b', value=text)
           self.entropy(end, False)
         elif end>starts[idx+1]:
-          #there is an overlapp, shorten something
+          #there is an overlap, shorten something
           if section.prob < self.content[ starts[idx+1] ].prob: #repair: shorten this section
             if struct.calcsize(section.dType)>1:
               # print("**WARNING: shorten this section with possibly important data, data-length>1B.")
@@ -302,7 +302,7 @@ class Util():
         break
       if re.search(r'^k\d+=', section.key) and section.dType=='i':
         prevKvariables += 1
-    # look immediately infront
+    # look immediately in front
     if maxOffset > 3:
       for dType in ['H','i','h']:
         byteSize = struct.calcsize(dType)
@@ -420,7 +420,7 @@ class Util():
 
   def pretty(self:FileProtocol, number:int) -> str:
     '''
-    convert decimal or hexdecimal number in easy to read string
+    convert decimal or hexadecimal number in easy to read string
 
     Args:
         number: integer to convert to hex

@@ -284,7 +284,7 @@ def main() -> None:
   import qtawesome as qta
   if not isinstance(qta.icon('fa5s.times'), QIcon):
     logging.error('qtawesome: could not load. Likely matplotlib is included and can not coexist.')
-  # end test coexistance
+  # end test coexistence
   window.show()
   app.exec()
   logging.info('End MARBLE GUI')

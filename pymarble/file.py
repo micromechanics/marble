@@ -19,7 +19,7 @@ class BinaryFile(InputOutput, Automatic, Util, Commandline):
 
     Args:
       filename: name of file
-      verbose: verbose output. 0=no output; 1=minmal; 2=more
+      verbose: verbose output. 0=no output; 1=minimal; 2=more
       fileType: disk or data
       config: configuration from file
 

@@ -213,7 +213,7 @@ class Automatic():
     for col in range(dataTXT.shape[1]):
       idxMax = np.argmax(dataTXT[:,col])
       valMax = dataTXT[idxMax,col]
-      # Above change allowed fot test script to run successfully
+      # Above change allowed for test script to run successfully
       if self.verbose>1:
         print('\nStart with column:',col,' max. value:',valMax)
       bestOffset, bestMax, bestDType = None, None, None

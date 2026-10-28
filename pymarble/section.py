@@ -21,7 +21,7 @@ import numpy as np
 #   - 0 unidentified
 #   - 10 sequences of 00 or FF
 #   - 40-60 ascii strings: the longer the higher with cutoff at 10-long;
-#           ascii stings include the following 00
+#           ascii strings include the following 00
 #   - 40-60 sequences: tho longer the higher: cutoff at 100-long
 #   - 100   if manually set key,unit,link
 # entropy -> see automaticIdentify:entropy

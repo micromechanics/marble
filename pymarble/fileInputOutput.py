@@ -166,7 +166,7 @@ class InputOutput():
         fOut.write('  fIn.seek(0)\n')
         fOut.write('  '+line)
         self.content[start].dClass='metadata'  #count->metadata
-      #body: things other than foor loop
+      #body: things other than for loop
       fOut.write('  fIn.seek(0)\n')
       lastOutput = 0
       if not bool(self.periodicity):  #if no periodicity
@@ -228,7 +228,7 @@ class InputOutput():
         lineData['value'] = lineData['value'].replace('\\','\\\\')
         lineData['entropy'] = round(lineData['entropy'],2)
         dataframe = pd.concat([dataframe, pd.Series(lineData).to_frame().T], ignore_index=True)
-      dataframe = dataframe[SECTION_OUTPUT_ORDER]         #sort colums by defined order
+      dataframe = dataframe[SECTION_OUTPUT_ORDER]         #sort columns by defined order
       dataframe.to_csv(fOut, index=False)
       fOut.write("'''\n")
     return

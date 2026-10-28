@@ -62,7 +62,7 @@ class Table(QWidget):
     Change / Refresh / Repaint
 
     Args:
-      resizeColumns (bool): resize colums depending of window width
+      resizeColumns (bool): resize columns depending of window width
     """
     if self.comm.binaryFile is None:
       return
