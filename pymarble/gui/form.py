@@ -2,6 +2,7 @@
 import struct, logging
 from typing import Any
 import numpy as np
+from numpy.typing import NDArray
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
@@ -243,7 +244,7 @@ class Form(QDialog):
     lineStyle = '-'
     if self.plotCB.currentText().endswith('byte value') or self.plotCB.currentText().endswith('character') or\
        (dType in {'b', 'B'} and self.plotCB.currentText().endswith('numerical value')):
-      valuesX: np.ndarray[Any, Any] = np.arange(-lead*byteSize, (length+lead)*byteSize)
+      valuesX: NDArray[Any] = np.arange(-lead*byteSize, (length+lead)*byteSize)
       self.valuesY = list(dataAll)
       limitX  = length*byteSize
       labelY  = 'byte value'
