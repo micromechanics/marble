@@ -243,7 +243,7 @@ class Form(QDialog):
     lineStyle = '-'
     if self.plotCB.currentText().endswith('byte value') or self.plotCB.currentText().endswith('character') or\
        (dType in {'b', 'B'} and self.plotCB.currentText().endswith('numerical value')):
-      valuesX: np.ndarray = np.arange(-lead*byteSize, (length+lead)*byteSize)
+      valuesX: np.ndarray[Any, Any] = np.arange(-lead*byteSize, (length+lead)*byteSize)
       self.valuesY = list(dataAll)
       limitX  = length*byteSize
       labelY  = 'byte value'
