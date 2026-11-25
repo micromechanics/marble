@@ -288,6 +288,19 @@ computers. Big-endian files are outside the current scope. If every multi-byte
 value is implausibly large, tiny, or patterned, first confirm that the source
 file is little-endian; otherwise use a tool that supports its byte order.
 
+Compressed data and container files
+-----------------------------------
+
+MARBLE describes a file as one linear sequence of sections. Compressed data
+(e.g. zlib/deflate, PKWARE implode) and container formats whose streams are
+scattered over the file (e.g. OLE2 compound files, ZIP) are outside the current
+scope: MARBLE cannot decompress or reassemble them, and its converter cannot
+read them. Signs are an entropy close to 8 bits per byte throughout, or known
+container signatures such as ``d0 cf 11 e0`` (OLE2) or ``PK`` (ZIP). Extract and
+decompress such data with a dedicated tool first; MARBLE can then analyse the
+extracted streams, but the converter for the original file has to be written
+separately.
+
 General recovery procedure
 --------------------------
 
