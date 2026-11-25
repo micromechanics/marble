@@ -38,7 +38,7 @@ fOut.attrs['default'] = b'test_1'
 
 
 
-def addAttrs(relPos, format, hdfBranch, key):
+def addAttrs(relPos, format, hdfBranch, key, unit=''):
   '''
   helper function: add attribute to branch
 
@@ -47,6 +47,7 @@ def addAttrs(relPos, format, hdfBranch, key):
     format: data to read, int=numb. of chars, otherwise 4i
     hdfBrach: branch to add
     key: name of the key
+    unit: unit of the value, saved as attribute key_units
 
   Returns:
     none
@@ -55,14 +56,16 @@ def addAttrs(relPos, format, hdfBranch, key):
   if '-v' in sys.argv:
     print('add Attrs', fIn.tell(), end=' ')
   key = key.lower().replace(' ','_')
+  if hdfBranch and unit:
+    hdfBranch.attrs[key+'_units'] = unit
   if type(format)==int:
     value = bytearray(source=fIn.read(format)).decode('latin-1')
     if hdfBranch:
-      hdfBranch.attrs[key] = value.replace('\x00','')
+      hdfBranch.attrs[key] = value.split('\x00')[0]
   else:
     value = struct.unpack(format, fIn.read(struct.calcsize(format)))
     if hdfBranch:
-      if len(value)==0:
+      if len(value)==1:
         hdfBranch.attrs[key] = value[0]
       else:
         hdfBranch.attrs[key] = value
@@ -136,7 +139,9 @@ try:
   fIn.seek(0)
   numberOfTests = readData(0, "1i")[0]
   fIn.seek(0)
-  addAttrs(0, "1i", None, "peridicity_count")
+  hdfSettings = fOut.create_group("settings")
+  hdfSettings.attrs["NX_class"] = b"NXparameters"
+  addAttrs(0, "1i", hdfSettings, "peridicity_count")
   for idxTest in range(numberOfTests):
     hdfBranch_ = fOut.create_group("test_"+str(idxTest+1))
     hdfBranch_.attrs["NX_class"] = b"NXentry"
@@ -165,7 +170,7 @@ except Exception as error:
 # periodicity={"count": 0, "start": 4, "end": 64016}
 # rowFormatMeta=[]
 # rowFormatSegments=[]
-# length=170
+# length=146
 length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
 1,i,peridicity:count,,,count,[],[1],100,1.15,True,unknown binary string
 1,i,cycle_number,,,metadata,[],[1],100,0.92,True,unknown binary string
@@ -192,27 +197,19 @@ length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
 244,B,,,,,[],[244],10,0.0,False,Zeros 244
 111,b,,,,,[],[111],0,4.25,False,unknown binary string
 17,B,,,,,[],[17],10,0.0,False,Zeros 17
-4072,b,,,,,[],[4072],0,4.55,False,unknown binary string
-21,c,,,,,[],[20],40,3.45,False,added messageToFIFO
-67,b,,,,,[],[67],0,4.33,False,unknown binary string
-22,c,,,,,[],[22],40,3.88,False,CInterface::AddNewByte
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-41,c,,,,,[],[20],40,4.29,False,added messageToFIFO
+4160,b,,,,,[],[4160],0,4.55,False,unknown binary string
+65,c,,,,,[],[44],40,4.76,False,CInterface::AddNewByte() added messageToFIFO
 539,b,,,,,[],[539],0,3.74,False,unknown binary string
 16,B,,,,,[],[16],10,0.0,False,Zeros 16
 1424,b,,,,,[],[1424],0,4.37,False,unknown binary string
-20,c,,,,,[],[20],40,3.58,False,CInterface::readLine
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-14,c,,,,,[],[13],36,2.82,False,COM_NO_ERROR
+36,c,,,,,[],[35],40,4.29,False,CInterface::readLine() COM_NO_ERROR
 72,b,,,,,[],[72],0,4.38,False,unknown binary string
-20,c,,,,,[],[20],40,3.58,False,CInterface::readLine
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-33,c,,,,,[],[13],36,3.69,False,COM_NO_ERROR
+55,c,,,,,[],[35],40,4.64,False,CInterface::readLine() COM_NO_ERROR
 660,b,,,,,[],[660],0,4.58,False,unknown binary string
 17,B,,,,,[],[17],10,0.0,False,Zeros 17
-1239,b,,,,,[],[1239],0,4.17,False,unknown binary string
-35,c,,,,,[],[35],40,4.24,False,CPiGcs2Functions::ReadStringCommand
-1253,b,,,,,[],[1253],0,4.44,False,unknown binary string
+1237,b,,,,,[],[1237],0,4.17,False,unknown binary string
+38,c,,,,,[],[38],40,4.32,False,--CPiGcs2Functions::ReadStringCommand(
+1252,b,,,,,[],[1252],0,4.44,False,unknown binary string
 2007,c,,,,,[],[13],36,1.7,False,eitForSocket
 2938,b,,,,,[],[2938],0,0.0,False,unknown binary string
 16,B,,,,,[],[16],10,0.0,False,Zeros 16
@@ -246,28 +243,20 @@ length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
 111,b,,,,,[],[111],0,4.25,False,unknown binary string
 17,B,,,,,[],[17],10,0.0,False,Zeros 17
 4048,b,,,,,[],[4048],0,4.55,False,unknown binary string
-22,c,,,,,[],[22],40,3.88,False,CInterface::AddNewByte
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-21,c,,,,,[],[20],40,3.45,False,added messageToFIFO
+45,c,,,,,[],[44],40,4.37,False,CInterface::AddNewByte() added messageToFIFO
 67,b,,,,,[],[67],0,4.33,False,unknown binary string
-22,c,,,,,[],[22],40,3.88,False,CInterface::AddNewByte
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-41,c,,,,,[],[20],40,4.29,False,added messageToFIFO
+65,c,,,,,[],[44],40,4.76,False,CInterface::AddNewByte() added messageToFIFO
 539,b,,,,,[],[539],0,3.74,False,unknown binary string
 16,B,,,,,[],[16],10,0.0,False,Zeros 16
 1424,b,,,,,[],[1424],0,4.37,False,unknown binary string
-20,c,,,,,[],[20],40,3.58,False,CInterface::readLine
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-14,c,,,,,[],[13],36,2.82,False,COM_NO_ERROR
+36,c,,,,,[],[35],40,4.29,False,CInterface::readLine() COM_NO_ERROR
 72,b,,,,,[],[72],0,4.38,False,unknown binary string
-20,c,,,,,[],[20],40,3.58,False,CInterface::readLine
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-33,c,,,,,[],[13],36,3.69,False,COM_NO_ERROR
+55,c,,,,,[],[35],40,4.64,False,CInterface::readLine() COM_NO_ERROR
 660,b,,,,,[],[660],0,4.58,False,unknown binary string
 17,B,,,,,[],[17],10,0.0,False,Zeros 17
-1239,b,,,,,[],[1239],0,4.12,False,unknown binary string
-35,c,,,,,[],[35],40,4.24,False,CPiGcs2Functions::ReadStringCommand
-1253,b,,,,,[],[1253],0,4.44,False,unknown binary string
+1237,b,,,,,[],[1237],0,4.12,False,unknown binary string
+38,c,,,,,[],[38],40,4.32,False,--CPiGcs2Functions::ReadStringCommand(
+1252,b,,,,,[],[1252],0,4.44,False,unknown binary string
 2007,c,,,,,[],[13],36,1.7,False,eitForSocket
 2938,b,,,,,[],[2938],0,0.0,False,unknown binary string
 16,B,,,,,[],[16],10,0.0,False,Zeros 16
@@ -301,28 +290,20 @@ length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
 111,b,,,,,[],[111],0,4.25,False,unknown binary string
 17,B,,,,,[],[17],10,0.0,False,Zeros 17
 4048,b,,,,,[],[4048],0,4.55,False,unknown binary string
-22,c,,,,,[],[22],40,3.88,False,CInterface::AddNewByte
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-21,c,,,,,[],[20],40,3.45,False,added messageToFIFO
+45,c,,,,,[],[44],40,4.37,False,CInterface::AddNewByte() added messageToFIFO
 67,b,,,,,[],[67],0,4.33,False,unknown binary string
-22,c,,,,,[],[22],40,3.88,False,CInterface::AddNewByte
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-41,c,,,,,[],[20],40,4.29,False,added messageToFIFO
+65,c,,,,,[],[44],40,4.76,False,CInterface::AddNewByte() added messageToFIFO
 539,b,,,,,[],[539],0,3.74,False,unknown binary string
 16,B,,,,,[],[16],10,0.0,False,Zeros 16
 1424,b,,,,,[],[1424],0,4.37,False,unknown binary string
-20,c,,,,,[],[20],40,3.58,False,CInterface::readLine
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-14,c,,,,,[],[13],36,2.82,False,COM_NO_ERROR
+36,c,,,,,[],[35],40,4.29,False,CInterface::readLine() COM_NO_ERROR
 72,b,,,,,[],[72],0,4.38,False,unknown binary string
-20,c,,,,,[],[20],40,3.58,False,CInterface::readLine
-2,b,,,,,[],[2],0,0.0,False,unknown binary string
-33,c,,,,,[],[13],36,3.69,False,COM_NO_ERROR
+55,c,,,,,[],[35],40,4.64,False,CInterface::readLine() COM_NO_ERROR
 660,b,,,,,[],[660],0,4.58,False,unknown binary string
 17,B,,,,,[],[17],10,0.0,False,Zeros 17
-1239,b,,,,,[],[1239],0,4.12,False,unknown binary string
-35,c,,,,,[],[35],40,4.24,False,CPiGcs2Functions::ReadStringCommand
-1253,b,,,,,[],[1253],0,4.44,False,unknown binary string
+1237,b,,,,,[],[1237],0,4.12,False,unknown binary string
+38,c,,,,,[],[38],40,4.32,False,--CPiGcs2Functions::ReadStringCommand(
+1252,b,,,,,[],[1252],0,4.44,False,unknown binary string
 2007,c,,,,,[],[13],36,1.7,False,eitForSocket
 2938,b,,,,,[],[2938],0,0.0,False,unknown binary string
 16,B,,,,,[],[16],10,0.0,False,Zeros 16

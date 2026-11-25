@@ -26,6 +26,7 @@ COLUMN_TOOLTIPS = {
   'entropy':'Calculated entropy of this section',
   'important':'Click to include or exclude this section from generated output',
   'value':'Click to edit the displayed value or description',
+  'note':'Click to edit the note, e.g. evidence for this identification',
 }
 
 class Table(QWidget):
@@ -128,7 +129,7 @@ class Table(QWidget):
         else:
           item = QTableWidgetItem(str(rowData[key]))
         item.setToolTip(COLUMN_TOOLTIPS.get(key, f'Section {key}'))
-        if key in ['unit','key','value']:
+        if key in ['unit','key','value','note']:
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled | Qt.ItemIsEditable)# type: ignore
         else:
           item.setFlags(Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsEnabled)   # type: ignore[operator]
@@ -186,7 +187,7 @@ class Table(QWidget):
         return
       start = self.rowIDs[item.row()]
       colName  = self.tableHeaders[item.column()]
-      if colName not in ['unit','key','value'] or self.comm.binaryFile is None:
+      if colName not in ['unit','key','value','note'] or self.comm.binaryFile is None:
         return
       setattr(self.comm.binaryFile.content[start], colName, safeText(item.data(Qt.ItemDataRole.EditRole)))
       return

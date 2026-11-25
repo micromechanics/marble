@@ -38,7 +38,7 @@ fOut.attrs['default'] = b'test_1'
 
 
 
-def addAttrs(relPos, format, hdfBranch, key):
+def addAttrs(relPos, format, hdfBranch, key, unit=''):
   '''
   helper function: add attribute to branch
 
@@ -47,6 +47,7 @@ def addAttrs(relPos, format, hdfBranch, key):
     format: data to read, int=numb. of chars, otherwise 4i
     hdfBrach: branch to add
     key: name of the key
+    unit: unit of the value, saved as attribute key_units
 
   Returns:
     none
@@ -55,14 +56,16 @@ def addAttrs(relPos, format, hdfBranch, key):
   if '-v' in sys.argv:
     print('add Attrs', fIn.tell(), end=' ')
   key = key.lower().replace(' ','_')
+  if hdfBranch and unit:
+    hdfBranch.attrs[key+'_units'] = unit
   if type(format)==int:
     value = bytearray(source=fIn.read(format)).decode('latin-1')
     if hdfBranch:
-      hdfBranch.attrs[key] = value.replace('\x00','')
+      hdfBranch.attrs[key] = value.split('\x00')[0]
   else:
     value = struct.unpack(format, fIn.read(struct.calcsize(format)))
     if hdfBranch:
-      if len(value)==0:
+      if len(value)==1:
         hdfBranch.attrs[key] = value[0]
       else:
         hdfBranch.attrs[key] = value
@@ -142,7 +145,8 @@ try:
   addAttrs(6788, 52, hdfBranch, "displacement_label")
   addAttrs(5944, 40, hdfBranch, "force_label")
   addAttrs(8276, 64, hdfBranch, "process_name")
-  addAttrs(11016, 32, hdfBranch, "some_name")
+  strLen29400 = readData(8188, "1i")[0]
+  addAttrs(2824, 32, hdfBranch, "some_name")
   addAttrs(26188, 273, hdfBranch, "path_name")
   addData(10559, f"{k1}d", hdfBranch, "time", "{'unit': 's', 'link': ''}")
   addData(0, f"{k1}f", hdfBranch, "displacement", "{'unit': 'mm', 'link': ''}")
@@ -164,7 +168,7 @@ except Exception as error:
 # periodicity={}
 # rowFormatMeta=[]
 # rowFormatSegments=[]
-# length=511
+# length=510
 length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
 44,b,,,,,[],[998496],0,3.58,False,unknown binary string
 1,i,k1=58076,,,count,[],[1],100,1.58,True,
@@ -520,18 +524,17 @@ length,dType,key,unit,link,dClass,count,shape,prob,entropy,important,value
 78,B,,,,,[],[78],10,0.0,False,Zeros 78
 172,b,,,,,[],[172],0,2.44,False,unknown binary string
 144,B,,,,,[],[144],10,0.0,False,Zeros 144
-20,b,,,,,[],[20],0,1.36,False,unknown binary string
-10,c,,,,,[],[10],30,2.95,False,Operator:
+16,b,,,,,[],[16],0,1.43,False,unknown binary string
+1,i,strLen29400=10,,,count,[],[1],34,0.92,True,
+10,c,,,,,[29400],[10],34,2.95,False,Operator:
 4,b,,,,,[],[4],0,1.58,False,unknown binary string
-10,c,,,,,[],[10],30,2.95,False,Material:
-4,b,,,,,[],[4],0,1.58,False,unknown binary string
-170,c,,,,,[],[11],32,0.65,False,File name:
-20,b,,,,,[],[20],0,0.0,False,unknown binary string
+12,c,,,,,[],[12],34,3.28,False,Material: &m
+2,b,,,,,[],[2],0,0.0,False,unknown binary string
+172,c,,,,,[],[13],36,0.65,False,File name: &f
+18,b,,,,,[],[18],0,3.62,False,unknown binary string
 182,B,,,,,[],[182],10,0.0,False,Zeros 182
-11,b,,,,,[],[11],0,2.92,False,unknown binary string
-189,B,,,,,[],[189],10,0.0,False,Zeros 189
-13,b,,,,,[],[13],0,3.02,False,unknown binary string
-195,B,,,,,[],[195],10,0.0,False,Zeros 195
+200,c,,,,,[],[11],32,0.48,False,Test&Motion
+208,c,,,,,[],[13],36,0.53,False,Page &p of &a
 10,b,,,,,[],[10],0,1.88,False,unknown binary string
 386,B,,,,,[],[386],10,0.0,False,Zeros 386
 6,b,,,,,[],[6],0,1.52,False,unknown binary string

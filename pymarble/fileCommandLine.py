@@ -61,10 +61,11 @@ class Commandline():
       printBinary: print also binary entries
     '''
     table = PrettyTable()
-    table.field_names = ['position']+SECTION_OUTPUT_ORDER
+    withNote = any(self.content[i].note for i in self.content)  #optional column: only if used
+    table.field_names = ['position']+SECTION_OUTPUT_ORDER[:None if withNote else -1]
     for start in self.content:
       if self.content[start].dType not in ['b','B'] or printBinary:
-        row = [start]+self.content[start].toList()
+        row = [start]+self.content[start].toList()[:None if withNote else -1]
         if self.printMode=='hex':
           row[0] = self.pretty(row[0])
           row[1] = self.pretty(row[1])

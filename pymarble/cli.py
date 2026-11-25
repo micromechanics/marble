@@ -32,8 +32,10 @@ def printHelp() -> None:
   print('y <seq>      : remove list of sections ')
   print('t <c> <s> <e>: mark periodicity in multiTest file: c-position of count; s-postion of')
   print('               periodicity start; e-position of periodicity end')
+  print('rf <s> <k> <t> [key:unit,...]: data in rows starting at s: k values of dType t per row')
   print('--- Other functions ---')
-  print('c <file name>: compare / diff to other binary file')
+  print('c <file names> [anchor=<regex>]: compare to other binary files: constant / varying bytes;')
+  print('               with anchor: split files into units at the regex and compare the units')
   print('x mode       : switch between dec/hex mode')
   print('ot           : output tags file')
   print('it           : read tags file')
@@ -106,6 +108,10 @@ def main(argv:list[str]) -> None:
         # read/write identified
         elif command.startswith('l'):
           fBIN.printList(command.endswith('a'))                   # type: ignore[misc]
+        elif command.startswith('rf'):  #rows: rf <start> <numColumns> <dType> [key:unit,key:unit,...]
+          parts = command.split()
+          columns = [dict(zip(['key','unit'], i.split(':'))) for i in parts[4].split(',')] if len(parts)>4 else None
+          fBIN.setRowFormat(int(parts[1],0), int(parts[2]), parts[3], columns=columns)  # type: ignore[misc]
         elif command.startswith('r'):  #manually labeled
           parts = command.split()
           fBIN.label(start=int(parts[1]), data=' '.join(parts[2:]) )                    # type: ignore[misc]
@@ -120,6 +126,10 @@ def main(argv:list[str]) -> None:
           fBIN.periodicity =  dict(zip(['count','start','end'],[int(i) for i in command.split()[1:]]))
 
         # misc. functions
+        elif command.startswith('c '):  #c <file> [<file> ...] [anchor=<regex>]
+          parts = command.split()[1:]
+          anchors = [i[7:] for i in parts if i.startswith('anchor=')]
+          fBIN.compare([i for i in parts if not i.startswith('anchor=')], anchors[0] if anchors else None)  # type: ignore[misc]
         elif command=='x mode':
           fBIN.printMode='hex' if fBIN.printMode=='dec' else 'dec'
         elif command=='ot':

@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 from PySide6.QtCore import Qt  # pylint: disable=no-name-in-module
+from PySide6.QtWidgets import QApplication  # pylint: disable=no-name-in-module
 
 from pymarble.gui.defaults import defaultConfiguration
 from pymarble.gui.gui import MainWindow
@@ -33,6 +34,7 @@ def test_gui_tutorial_screenshots(qtbot, tmp_path):
   screenshotDirectory = repository/'docs'/'source'/'_static'/'GuiTutorial'
   screenshotDirectory.mkdir(parents=True, exist_ok=True)
 
+  QApplication.styleHints().setColorScheme(Qt.ColorScheme.Light)  #screenshots independent of desktop theme
   configuration = copy.deepcopy(defaultConfiguration)
   configuration['columns'] = ['start', 'length', 'dType', 'key', 'unit', 'prob', 'important', 'value']
   window = MainWindow(configuration, str(sample))

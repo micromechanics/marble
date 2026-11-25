@@ -26,8 +26,8 @@ class BinaryFile(InputOutput, Automatic, Util, Commandline):
     '''
     super().__init__()
     #All options should be here. GUI can change these defaults and these are also present in defaults.py
-    self.optFind      = {'maxError':1e-4}
-    self.optAutomatic = {'minChars':10,   'minArray': 50, 'maxExp':11, 'minZeros':16, 'minEntropy':3}
+    self.optFind      = {'maxError':1e-4, 'maxErrorExport':1e-2}
+    self.optAutomatic = {'minChars':10,   'minArray': 50, 'maxExp':11, 'minZeros':16, 'minEntropy':3, 'maxFieldsPerRegion':32}
     self.optEntropy   = {'blockSize':256, 'skipEvery':5}
     if config:
       self.optFind      |= config.get('optFind', {})

@@ -34,6 +34,7 @@ class Form(QDialog):
     #definitions: no self.length etc. since content of textfields only truth
     section  = self.comm.binaryFile.content[start]
     self.lengthInitial = int(section.length)
+    self.note = section.note  #not editable in form; keep when saving
     self.lead = 20
     self.critPlot = 50000
     self.critPrint= 200
@@ -448,7 +449,7 @@ class Form(QDialog):
       section = Section(length=length, dType=dType,
                         key=safeText(self.keyW.text()), unit=safeText(self.unitW.text()), value=safeText(value),
                         link=safeText(self.linkW.text()), dClass=dClass, count=count, shape=shape,
-                        prob=200, entropy=entropy, important=self.importantW.isChecked())
+                        prob=200, entropy=entropy, important=self.importantW.isChecked(), note=self.note)
       #first save section with semi-infinite probability, fill/clean, save real section
       binaryFile.content[start] = section
       binaryFile.fill()                                   # type: ignore[misc]

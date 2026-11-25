@@ -1,5 +1,5 @@
 """input and output to files; plot to screen"""
-import os, io, struct, json, logging, html
+import os, io, re, struct, json, logging, html
 import xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape, quoteattr
 import numpy as np
@@ -174,6 +174,9 @@ class InputOutput():
         fOut.write('  hdfBranch_.attrs["NX_class"] = b"NXentry"\n')
         fOut.write('  hdfBranch = hdfBranch_.create_group("data")\n')
         fOut.write('  hdfBranch.attrs["NX_class"] = b"NXdata"\n')
+      else:  #metadata outside of the tests, e.g. settings common to all tests
+        fOut.write('  hdfSettings = fOut.create_group("settings")\n')
+        fOut.write('  hdfSettings.attrs["NX_class"] = b"NXparameters"\n')
       for start in self.content:
         if 'start' in self.periodicity and start==int(self.periodicity['start']):
           fOut.write('  for idxTest in range(numberOfTests):\n')
@@ -188,6 +191,8 @@ class InputOutput():
         branchName = None
         if ( sect.dClass in ['metadata','primary'] and inForLoop ) or not bool(self.periodicity):
           branchName = 'hdfBranch'
+        elif sect.dClass in ['metadata','primary']:
+          branchName = 'hdfSettings'
         if line := self.content[start].toPY(start, lastOutput, binaryFile=self, hdf=branchName):
           forLoopPrefix = '  ' if inForLoop else ''
           fOut.write(f'  {forLoopPrefix}{line}')
@@ -229,6 +234,8 @@ class InputOutput():
         lineData['entropy'] = round(lineData['entropy'],2)
         dataframe = pd.concat([dataframe, pd.Series(lineData).to_frame().T], ignore_index=True)
       dataframe = dataframe[SECTION_OUTPUT_ORDER]         #sort columns by defined order
+      if not any(self.content[i].note for i in self.content):  #optional column: keep old format when unused
+        dataframe = dataframe.drop(columns='note')
       dataframe.to_csv(fOut, index=False)
       fOut.write("'''\n")
     return
@@ -290,8 +297,8 @@ class InputOutput():
       start = 0
       #Input lines
       for row in readData:
-        row['count'] = [] if row['count'] =='[]' else [int(i) for i in row['count'][1:-1].split(',')]
-        row['shape'] = [] if row['shape'] =='[]' else [int(i) for i in row['shape'][1:-1].split(',')]
+        for key in ('count','shape'):  #older files may contain 'np.int64(4)' instead of '4'
+          row[key] = [int(i) for i in re.findall(r'-?\d+', re.sub(r'np\.\w+\(', '', row[key]))]
         row['value'] = html.unescape(row['value'])
         #for all sections
         section = Section(**row)            # type: ignore

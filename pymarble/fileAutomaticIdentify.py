@@ -7,6 +7,23 @@ from PySide6.QtWidgets import QApplication, QProgressBar         # pylint: disab
 from .section import Section
 from .fileClass import FileProtocol
 
+
+def lengthPrefixes(data:Union[bytes,bytearray], start:int) -> list[tuple[str,int]]:
+  '''
+  Candidates for a length prefix directly in front of start: 4-byte and 2-byte integers
+  - ponytail: 1-byte prefixes skipped since dType 'B'/'b' mean zeros/unknown in marble
+
+  Args:
+    data: bytes to look into
+    start: start of the text inside data
+
+  Returns:
+    list of (dType, value)
+  '''
+  return [(dType, struct.unpack(dType, data[start-struct.calcsize(dType):start])[0]) for dType in ['i','H']
+          if start-struct.calcsize(dType)>=0]
+
+
 class Automatic():
   """ Mixin that includes all functions that identify sections """
   def automatic(self:FileProtocol, methodOrder:str='x_z_p_a', start:int=-1, getMethods:bool=False,
@@ -127,19 +144,33 @@ class Automatic():
     '''
     self.file.seek(start)
     data = bytearray(self.file.read(self.content[start].byteSize()))
-    found = False
-    # REMOVED \d in next re
-    for i in re.finditer(b'[\w\.\ \\\/;:,]{'+str.encode(str(self.optAutomatic['minChars']))+b',}',data): #pylint: disable=anomalous-backslash-in-string
+    newSections:dict[int,Section] = {}
+    endLast = 0
+    for i in re.finditer(rb'[\w\.\ \\\/;:,\-()+=#%&]{'+str.encode(str(self.optAutomatic['minChars']))+b',}',data):
       [startI, endI], text = i.span(), i[0].decode('utf-8')
-      nonZero = np.where(np.array(data[endI:])>0)[0]  #add trailing zeros
-      if len(nonZero)>0:
-        endI += nonZero[0]
+      if startI<endLast:  #inside a length-prefixed string found before
+        continue
       prob = 10+min(len(text)*2, 30)
-      self.content[start+startI] = Section(length=endI-startI, dType='c', value=text, prob=prob)
-      if startI>0:
-        found = True
-    if found:  #if found, remove parent
+      # length-prefixed string: 4- or 2-byte length directly in front, all bytes of that length printable;
+      # length at most 2 shorter than the visible text (regex may add a stray char), else it is a random number
+      for dType, length in lengthPrefixes(data, startI):
+        if len(text)-2<=length<=4096 and startI+length<=len(data) and all(0x20<=j<=0x7e for j in data[startI:startI+length]):
+          prefixStart = start+startI-struct.calcsize(dType)
+          newSections[prefixStart] = Section(length=1, key=f'strLen{prefixStart}={length}', dType=dType, prob=prob,
+                                             dClass='count', important=True)
+          text = data[startI:startI+length].decode('ascii')
+          newSections[start+startI] = Section(length=length, dType='c', value=text, prob=prob, count=[prefixStart])
+          endLast = startI+length
+          break
+      else:
+        nonZero = np.where(np.array(data[endI:])>0)[0]  #add trailing zeros
+        if len(nonZero)>0:
+          endI += nonZero[0]
+        newSections[start+startI] = Section(length=endI-startI, dType='c', value=text, prob=prob)
+        endLast = endI
+    if newSections:  #replace parent by found sections
       del self.content[start]
+      self.content.update(newSections)
     return
 
 
@@ -149,13 +180,13 @@ class Automatic():
     '''
     self.file.seek(0)
     data = bytearray(self.file.read(self.fileLength))
-    xmlStartIterator = re.finditer(b'<\w+>'   ,data) #pylint: disable=anomalous-backslash-in-string
+    xmlStartIterator = re.finditer(rb'<\w+>', data)
     xmlStartList = [(i.start(),i.end(),i.group()) for i in xmlStartIterator]
     if not xmlStartList:
       logging.info("no xml string found")
       return
     xmlStart = xmlStartList[0]
-    xmlEndIterator = re.finditer(b'<\/\w+>' ,data) #pylint: disable=anomalous-backslash-in-string
+    xmlEndIterator = re.finditer(rb'</\w+>', data)
     xmlEndList = [(i.start(),i.end(),i.group())   for i in xmlEndIterator]
     if not xmlEndList:
       return
@@ -166,9 +197,17 @@ class Automatic():
         _ = ET.fromstring(xmlString)
       except ET.ParseError:
         logging.error('XML incorrect:\n%s\n',xmlString)
-      self.content[xmlStart[0]]=Section(length=xmlEnd[1]-xmlStart[0], dType='c', value='xml string',
-                                        key='metadata', dClass='metadata', prob=100)
-      del self.content[0]
+      del self.content[0]  #before adding: new sections may start at 0
+      length, count = xmlEnd[1]-xmlStart[0], []
+      for dType, prefixLength in lengthPrefixes(data, xmlStart[0]):  #length prefix may include trailing whitespace
+        if length<=prefixLength<=length+4 and not data[xmlEnd[1]:xmlStart[0]+prefixLength].strip(b'\r\n\t \x00'):
+          prefixStart = xmlStart[0]-struct.calcsize(dType)
+          self.content[prefixStart] = Section(length=1, key=f'strLen{prefixStart}={prefixLength}', dType=dType,
+                                              prob=100, dClass='count', important=True)
+          length, count = prefixLength, [prefixStart]
+          break
+      self.content[xmlStart[0]]=Section(length=length, dType='c', value='xml string', key='metadata',
+                                        dClass='metadata', prob=100, count=count)
     return
 
 
@@ -210,9 +249,13 @@ class Automatic():
     #load data
     dataTXT = np.loadtxt(exportedFile)
     lenData = dataTXT.shape[0]
+    success = False
     for col in range(dataTXT.shape[1]):
       idxMax = np.argmax(dataTXT[:,col])
       valMax = dataTXT[idxMax,col]
+      if valMax==0:
+        logging.warning('column %s: maximum is 0, cannot be searched', col+1)
+        continue
       # Above change allowed for test script to run successfully
       if self.verbose>1:
         print('\nStart with column:',col,' max. value:',valMax)
@@ -227,13 +270,17 @@ class Automatic():
           self.file.seek(start)
           dataBin = self.file.read(struct.calcsize(str(lenData)+dType))
           dataBINARY = np.array(struct.unpack(str(lenData)+dType, dataBin))
-          maxDiff = np.max(dataBINARY-dataTXT[:,col])
-          if bestMax is None or abs(maxDiff)<abs(bestMax):
+          maxDiff = np.max(np.abs(dataBINARY-dataTXT[:,col]))
+          if bestMax is None or maxDiff<bestMax:
             bestOffset, bestMax, bestDType = start, maxDiff, dType
       if bestOffset is None or bestMax is None or bestDType is None:
-        logging.error('no fitting best value found')
-        return False
-      prob = bestMax/valMax if bestDType=='d' else (bestMax/valMax)**2
+        logging.error('column %s: no fitting best value found', col+1)
+        continue
+      relError = max(bestMax/abs(valMax), 1e-12)  #floor: exact match would give infinite probability
+      if relError > self.optFind['maxErrorExport']:
+        logging.error('column %s: best match has relative error %.2g > maxErrorExport', col+1, relError)
+        continue
+      prob = relError if bestDType=='d' else relError**2
       prob = min( int(np.log10(1./prob)*3+50), 90) #probability has max. value of 90
       if self.verbose>1:
         print(f'  Best fit: dType={bestDType} start={bestOffset} length={lenData} end=',
@@ -243,7 +290,10 @@ class Automatic():
       section = Section(length=lenData, dType=bestDType, value=f'from exported data column {col+1}',
         prob=prob, count=count, shape=[lenData], dClass='primary')
       self.content[bestOffset] = section
-    return True
+      success = True
+    if success:
+      self.fill()  #resolve overlaps with previously found sections
+    return success
 
 
   def findStreak(self:FileProtocol, dType:str='d', start:int=0) -> None:

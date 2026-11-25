@@ -25,9 +25,10 @@ import numpy as np
 #   - 40-60 sequences: tho longer the higher: cutoff at 100-long
 #   - 100   if manually set key,unit,link
 # entropy -> see automaticIdentify:entropy
+# note: free text, e.g. evidence/reasoning for the identification; optional when loading old files
 # TODO document dTypes: …
 SECTION_OUTPUT_ORDER = ['length','dType','key','unit','link','dClass','count','shape','prob','entropy',\
-                        'important','value']
+                        'important','value','note']
 
 class Section:
   """
@@ -35,7 +36,7 @@ class Section:
   """
   def __init__(self, length:int=0, dType:str='', key:str='', unit:str='', value:str='', link:str='',
                dClass:str='', count:list[int]=[], shape:list[int]=[], prob:int=0, entropy:float=-1.0,
-               important:bool=False, data:Union[str,dict[str,str]]=''):
+               important:bool=False, data:Union[str,dict[str,str]]='', note:str=''):
     """
     Args:
       length: number of items in the section
@@ -51,6 +52,7 @@ class Section:
       entropy: entropy estimate
       important: whether the section is marked important
       data: serialized section data to parse
+      note: free text, e.g. evidence for the identification
     """
     # structural properties
     self.dType     = dType
@@ -66,6 +68,7 @@ class Section:
     self.prob      = prob
     self.entropy   = entropy
     self.important = important
+    self.note      = note
     if data:
       self.setData(data)
     # set shape if unset
@@ -149,6 +152,8 @@ class Section:
       serialized section text
     '''
     strList = [str(i).replace('\\', '\\\\').replace('|', '\\|') for i in self.toList()]
+    if not self.note:  #optional last field: keep old format when unused
+      strList = strList[:-1]
     return '|'.join( strList )
 
 
@@ -159,7 +164,10 @@ class Section:
     Returns:
       section values keyed by output column name
     '''
-    return {i:getattr(self,i) for i in SECTION_OUTPUT_ORDER}
+    result = {i:getattr(self,i) for i in SECTION_OUTPUT_ORDER}
+    for i in ('count','shape'):  #plain ints: numpy ints would be written as 'np.int64(..)' and not load again
+      result[i] = [int(j) for j in result[i]]
+    return result
 
 
   def toList(self) -> list[str]:
@@ -192,14 +200,24 @@ class Section:
     Returns:
       Python code line or None if no output should be generated for this section
     '''
-    if self.dType in ['b','B']:
+    if self.dType=='B' or (self.dType=='b' and not self.important):
       return None
     relPos = offset - lastOffset
+    if self.dType=='b':  #labelled bytes, e.g. embedded image or file: uint8 array, reshaped if shape is n-dim.
+      if not hdf:
+        return f'fIn.seek({relPos+self.length}, 1)\n'
+      reshape = f'.reshape({self.shape})' if len(self.shape)>1 else ''
+      return f'fIn.seek({relPos}, 1); {hdf}.create_dataset("{self.key}", data=np.frombuffer(fIn.read({self.length}), '\
+             f'dtype=np.uint8){reshape})\n'
     if self.dType=='c' or self.dClass=='metadata':
       length = str(self.length) if self.dType=='c' else f'"{self.size()}"'  #default: char or
+      if self.dType=='c' and self.count and binaryFile is not None and self.count[0] in binaryFile.content and \
+         binaryFile.content[self.count[0]].important:  #length variable only exists if count section is written
+        length = binaryFile.content[self.count[0]].key.split('=')[0]  #length-prefixed string: length variable
       key = self.key.replace(':','_')
-      return f'addAttrs({relPos}, {length}, {hdf}, "{key}' + '")\n'
-    if self.dType=='i':
+      unit = f', "{self.unit}"' if self.unit else ''
+      return f'addAttrs({relPos}, {length}, {hdf}, "{key}"{unit})\n'
+    if self.dType=='i' or self.dClass=='count':
       variable = variable or self.key.split('=')[0]
       return f'{variable} = readData({relPos}, "{self.size()}' + '")[0]\n'
     if binaryFile is None:
@@ -268,7 +286,7 @@ class Section:
     '''
     return """
 
-def addAttrs(relPos, format, hdfBranch, key):
+def addAttrs(relPos, format, hdfBranch, key, unit=''):
   '''
   helper function: add attribute to branch
 
@@ -277,6 +295,7 @@ def addAttrs(relPos, format, hdfBranch, key):
     format: data to read, int=numb. of chars, otherwise 4i
     hdfBrach: branch to add
     key: name of the key
+    unit: unit of the value, saved as attribute key_units
 
   Returns:
     none
@@ -285,14 +304,16 @@ def addAttrs(relPos, format, hdfBranch, key):
   if '-v' in sys.argv:
     print('add Attrs', fIn.tell(), end=' ')
   key = key.lower().replace(' ','_')
+  if hdfBranch and unit:
+    hdfBranch.attrs[key+'_units'] = unit
   if type(format)==int:
     value = bytearray(source=fIn.read(format)).decode('latin-1')
     if hdfBranch:
-      hdfBranch.attrs[key] = value.replace('\\x00','')
+      hdfBranch.attrs[key] = value.split('\\x00')[0]
   else:
     value = struct.unpack(format, fIn.read(struct.calcsize(format)))
     if hdfBranch:
-      if len(value)==0:
+      if len(value)==1:
         hdfBranch.attrs[key] = value[0]
       else:
         hdfBranch.attrs[key] = value

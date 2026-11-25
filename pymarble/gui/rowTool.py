@@ -1,12 +1,10 @@
 """ Editor to identify data saved in rows """
 import struct, logging
-import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QComboBox, \
                               QSpinBox, QCheckBox, QWidget  # pylint: disable=no-name-in-module
-from ..section import Section
 from .style import IconButton, widgetAndLayout
 from .communicate import Communicate
 from .defaults import translateDtype, translateDtypeInv
@@ -238,16 +236,11 @@ class RowTool(QDialog):
       else:
         start      = self.startW.value()
         shape      = [int(self.lengthW.text()), self.numberW.value()]
-      count = [self.comm.binaryFile.findAnchor(shape[0], start)[0],                   # type: ignore[misc]
-               self.comm.binaryFile.findAnchor(shape[1], start)[0]]                   # type: ignore[misc]
-      section = Section(length=int(np.prod(shape)), dType=translateDtypeInv[self.dTypeCB.currentText()],
-                        key='primary data in rows', value='primary data in rows', dClass='primary',
-                        shape=shape, count=count, prob=100, important=True, entropy=-1)
       del self.comm.binaryFile.content[self.start]
-      self.comm.binaryFile.content[start] = section
-      self.comm.binaryFile.rowFormatMeta = [{'key':self.keyWs[i].text(), 'unit':self.unitWs[i].text(),
-                                            'link':self.linkWs[i].text()} for i in range(self.numberW.value())]
-      self.comm.binaryFile.rowFormatSegments.add(start)
+      columns = [{'key':self.keyWs[i].text(), 'unit':self.unitWs[i].text(), 'link':self.linkWs[i].text()}
+                 for i in range(self.numberW.value())]
+      self.comm.binaryFile.setRowFormat(start, shape[1], translateDtypeInv[self.dTypeCB.currentText()],  # type: ignore[misc]
+                                        numRows=shape[0], columns=columns, searchColumnCount=True)
       self.comm.changeTable.emit()
       self.accept()
     else:

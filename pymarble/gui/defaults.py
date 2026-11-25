@@ -2,9 +2,9 @@
 
 defaultConfiguration = {
   "lastDirectory": "",
-  "columns": ["start", "length", "key", "value"],
-  "optFind": {"maxError":1e-4},
-  "optAutomatic": {"minChars":10,   "minArray": 50, "maxExp":11, "minZeros":16, "minEntropy":3},
+  "columns": ["start", "length", "key", "value", "note"],
+  "optFind": {"maxError":1e-4, "maxErrorExport":1e-2},
+  "optAutomatic": {"minChars":10,   "minArray": 50, "maxExp":11, "minZeros":16, "minEntropy":3, "maxFieldsPerRegion":32},
   "optEntropy": {"blockSize":256, "skipEvery":5},
   "llm": {"type":"openAI", "server":"https://api.openai.com/v1", "model":"",
           "keyringId":"pymarble-openai-default", "comment":"", "keyStorage":"keyring"}
@@ -68,7 +68,7 @@ HELP_TABLE = """
 <li>Use the <b>dClass</b> drop-down to choose metadata, primary data, count, or unknown.</li>
 <li>Use the <b>prob</b> drop-down to set the confidence of an identification.</li>
 <li>Click <b>important</b> to include or exclude a section from generated output.</li>
-<li>Click cells in the <b>key</b>, <b>unit</b>, and <b>value</b> columns to edit them directly.</li>
+<li>Click cells in the <b>key</b>, <b>unit</b>, <b>value</b>, and <b>note</b> columns to edit them directly.</li>
 <li>Hover over a column heading or cell for a short explanation.</li>
 </ul>
 """

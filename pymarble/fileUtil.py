@@ -1,6 +1,6 @@
 """Search file and find values"""
-import struct, math, re, difflib, copy, logging
-from typing import Union
+import struct, math, re, difflib, copy, logging, os
+from typing import Union, Any
 import numpy as np
 from .section import Section, SECTION_OUTPUT_ORDER
 from .fileClass import FileProtocol
@@ -141,6 +141,201 @@ class Util():
     return
 
 
+  def setRowFormat(self:FileProtocol, start:int, numColumns:int, dType:str='f', numRows:int=-1,
+                   columns:list[dict[str,str]] | None=None, searchColumnCount:bool=False) -> None:
+    '''
+    Define primary data that is saved in rows: numRows x numColumns values, row after row
+
+    Args:
+      start: start offset of the data
+      numColumns: number of values per row
+      dType: data type of each value
+      numRows: number of rows; -1: derive from the section at start
+      columns: key, unit, link of each column
+      searchColumnCount: search the file for the number of columns, otherwise it is a fixed number
+    '''
+    if numRows<0:
+      if start not in self.content:
+        logging.error('setRowFormat: no section at %s to derive the number of rows', start)
+        return
+      numRows = self.content[start].byteSize()//(numColumns*struct.calcsize(dType))
+      for countType in ['i','H']:  #count directly in front: exact; automatic section lengths are approximate
+        if start-struct.calcsize(countType)>=0:
+          self.file.seek(start-struct.calcsize(countType))
+          numFound = struct.unpack(countType, self.file.read(struct.calcsize(countType)))[0]
+          if 0<numFound and abs(numFound-numRows)<=0.01*numRows:
+            numRows = numFound
+            break
+    shape = [numRows, numColumns]
+    count = [self.findAnchor(numRows, start)[0],
+             self.findAnchor(numColumns, start)[0] if searchColumnCount else -1]
+    self.content[start] = Section(length=numRows*numColumns, dType=dType, key='primary data in rows',
+                                  value='primary data in rows', dClass='primary', shape=shape, count=count,
+                                  prob=100, important=True, entropy=-1)
+    columns = columns or []
+    self.rowFormatMeta[:] = [{'key':i.get('key',''), 'unit':i.get('unit',''), 'link':i.get('link','')}
+                             for i in columns+[{}]*(numColumns-len(columns))]
+    self.rowFormatSegments.add(start)
+    self.fill()
+    return
+
+
+  def compare(self:FileProtocol, otherFiles:list[str], anchor:Union[str,bytes,None]=None, verbose:bool=True) \
+    -> list[dict[str,Any]]:
+    '''
+    Compare this file with other files: which bytes are constant, which vary
+
+    - files: sizes, identical, common prefix, fraction of equal bytes at the same position (interpretation is up to the user)
+    - with anchor (regex, e.g. a date string that starts each test): split all files at the anchor and compare the
+      distinct segments: head (before first anchor), units (anchor to next anchor), tail (last anchor to end).
+      Each group is compared aligned at its start and aligned at its end; segment lengths are reported.
+
+    Args:
+      otherFiles: file names to compare with
+      anchor: regular expression (str or bytes) that marks the start of each unit
+      verbose: print results
+
+    Returns:
+      list of results: numbers per file pair and, per group/alignment, ranges with state constant/varying
+    '''
+    allData:list[tuple[str,bytes]] = []
+    for fileName in [self.fileName]+otherFiles:
+      with open(fileName, 'rb') as fIn:
+        allData.append((fileName, fIn.read()))
+    results:list[dict[str,Any]] = []
+    for idx, (fileName1, data1) in enumerate(allData):
+      for fileName2, data2 in allData[idx+1:]:
+        minLen = min(len(data1), len(data2))
+        equal = np.frombuffer(data1[:minLen], np.uint8)==np.frombuffer(data2[:minLen], np.uint8)
+        prefix = int(np.argmin(equal)) if not equal.all() else minLen
+        fraction = float(equal.mean()) if minLen else 0.
+        results.append({'group':'file', 'files':[fileName1, fileName2], 'sizes':[len(data1), len(data2)],
+                        'commonPrefix':prefix, 'equalFraction':round(fraction,4), 'identical':data1==data2})
+    if anchor is not None:
+      pattern = re.compile(anchor.encode('latin-1') if isinstance(anchor, str) else anchor)
+      groups:dict[str,list[bytes]] = {'head':[], 'unit':[], 'tail':[]}
+      for _, data in allData:
+        starts = [i.start() for i in pattern.finditer(data)]
+        if not starts:
+          continue
+        groups['head'].append(data[:starts[0]])
+        groups['unit'] += [data[i:j] for i,j in zip(starts[:-1], starts[1:])]
+        groups['tail'].append(data[starts[-1]:])
+      for group, segments in groups.items():
+        segments = list(dict.fromkeys(segments))  #distinct, keep order
+        if len(segments)<2:
+          results.append({'group':group, 'segments':len(segments), 'lengths':[len(i) for i in segments]})
+          continue
+        lengths = [len(i) for i in segments]
+        minLen = min(lengths)
+        for align in ['start'] if len(set(lengths))==1 else ['start','end']:
+          aligned = np.array([np.frombuffer(i[:minLen] if align=='start' else i[-minLen:], np.uint8) for i in segments])
+          varying = np.where((aligned!=aligned[0]).any(axis=0))[0]
+          ranges:list[list[int]] = []
+          for i in varying:   #merge varying bytes that are close
+            if ranges and i-ranges[-1][1]<=3:
+              ranges[-1][1] = int(i)
+            else:
+              ranges.append([int(i), int(i)])
+          offset = 0 if align=='start' else -minLen
+          ranges_ = [{'start':a+offset, 'end':b+offset+1,
+                      'values':[aligned[k][a:b+1].tobytes().hex() for k in range(len(segments))] if b-a<16 else []}
+                     for a,b in ranges]
+          results.append({'group':group, 'align':align, 'segments':len(segments), 'lengths':lengths,
+                          'compared':minLen, 'varying':ranges_})
+    if verbose:
+      fileResults = [i for i in results if i['group']=='file']
+      print(f'{len(allData)} files, {len(fileResults)} pairs; equal bytes = fraction of equal bytes at the same position')
+      for res in fileResults:
+        print(f"  {os.path.basename(res['files'][0])} - {os.path.basename(res['files'][1])}: sizes {res['sizes']}, "
+              f"common prefix {res['commonPrefix']}, equal bytes {res['equalFraction']:.1%}"
+              f"{', identical' if res['identical'] else ''}")
+      for res in results:
+        if res['group']=='file':
+          continue
+        if 'varying' not in res:
+          print(f"{res['group']}: {res['segments']} distinct segment(s), lengths {res['lengths']}")
+        else:
+          print(f"{res['group']} aligned at {res['align']}: {res['segments']} distinct segments, lengths "
+                f"{res['lengths']}, {res['compared']} bytes compared; all other bytes constant")
+          shown = res['varying'] if len(res['varying'])<=30 else res['varying'][:15]+res['varying'][-15:]
+          for idxRange, rng in enumerate(shown):
+            if len(shown)<len(res['varying']) and idxRange==15:
+              print(f"  ... {len(res['varying'])-30} more varying ranges ...")
+            print(f"  varying {rng['start']}..{rng['end']} ({rng['end']-rng['start']} bytes)", end='')
+            print(':  '+' '.join(rng['values']) if rng['values'] else '')
+            if rng['values'] and len(rng['values'][0]) in (4,8,16):
+              fmt = {4:'<H', 8:'<I', 16:'<d'}[len(rng['values'][0])]
+              numbers = [struct.unpack(fmt, bytes.fromhex(i))[0] for i in rng['values']]
+              print(f'    as {fmt}: {numbers}')
+              if fmt=='<I':
+                floats = [float(f"{struct.unpack('<f', bytes.fromhex(i))[0]:.6g}") for i in rng['values']]
+                print(f'    as <f: {floats}')
+    return results
+
+
+  def coverage(self:FileProtocol, otherFiles:list[str] | None=None, anchor:Union[str,bytes,None]=None,
+               verbose:bool=True) -> dict[str,Any]:
+    '''
+    How much of the file is understood; labelled = important sections
+
+    - fields: each labelled section counts as one field, regardless of size; unknown bytes (dType b) count as
+      one potential field per 4 bytes, at most optAutomatic['maxFieldsPerRegion'] per region (larger regions are
+      likely one structure: array, image, table); unlabelled typed sections count as one potential field; zeros count nothing
+    - bytes: fraction of the file in labelled sections (dominated by large data arrays)
+    - varying (with otherFiles): bytes that vary between samples carry the information; labelled sections that
+      contain varying bytes vs. regions of varying bytes outside of labelled sections
+
+    Args:
+      otherFiles: other samples, see compare()
+      anchor: regular expression that starts each measurement unit, see compare()
+      verbose: print results
+
+    Returns:
+      dictionary with the coverages
+    '''
+    labelled = [(start, start+sec.byteSize()) for start, sec in self.content.items() if sec.important]
+    # ponytail: 4 bytes per field and the cap per region are assumptions
+    potential = sum(min(math.ceil(sec.byteSize()/4), self.optAutomatic['maxFieldsPerRegion']) if sec.dType=='b' else 1
+                    for sec in self.content.values()
+                    if not sec.important and sec.dType!='B')
+    result:dict[str,Any] = {'fields': {'labelled':len(labelled), 'potential':potential,
+                                       'fraction':len(labelled)/max(len(labelled)+potential,1)},
+                            'bytes':  sum(end-start for start,end in labelled)/max(self.fileLength,1)}
+    if otherFiles:
+      pattern = re.compile(anchor.encode('latin-1') if isinstance(anchor, str) else anchor) if anchor is not None \
+                else re.compile(rb'\A')   #no anchor: compare complete files
+      with open(self.fileName, 'rb') as fIn:
+        anchors = [i.start() for i in pattern.finditer(fIn.read())]
+      segments = {'head':[(0, anchors[0])] if anchors else [], 'unit':list(zip(anchors[:-1], anchors[1:])),
+                  'tail':[(anchors[-1], self.fileLength)] if anchors else []}
+      varying = np.zeros(self.fileLength, dtype=bool)   #varying bytes in this file
+      for res in self.compare(otherFiles, pattern.pattern, verbose=False):
+        if 'varying' in res:
+          for segStart, segEnd in segments[res['group']]:
+            base = segStart if res['align']=='start' else segEnd
+            for rng in res['varying']:
+              varying[max(base+rng['start'], segStart):min(base+rng['end'], segEnd)] = True
+      inLabelled = np.zeros(self.fileLength, dtype=bool)
+      for start, end in labelled:
+        inLabelled[start:end] = True
+      covered = sum(1 for start,end in labelled if varying[start:end].any())
+      outside = np.flatnonzero(varying & ~inLabelled)
+      # ponytail: varying bytes closer than 16 bytes form one region; data arrays become one region, close header
+      # fields may merge
+      regions = int(len(outside)>0) + int(np.count_nonzero(np.diff(outside)>16))
+      result['varying'] = {'labelledSections':covered, 'regionsOutside':regions,
+                           'fraction':covered/max(covered+regions,1)}
+    if verbose:
+      print(f"fields:  {result['fields']['labelled']} labelled, {result['fields']['potential']} potential fields in "
+            f"unknown regions -> {result['fields']['fraction']:.1%}")
+      print(f"bytes:   {result['bytes']:.1%} of the file in labelled sections")
+      if 'varying' in result:
+        print(f"varying: {result['varying']['labelledSections']} labelled sections contain varying bytes, "
+              f"{result['varying']['regionsOutside']} varying regions outside -> {result['varying']['fraction']:.1%}")
+    return result
+
+
   def fill(self:FileProtocol) -> None:
     '''
     Fill content by labeling undefined sections to be "undefined" binary data
@@ -170,7 +365,7 @@ class Util():
                section.dClass!='metadata':
           #if data less that supposed
           toDelete.append(start)
-        elif idx+1<len(starts) and section.dType=='c' and self.content[starts[idx+1]].dType=='B':
+        elif idx+1<len(starts) and section.dType=='c' and not section.count and not section.important and self.content[starts[idx+1]].dType=='B':
           #if text is followed by a zeros
           self.content[start].length += self.content[starts[idx+1]].length #   add zeros to text
           toDelete.append(starts[idx+1])                                   #   remove zeros
@@ -245,7 +440,8 @@ class Util():
       pairsAll    = zip(self.content.keys()[:-1], self.content.keys()[1:])
       #TODO: joinPattern ['b'] or ['B']
       while pairsRepair := [[i, j] for i, j in pairsAll
-                            if self.content[i].dType == 'b' and self.content[j].dType == 'b']:
+                            if self.content[i].dType == 'b' and self.content[j].dType == 'b' and
+                            not self.content[i].important and not self.content[j].important]:  #keep labelled bytes
         first, second = pairsRepair[0]  #just take the first and then rebuild to prevent overlapping
         self.content[first].length += self.content[second].length
         self.content[first].shape  = [self.content[first].length]

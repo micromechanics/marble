@@ -40,3 +40,6 @@ class FileProtocol(Protocol):
   diffStrings: Callable[[str,str],list[str]]
   entropy: Callable[[int,bool],float]
   verify: Callable[[Any], None]
+  setRowFormat: Callable[..., None]
+  compare: Callable[..., list[dict[str,Any]]]
+  coverage: Callable[..., dict[str,Any]]
